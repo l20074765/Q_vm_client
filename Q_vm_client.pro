@@ -77,6 +77,7 @@ DISTFILES += \
     qml/VMTradeWidget.qml \
     qml/VMTransactionPage.qml \
     qml/VMGoodsListPage.qml \
-    qml/VMTradeoutPage.qml
+    qml/VMTradeoutPage.qml \
+    qml/VMTradeFailPage.qml
 
 

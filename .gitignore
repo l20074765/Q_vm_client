@@ -33,7 +33,7 @@ Thumbs.db
 *.rc
 /.qmake.cache
 /.qmake.stash
-
+*.log
 # qtcreator generated files
 *.pro.user*
 
@@ -69,5 +69,7 @@ Thumbs.db
 # --------
 *.dll
 *.exe
+
+*.log
 
 

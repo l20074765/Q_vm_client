@@ -69,6 +69,11 @@ Rectangle {
             id:vmTradeoutPage
             anchors.fill: parent
         }
+        //7.出货失败界面
+        VMTradeFailPage{
+            id:vmTradeFailPage
+            anchors.fill: parent
+        }
 
     }
 
@@ -157,7 +162,7 @@ Rectangle {
     function tradeResult(res){
         console.log("支付结果上报:" + res);
         if(res == 1){ //支付成功
-
+            vmPageSwitch(vmTradeoutPage);
         }
         else{
 

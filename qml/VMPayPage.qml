@@ -105,9 +105,9 @@ VMWidget {
         Image {
             id: payqure_image//二维码图片
             x:payView_image.x + payView_image.width * 0.558
-            y:payView_image.y + payView_image.height * 0.42
+            y:payView_image.y + payView_image.height * 0.412
             width: payView_image.width * 0.225
-            height: payView_image.height * 0.34
+            height: payView_image.height * 0.332
             source: pic_image
             fillMode: Image.PreserveAspectCrop
             clip: true

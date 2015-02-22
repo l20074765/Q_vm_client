@@ -23,8 +23,6 @@ class MainObject : public QObject
     Q_PROPERTY(QList<ProductObject *> productList READ getProductList WRITE setProductList NOTIFY vmProductListChanged)
 
     Q_PROPERTY(ProductHash productHash READ getProductHash WRITE setProductHash NOTIFY vmProductHashChanged)
-
-
     Q_PROPERTY(QImage picImage READ getPicImage WRITE setPicImage )
 
     //QMetaProperty
@@ -63,18 +61,10 @@ public slots:
     void qmlActionSlot(int v);
     void vmcpaySlot(int cabinet,int column,int type,long cost);
     void sqlProductChangedSlot();
-
-
     void sqlAddProductSLot(ProductObject *  obj);
-
-
     quint32 product_count(){return productHash.count();}
-
-
-
     ProductObject *getAddProductObj();
     void addProductFinish(QVariant p);
-    //void setAddProductObj(ProductObject *obj);
 
     void tradeOverSlot(QPixmap pic);
     void tradeResultSlot(int res);
