@@ -2,6 +2,11 @@
 #include <QtDebug>
 #include <QMetaType>
 #include <QThread>
+
+
+#include <QFile>
+#include <QDir>
+
 MainObject::MainObject(QObject *parent) : QObject(parent)
 {
     qDebug()<<trUtf8("Create MainObject");
@@ -37,6 +42,10 @@ MainObject::MainObject(QObject *parent) : QObject(parent)
     connect(vmcMainFlow,SIGNAL(EV_callBackSignal(quint8,const void*)),
             this,SLOT(EV_callBackSlot(quint8,const void*)),Qt::QueuedConnection);
     vmcMainFlow->vmcStart();
+
+
+
+
 }
 
 MainObject::~MainObject()
@@ -81,8 +90,6 @@ void MainObject::vmcpaySlot(int cabinet,int column,int type,long cost)
            <<" column:"<<column
           <<" type:"<<type<<" cost:"<<cost;
     alipayApi->tradBegin();
-
-
 }
 
 
@@ -110,7 +117,40 @@ void MainObject::EV_callBackSlot(const quint8 type,const void *ptr)
 
        }
 
+
     }
+    else if(type == EV_ENTER_MANTAIN)//退出维护
+    {
+        this->setVmcState(EV_STATE_MANTAIN);
+    }
+    else if(type == EV_EXIT_MANTAIN)//推出维护
+    {
+        this->setVmcState(EV_STATE_FAULT);
+    }
+}
+
+
+
+
+void MainObject::setAdsFileList(const QStringList &list)
+{
+    this->adsFileList = list;
+}
+
+QStringList MainObject::getAdsFileList()
+{
+    QStringList list;
+    QDir dir("../../images/ads");
+    QStringList filter;
+    filter<<"*.jpg"<<"*.png"<<"*.avi";
+    list = dir.entryList(filter);
+    qDebug()<<"测试遍历文件"<<list;
+
+
+
+    return list;
+
+
 }
 
 

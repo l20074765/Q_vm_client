@@ -24,8 +24,6 @@ int main(int argc,char *argv[])
     systemMsgOutput = qInstallMsgHandler(myMessageOutput);
 
     QApplication app(argc,argv);
-
-
     app.setApplicationName(QObject::trUtf8("QVMClient"));
     app.setApplicationVersion(QObject::trUtf8("1.1.0"));
     app.setApplicationName(QObject::trUtf8("QVMClient"));
@@ -34,7 +32,6 @@ int main(int argc,char *argv[])
 
     qDebug()<<QObject::trUtf8("测试日志输出")<<QT_VERSION_STR
            <<qApp->applicationVersion();
-
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));

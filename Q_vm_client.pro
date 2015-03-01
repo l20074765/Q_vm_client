@@ -1,5 +1,6 @@
 QT+=core gui sql network
 QT+=declarative
+QT += phonon
 CONFIG += release warn_on
 
 TEMPLATE = app
@@ -19,11 +20,18 @@ INCLUDEPATH +=$$PWD \
               $$PWD/src/sql \
               $$PWD/src/alipay \
             $$PWD/src/jsoncpp \
+            $$PWD/src/video \
 
 
 LIBS +=  -L$$PWD -L$$PWD/libs
 
 DEFINES +=VM_DECLARATIVE
+
+
+
+QML_IMPORT_PATH += $$PWD/plugins  \
+
+
 
 SOURCES += \
     src/main.cpp \
@@ -40,7 +48,8 @@ SOURCES += \
     src/jsoncpp/json_reader.cpp \
     src/jsoncpp/json_value.cpp \
     src/jsoncpp/json_valueiterator.inl \
-    src/jsoncpp/json_writer.cpp
+    src/jsoncpp/json_writer.cpp \
+    src/video/vmvideo.cpp
 
 HEADERS += \
     src/mainwindow.h \
@@ -60,24 +69,31 @@ HEADERS += \
     src/jsoncpp/json_batchallocator.h \
     src/jsoncpp/reader.h \
     src/jsoncpp/value.h \
-    src/jsoncpp/writer.h
-
-
-QML_IMPORT_PATH += $$PWD/plugins
+    src/jsoncpp/writer.h \
+    src/video/vmvideo.h
 
 
 DISTFILES += \
     qml/main.qml \
-    qml/VMAdsPage.qml \
-    qml/VMWidget.qml \
-    qml/VMStatusbar.qml \
-    qml/VMTitlebar.qml \
-    qml/Product.qml \
-    qml/VMPayPage.qml \
-    qml/VMTradeWidget.qml \
-    qml/VMTransactionPage.qml \
-    qml/VMGoodsListPage.qml \
-    qml/VMTradeoutPage.qml \
-    qml/VMTradeFailPage.qml
+    qml/ads/VMAdsPage.qml \
+    qml/custom/Product.qml \
+    qml/custom/VMStatusbar.qml \
+    qml/custom/VMTitlebar.qml \
+    qml/custom/VMWidget.qml \
+    qml/trade/VMFaultPage.qml \
+    qml/trade/VMGoodsListPage.qml \
+    qml/trade/VMPayPage.qml \
+    qml/trade/VMTradeFailPage.qml \
+    qml/trade/VMTradeoutPage.qml \
+    qml/trade/VMTradeWidget.qml \
+    qml/trade/VMTransactionPage.qml \
+    qml/maintain/MTButton.qml \
+    qml/maintain/MTMain.qml \
+    qml/maintain/MTMainTainPage.qml \
+    qml/maintain/MTTradePage.qml \
+    qml/maintain/MTProductPage.qml \
+    qml/maintain/MTColumnPage.qml
+
+
 
 

@@ -1,101 +1,88 @@
 import QtQuick 1.1
-import QtDesktop 0.1
+import "maintain" as MainTain
+import "ads" as Ads
+import "custom" as Custom
+import "trade" as Trade
 
+
+//主界面
 Rectangle {
     id:main_rect
     anchors.fill: parent
-    property VMWidget curPage:vmFaultPage
-    property VMWidget lastPage:vmFaultPage
-
+    property Item curPage:vmFaultPage
+    property Item lastPage:vmFaultPage
     signal qmlActionSignal(int type)
+
     //1.广告页面
-    VMAdsPage{
+    Ads.VMAdsPage{
         id:vmAdsPage
         anchors.fill: parent
         onAds_clicked: {
-          if(curPage == vmAdsPage)
+            if(curPage == vmAdsPage)
+                vmPageSwitch(vmGoodsListPage);
+        }
+    }
+    //2.故障页面
+    Trade.VMFaultPage{
+        id:vmFaultPage
+        anchors.fill: parent
+    }
+    //3.商品列表
+    Trade.VMGoodsListPage{
+        id:vmGoodsListPage
+        anchors.fill: parent
+        onGoodsList_clicked: {
+            var p = vmGoodsListPage.vmGetCurProductItem()
+            vmTransactionPage.setGoodsInfo(p)
+            console.log("进入交易界面" + p);
+            vmPageSwitch(vmTransactionPage);
+        }
+        onBack_clicked: {
+            vmPageSwitch(vmAdsPage);
+        }
+    }
+    //4.交易界面
+    Trade.VMTransactionPage{
+        id:vmTransactionPage
+        anchors.fill: parent
+        onButton_pay_clicked:{
+            var p = vmGoodsListPage.vmGetCurProductItem()
+            vmPayPage.vmPayAddProduct(p)
+            vmPageSwitch(vmPayPage);
+            qmlActionSignal(1);
+        }
+        onBack_clicked: {
             vmPageSwitch(vmGoodsListPage);
         }
     }
 
-    //主界面显示区
-    Rectangle{
-        id:main_page
-        width: parent.width
-        height: parent.height*0.9
-        anchors{top:title_bar.bottom}
-        signal main_change_signal
-
-        //2.故障页面
-        VMFaultPage{
-            id:vmFaultPage
-            anchors.fill: parent
-        }
-
-        //3.商品列表陀
-        VMGoodsListPage{
-            id:vmGoodsListPage
-            anchors.fill: parent
-
-            onGoodsList_clicked: {
-                var p = vmGoodsListPage.vmGetCurProductItem()
-                vmTransactionPage.setGoodsInfo(p)
-                console.log("进入交易界面" + p);
-                vmPageSwitch(vmTransactionPage);
-            }
-        }
-
-
-        //4.交易界面
-        VMTransactionPage{
-            id:vmTransactionPage
-            anchors.fill: parent
-            onButton_pay_clicked:{
-                var p = vmGoodsListPage.vmGetCurProductItem()
-                vmPayPage.vmPayAddProduct(p)
-                vmPageSwitch(vmPayPage);
-                qmlActionSignal(1);
-            }
-        }
-
-        //5.支付界面
-        VMPayPage{
-            id:vmPayPage
-            anchors.fill: parent
-        }
-
-        //6.成功支付后的出货界面
-        VMTradeoutPage{
-            id:vmTradeoutPage
-            anchors.fill: parent
-        }
-        //7.出货失败界面
-        VMTradeFailPage{
-            id:vmTradeFailPage
-            anchors.fill: parent
-        }
+    //5.支付界面
+    Trade.VMPayPage{
+        id:vmPayPage
+        anchors.fill: parent
 
     }
 
-    //标题栏区域
-    VMTitlebar{
-        id:title_bar
-        width: parent.width
-        height: parent.height*0.05
-        anchors{top:parent.top}
+    //6.成功支付后的出货界面
+    Trade.VMTradeoutPage{
+        id:vmTradeoutPage
+        anchors.fill: parent
     }
-
-    //状态栏区域
-    VMStatusbar{
-        id:status_bar
-        width: parent.width
-        height: parent.height*0.05
-        anchors{top:main_page.bottom}
-        onStatus_back_clicked: {
-            //执行返回按钮
-            back_req()
+    //7.出货失败界面
+    Trade.VMTradeFailPage{
+        id:vmTradeFailPage
+        anchors.fill: parent
+        onBack_clicked: {
+           vmPageSwitch(vmAdsPage);
         }
     }
+
+    //8.维护主界面
+    MainTain.MTMain{
+        id:vmMTMainPage
+        anchors.fill: parent
+    }
+
 
 
     //返回函数
@@ -113,10 +100,15 @@ Rectangle {
         {
             vmPageSwitch(vmAdsPage)
         }
+        else if(s == 4) //维护
+        {
+
+            vmPageSwitch(vmMTMainPage);
+        }
         else //故障
         {
-           // vmPageSwitch(vmFaultPage)
-            vmPageSwitch(vmGoodsListPage)
+           //vmPageSwitch(vmFaultPage)
+            vmPageSwitch(vmFaultPage)
 
         }
         return 1;
@@ -154,7 +146,7 @@ Rectangle {
     //上报二维码图片
     function alipay_pic_ok(){
         console.log("支付宝二维码图片开始获取");
-        vmPayPage.pic_image = "../images/alipay/ali_code.png"
+        vmPayPage.pic_image = "../../images/alipay/ali_code.png"
 
     }
 
@@ -173,20 +165,8 @@ Rectangle {
     function vmPageSwitch(page){
         main_rect.lastPage = main_rect.curPage
         main_rect.curPage = page
-        main_rect.lastPage.state="hide"
-        main_rect.curPage.state="show"
-        if(main_rect.curPage == vmAdsPage){//广告界面隐藏工具栏
-            title_bar.visible=false
-            status_bar.visible=false
-            main_page.visible=false
-        }
-        else{
-            title_bar.visible=true
-            status_bar.visible=true
-            main_page.visible=true
-
-        }
-
+        main_rect.lastPage.visible = false
+        main_rect.curPage.visible = true
 
     }
 

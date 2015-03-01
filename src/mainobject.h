@@ -10,10 +10,9 @@
 #include <QHash>
 #include "alipayapi.h"
 #include "vmcmainflow.h"
-
 #include <QPixmap>
 #include <QImage>
-
+#include <QStringList>
 
 class MainObject : public QObject
 {
@@ -24,6 +23,8 @@ class MainObject : public QObject
 
     Q_PROPERTY(ProductHash productHash READ getProductHash WRITE setProductHash NOTIFY vmProductHashChanged)
     Q_PROPERTY(QImage picImage READ getPicImage WRITE setPicImage )
+
+    Q_PROPERTY(QStringList adsFileList READ getAdsFileList WRITE setAdsFileList )
 
     //QMetaProperty
     //Q_DECLARE_METATYPE(ProductHash)
@@ -48,7 +49,8 @@ public:
     void setPicImage(const QImage &image){picImage = image;}
     QImage getPicImage() {return picImage;}
 
-
+    void setAdsFileList(const QStringList &list);
+    QStringList getAdsFileList();
 signals:
     void vmcStateChanged(QVariant state);
     void vmProductListChanged();
@@ -70,28 +72,23 @@ public slots:
     void tradeResultSlot(int res);
 
     void EV_callBackSlot(const quint8 type,const void *ptr);
+
+
+
 private:
 
     int vmcState;
-
     QHash<QString,ProductObject *> productHash;
-
     QHash<QString,QVariant> productQmlHash;
-
-
-
     VmSql *vmsql;
-
     QList<ProductObject *> productList;
-
     ProductObject *productObj;
-
     AlipayAPI *alipayApi;
     VmcMainFlow *vmcMainFlow;
-
-
     QPixmap pic;
     QImage picImage;
+
+    QStringList adsFileList;
 
 };
 
