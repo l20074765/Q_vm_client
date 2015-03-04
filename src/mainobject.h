@@ -5,7 +5,7 @@
 
 #include <QObject>
 #include <QCache>
-#include <vmsql.h>
+#include "vmsql.h"
 #include <productobject.h>
 #include <QHash>
 #include "alipayapi.h"
@@ -49,6 +49,10 @@ signals:
     void sqlAddProductSignal();
     void tradeOverSignal();
     void tradeResultSignal(QVariant res);
+
+    //数据库信号发射操作
+    void sqlRequestSignal(int type,QObject *obj);
+
     //支付宝信号发射
     void alipayTrade();
 public slots:
@@ -63,6 +67,8 @@ public slots:
     void tradeResultSlot(int res);
     void EV_callBackSlot(const quint8 type,const void *ptr);
 
+    //数据库接收槽
+    void sqlActionSlot(int type,QObject *obj);
 private:
     int vmcState;
     QHash<QString,ProductObject *> productHash;
@@ -70,6 +76,8 @@ private:
 
     //数据库接口类
     VmSql *vmsql;
+    QThread *sqlyThread;//数据库线程类
+
 
     QList<ProductObject *> productList;
     ProductObject *productObj;

@@ -29,7 +29,10 @@ public:
         SQL_CONNECT_FAIL = 0,
         SQL_CONNECT_OK
     };
-
+    enum{
+        SQL_ACTION_PRODUCT_ADD,
+        SQL_ACTION_PRODUCT_DEC
+    };
     enum{
         SQL_TYPE_START
     };
@@ -37,15 +40,17 @@ public:
 
 
 signals:
-    void sqlRptSignal(quint32 type);
-    void sqlProductChanged();
-    void sqlAddProduct(ProductObject * obj);
+    void sqlActionSignal(int type,QObject *obj);
 protected:
 
 public slots:
-    void sql_start();
+    void requestHandle(int type,QObject *obj);
     void tabelModelInit();
-    void sqlRptSlot(quint32 type);
+    void sqlRptSlot(int type,QObject *obj);
+
+
+private:
+    void sql_start();
 private:
     bool sqlConnected;
     QSqlDatabase m_db;

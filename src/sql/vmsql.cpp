@@ -9,16 +9,12 @@
 
 VmSql::VmSql(QObject *parent) : QObject(parent)
 {
-    stopped = true;
     sqlConnected = false;
     m_model = NULL;
     m_modelCabinet = NULL;
     productHash.clear();
-
-    //注册元对象
-   // qRegisterMetaType<QHash<QString,ProductObject*>>("QHash<QString,ProductObject*>");
-    connect(this,SIGNAL(sqlRptSignal(quint32)),
-            this,SLOT(sqlRptSlot(quint32)),Qt::QueuedConnection);
+    connect(this,SIGNAL(sqlActionSignal(int,QObject*)),
+            this,SLOT(sqlRptSlot(int,QObject*)));
 
 
 
@@ -36,26 +32,35 @@ VmSql::~VmSql()
 
 
 //启动数据库
+void VmSql::requestHandle(int type,QObject *obj)
+{
+    qDebug()<<trUtf8("数据库线程操作")<<"type="<<type;
+    if(type == SQL_TYPE_START)
+    {
+        sql_start();
+    }
+
+
+}
+
+
+
 void VmSql::sql_start()
 {
     bool ok = sqlConnection();
     if(ok)
     {
         sqlConnected = true;
-        emit sqlRptSignal(SQL_CONNECT_OK);
+        emit sqlActionSignal(SQL_CONNECT_OK,NULL);
     }
     else
     {
-        emit sqlRptSignal(SQL_CONNECT_FAIL);
+        emit sqlActionSignal(SQL_CONNECT_FAIL,NULL);
     }
-
     qDebug()<<"VmSql::VmSql"<<ok;
-
 }
 
-
-
-void VmSql::sqlRptSlot(quint32 type)
+void VmSql::sqlRptSlot(int type,QObject *obj)
 {
     if(type == SQL_CONNECT_OK)
     {
@@ -78,7 +83,6 @@ bool VmSql::sqlConnection()
 
 void VmSql::tabelModelInit()
 {
-    //qDebug()<<QString("tabelModelInit。。。");
     m_model = new QSqlTableModel(this,m_db);
     m_modelCabinet = new QSqlTableModel(this,m_db);
     m_modelCabinet->setTable("vmc_cabinet1");
@@ -117,15 +121,7 @@ void VmSql::productTableCheck()
                 .arg(priceInt % 100,2,10,QLatin1Char('0'));
 
         qDebug()<<"sqlAddProduct..."<<productObj->salePrice;
-        emit sqlAddProduct(productObj);
-#if 0
-        if(!productHash.contains(productNo1)) //商品重合
-        {
-            productHash.insert(QString("%1").arg(productNo1),productOb);
-            //新增商品 发送通知
-        }
-#endif
-
+        emit sqlActionSignal(SQL_ACTION_PRODUCT_ADD,productObj);
     }
 
 

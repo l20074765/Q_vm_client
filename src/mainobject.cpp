@@ -14,8 +14,16 @@ MainObject::MainObject(QObject *parent) : QObject(parent)
     productObj = NULL;
     productList.clear();
     productQmlHash.clear();
+
+
+
     vmsql = new VmSql();
-    vmsql->startThread();
+    sqlyThread = new QThread(this);
+    connect(this,SIGNAL(sqlRequestSignal(int,QObject*)),
+            vmsql,SLOT(requestHandle(int,QObject*)),Qt::QueuedConnection);
+    connect(vmsql,SIGNAL(sqlActionSignal(int,QObject*)),
+            this,SLOT(sqlActionSlot(int,QObject*)),Qt::QueuedConnection);
+    sqlyThread->start();//启动数据库线程
 
 
     alipayApi = new AlipayAPI();
@@ -34,12 +42,7 @@ MainObject::MainObject(QObject *parent) : QObject(parent)
 
     qRegisterMetaType<ProductHash>("ProductHash");//注册元对象
 
-    connect(vmsql,SIGNAL(sqlProductChanged()),
-            this,SLOT(sqlProductChangedSlot()),Qt::QueuedConnection);
 
-    connect(vmsql,SIGNAL(sqlAddProduct(ProductObject * )),
-            this,SLOT(sqlAddProductSLot(ProductObject * ))
-            ,Qt::QueuedConnection);
 
     //启动后台通信
     qDebug()<<"Start vmc ...COM7";
@@ -48,6 +51,10 @@ MainObject::MainObject(QObject *parent) : QObject(parent)
             this,SLOT(EV_callBackSlot(quint8,const void*)),Qt::QueuedConnection);
     vmcMainFlow->vmcStart();
     alipayThread->start();
+
+
+    //启动数据库
+    emit sqlRequestSignal(VmSql::SQL_TYPE_START,NULL);
 }
 
 MainObject::~MainObject()
@@ -91,10 +98,8 @@ void MainObject::vmcpaySlot(int cabinet,int column,int type,long cost)
     qDebug()<<trUtf8("出货前准备检测支付结果")<<"cabinet:"<<cabinet
            <<" column:"<<column
           <<" type:"<<type<<" cost:"<<cost;
-
     qDebug()<<trUtf8("当前线程:")<<QThread::currentThread();
     emit alipayTrade();
-   // alipayApi->tradBegin();
 }
 
 
@@ -167,6 +172,20 @@ void MainObject::setVmcState(const int state)
     QVariant var;
     var.setValue(vmcState);
     emit vmcStateChanged(var);
+}
+
+
+
+
+void MainObject::sqlActionSlot(int type, QObject *obj)
+{
+    qDebug()<<"MainObject::sqlActionSlot"<<type<<obj;
+    if(type == VmSql::SQL_ACTION_PRODUCT_ADD)
+    {
+        ProductObject *product = qobject_cast<ProductObject *>(obj);
+        if(product)
+            sqlAddProductSLot(product);
+    }
 }
 
 
