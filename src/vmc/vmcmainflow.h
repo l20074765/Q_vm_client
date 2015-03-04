@@ -15,6 +15,7 @@ public:
     void init();
     void EV_fun(int type,const void *ptr);
     void vmcStart();
+    int  EV_trade(int cabinet,int column,int type,long cost);
 signals:
     void EV_callBackSignal(const quint8 type,const void *ptr);
 

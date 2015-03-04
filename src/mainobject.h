@@ -13,22 +13,16 @@
 #include <QPixmap>
 #include <QImage>
 #include <QStringList>
+#include <QThread>
 
 class MainObject : public QObject
 {
     Q_OBJECT
-
     Q_PROPERTY(int vmcState READ getVmcState WRITE setVmcState NOTIFY vmcStateChanged)
     Q_PROPERTY(QList<ProductObject *> productList READ getProductList WRITE setProductList NOTIFY vmProductListChanged)
-
     Q_PROPERTY(ProductHash productHash READ getProductHash WRITE setProductHash NOTIFY vmProductHashChanged)
     Q_PROPERTY(QImage picImage READ getPicImage WRITE setPicImage )
-
     Q_PROPERTY(QStringList adsFileList READ getAdsFileList WRITE setAdsFileList )
-
-    //QMetaProperty
-    //Q_DECLARE_METATYPE(ProductHash)
-
 
 public:
     explicit MainObject(QObject *parent = 0);
@@ -44,11 +38,8 @@ public:
 
     ProductHash getProductHash(){return productHash;}
     void setProductHash(ProductHash hash){productHash = hash;}
-
-
     void setPicImage(const QImage &image){picImage = image;}
     QImage getPicImage() {return picImage;}
-
     void setAdsFileList(const QStringList &list);
     QStringList getAdsFileList();
 signals:
@@ -56,39 +47,48 @@ signals:
     void vmProductListChanged();
     void vmProductHashChanged();
     void sqlAddProductSignal();
-
     void tradeOverSignal();
     void tradeResultSignal(QVariant res);
+    //支付宝信号发射
+    void alipayTrade();
 public slots:
-    void qmlActionSlot(int v);
+    void qmlActionSlot(int v,QString req);
     void vmcpaySlot(int cabinet,int column,int type,long cost);
     void sqlProductChangedSlot();
     void sqlAddProductSLot(ProductObject *  obj);
     quint32 product_count(){return productHash.count();}
     ProductObject *getAddProductObj();
     void addProductFinish(QVariant p);
-
     void tradeOverSlot(QPixmap pic);
     void tradeResultSlot(int res);
-
     void EV_callBackSlot(const quint8 type,const void *ptr);
 
-
-
 private:
-
     int vmcState;
     QHash<QString,ProductObject *> productHash;
     QHash<QString,QVariant> productQmlHash;
+
+    //数据库接口类
     VmSql *vmsql;
+
     QList<ProductObject *> productList;
     ProductObject *productObj;
-    AlipayAPI *alipayApi;
+
+    //主控板通信接口类
     VmcMainFlow *vmcMainFlow;
+
+
     QPixmap pic;
     QImage picImage;
-
     QStringList adsFileList;
+
+    //支付宝类接口以及线程
+    AlipayAPI *alipayApi;
+    QThread *alipayThread;
+
+
+
+    QList<ProductObject *>productSelectList;//用户当前所选择的商品数
 
 };
 

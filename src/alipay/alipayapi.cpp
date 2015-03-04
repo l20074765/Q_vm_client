@@ -15,7 +15,8 @@
 #include <QtDebug>
 
 
-AlipayAPI::AlipayAPI(QObject *parent) : QObject(parent)
+AlipayAPI::AlipayAPI(QObject *parent)
+    : QObject(parent)
 {
     network_man = new QNetworkAccessManager(this);
     connect(network_man,SIGNAL(finished(QNetworkReply*)),
@@ -325,6 +326,8 @@ QMap<QString, QString> AlipayAPI::filterPara(const QMap<QString, QString> &mapAr
 //开始交易请求生成二维码
 void AlipayAPI::tradBegin()
 {
+    qDebug()<<"AlipayAPI:"<<trUtf8("当前线程:")<<QThread::currentThread();
+
     QMap<QString,QString> map;
     //接口名称
     str_cur_ali_type = aliConfig->str_precreate;
@@ -348,6 +351,8 @@ void AlipayAPI::tradBegin()
     QString jsonStr = QString::fromStdString(jsonArr.toStyledString());
     map.insert("goods_detail",jsonStr.toUtf8());
     qDebug()<<"jsonArr:"<<jsonStr.toUtf8();
+
+
     buildRequest(map);
 
 }

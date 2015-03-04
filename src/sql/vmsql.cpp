@@ -7,7 +7,7 @@
 #include <QMetaType>
 
 
-VmSql::VmSql(QThread *parent) : QThread(parent)
+VmSql::VmSql(QObject *parent) : QObject(parent)
 {
     stopped = true;
     sqlConnected = false;
@@ -15,12 +15,8 @@ VmSql::VmSql(QThread *parent) : QThread(parent)
     m_modelCabinet = NULL;
     productHash.clear();
 
-
-
     //注册元对象
    // qRegisterMetaType<QHash<QString,ProductObject*>>("QHash<QString,ProductObject*>");
-
-
     connect(this,SIGNAL(sqlRptSignal(quint32)),
             this,SLOT(sqlRptSlot(quint32)),Qt::QueuedConnection);
 
@@ -38,9 +34,10 @@ VmSql::~VmSql()
 
 
 
-void VmSql::run()
-{
 
+//启动数据库
+void VmSql::sql_start()
+{
     bool ok = sqlConnection();
     if(ok)
     {
@@ -49,29 +46,11 @@ void VmSql::run()
     }
     else
     {
-         emit sqlRptSignal(SQL_CONNECT_FAIL);
+        emit sqlRptSignal(SQL_CONNECT_FAIL);
     }
 
     qDebug()<<"VmSql::VmSql"<<ok;
-    while(!stopped)
-    {
-        qDebug()<<"Sql thread runing";
-        msleep(1000);
-    }
 
-    qDebug()<<"Sql Thread stopped...";
-}
-
-
-void VmSql::stopThread()
-{
-    stopped = true;
-}
-
-void VmSql::startThread()
-{
-    stopped = false;
-    this->start();
 }
 
 
@@ -150,6 +129,37 @@ void VmSql::productTableCheck()
     }
 
 
+}
+
+
+ProductObject *VmSql::sqlFindProduct(const QString &product_id)
+{
+    qDebug()<<"sqlFindProduct:"<<product_id;
+    int key = m_model->record().indexOf("productNo");
+
+
+    for(int i = 0;i < m_model->rowCount();i++)
+    {
+        QSqlRecord record = m_model->record(i);
+        QString producNo = record.value(key).toString();
+        bool ok;
+        if(producNo == product_id)//找到数据
+        {
+             ProductObject *productObj = new ProductObject();
+             productObj->id = producNo;
+             productObj->name = record.value("productName").toString();
+
+             quint32 priceInt = record.value("salesPrice").toUInt(&ok);
+             productObj->salePrice = QString("%1.%2")
+                     .arg(priceInt/100)
+                     .arg(priceInt % 100,2,10,QLatin1Char('0'));
+
+             return productObj;
+        }
+    }
+
+
+    return NULL;
 }
 
 

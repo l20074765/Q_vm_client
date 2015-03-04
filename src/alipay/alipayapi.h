@@ -5,6 +5,7 @@
 #include <QMap>
 #include <QPixmap>
 #include "alipayconfig.h"
+#include <QThread>
 class QTimer;
 class QNetworkReply;
 class QNetworkAccessManager;
@@ -19,7 +20,7 @@ public:
     ~AlipayAPI();
 
 
-    void tradBegin();
+
 
     QString buildRequest(const QMap<QString,QString> &mapArr);
     QMap<QString,QString> filterPara(const QMap<QString,QString> &mapArr);
@@ -32,6 +33,8 @@ public slots:
     void network_recved(QNetworkReply *reply); //支付http回应处理
     void network_pic_recved(QNetworkReply *reply);//下载二维码回应处理
     void timerout_ali_checked();
+
+    void tradBegin();
 private:
     QNetworkAccessManager *network_man; //支付htpp管理
     QNetworkAccessManager *network_pic_man;//下载二维码图片管理
@@ -44,6 +47,8 @@ private:
 
 
     AlipayConfig *aliConfig;
+
+
 
 };
 

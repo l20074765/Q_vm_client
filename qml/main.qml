@@ -11,7 +11,7 @@ Rectangle {
     anchors.fill: parent
     property Item curPage:vmFaultPage
     property Item lastPage:vmFaultPage
-    signal qmlActionSignal(int type)
+    signal qmlActionSignal(int type,string req)
 
     //1.广告页面
     Ads.VMAdsPage{
@@ -46,10 +46,11 @@ Rectangle {
         id:vmTransactionPage
         anchors.fill: parent
         onButton_pay_clicked:{
-            var p = vmGoodsListPage.vmGetCurProductItem()
-            vmPayPage.vmPayAddProduct(p)
+            var p = vmGoodsListPage.vmGetCurProductItem();
+            vmPayPage.vmPayAddProduct(p);
+            vmPayPage.payqurePicSet(0);
             vmPageSwitch(vmPayPage);
-            qmlActionSignal(1);
+            qmlActionSignal(1,p.product_id);
         }
         onBack_clicked: {
             vmPageSwitch(vmGoodsListPage);
@@ -60,6 +61,10 @@ Rectangle {
     Trade.VMPayPage{
         id:vmPayPage
         anchors.fill: parent
+        onBack_clicked: {
+            vmPayPage.listViewClear();
+            vmPageSwitch(vmGoodsListPage);
+        }
 
     }
 
@@ -146,8 +151,8 @@ Rectangle {
     //上报二维码图片
     function alipay_pic_ok(){
         console.log("支付宝二维码图片开始获取");
-        vmPayPage.pic_image = "../../images/alipay/ali_code.png"
-
+        //vmPayPage.pic_image = "../../images/alipay/ali_code.png"
+        vmPayPage.payqurePicSet(1);
     }
 
     //支付结果

@@ -79,3 +79,17 @@ void VmcMainFlow::EV_start_slot()
     }
     qDebug()<<tr("Load dll failed!");
 }
+
+
+int VmcMainFlow::EV_trade(int cabinet, int column, int type, long cost)
+{
+    typedef int (*EV_trade_t)(int cabinet, int column, int type, long cost);
+    EV_trade_t trade = (EV_trade_t)lib_ev.resolve("EV_trade");
+    if(trade)
+    {
+        return trade(cabinet,column,type,cost);
+    }
+    else
+        return 0;
+}
+

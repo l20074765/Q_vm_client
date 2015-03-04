@@ -8,7 +8,7 @@
 #include <QDir>
 #include <QWidget>
 #include "vmvideo.h"
-
+#include <QSettings>
 MainWindow::MainWindow(QWidget *parent) :
     QDeclarativeView(parent)
 {
@@ -29,7 +29,15 @@ MainWindow::MainWindow(QWidget *parent) :
     qmlRegisterType<VMVideo>("Qtvm",1,0,"VMVideo");
 
     QUrl url;
-    url = QUrl::fromLocalFile("../../qml/main.qml");
+    QSettings *read = new QSettings("config.ini",QSettings::IniFormat);
+
+    bool ok;
+    int qmlDebug = read->value("CONFIG/QmlDebug").toInt(&ok);
+    delete read;
+    if(qmlDebug == 1)
+        url = QUrl::fromLocalFile("../../qml/main.qml");
+    else
+        url = QUrl::fromLocalFile("qml/main.qml");
     this->setSource(url);
     // this->setFixedSize(QSize(768*0.5,1366*0.5));
     this->setMinimumSize(QSize(768*0.5,1366*0.5));
@@ -55,8 +63,8 @@ MainWindow::MainWindow(QWidget *parent) :
             mainItem,SLOT(vmcproductAdd()),Qt::DirectConnection);
 
 
-    connect(mainItem,SIGNAL(qmlActionSignal(int)),
-            mainObject,SLOT(qmlActionSlot(int)),Qt::QueuedConnection);
+    connect(mainItem,SIGNAL(qmlActionSignal(int,QString)),
+            mainObject,SLOT(qmlActionSlot(int,QString)),Qt::QueuedConnection);
 
     connect(mainObject,SIGNAL(tradeOverSignal()),
             mainItem,SLOT(alipay_pic_ok()),Qt::QueuedConnection);

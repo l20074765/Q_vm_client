@@ -61,6 +61,9 @@ Rectangle {
             console.log("main:onClicked....")
             ads_clicked()
             ads_timer.stop();
+            if(ads_file_str.indexOf("avi") > 0){
+                 vm_video.stop();
+            }
         }
 
     }

@@ -10,16 +10,12 @@
 #include "productobject.h"
 
 
-class VmSql : public QThread
+class VmSql : public QObject
 {
     Q_OBJECT
 public:
-    explicit VmSql(QThread *parent = 0);
+    explicit VmSql(QObject *parent = 0);
     ~VmSql();
-
-
-    void stopThread();
-    void startThread();
 
     bool sqlConnection();
 
@@ -34,8 +30,10 @@ public:
         SQL_CONNECT_OK
     };
 
-
-
+    enum{
+        SQL_TYPE_START
+    };
+    ProductObject *sqlFindProduct(const QString &product_id);
 
 
 signals:
@@ -43,13 +41,12 @@ signals:
     void sqlProductChanged();
     void sqlAddProduct(ProductObject * obj);
 protected:
-    virtual void run();
 
 public slots:
+    void sql_start();
     void tabelModelInit();
     void sqlRptSlot(quint32 type);
 private:
-    bool stopped;
     bool sqlConnected;
     QSqlDatabase m_db;
     QSqlTableModel *m_model;

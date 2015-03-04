@@ -18,12 +18,19 @@ MainObject::MainObject(QObject *parent) : QObject(parent)
     vmsql->startThread();
 
 
-    alipayApi = new AlipayAPI(this);
+    alipayApi = new AlipayAPI();
+    alipayThread = new QThread(this);
+    alipayApi->moveToThread(alipayThread);
+
+
     connect(alipayApi,SIGNAL(tradeOverSignal(QPixmap)),
-            this,SLOT(tradeOverSlot(QPixmap)));
+            this,SLOT(tradeOverSlot(QPixmap)),Qt::QueuedConnection);
 
     connect(alipayApi,SIGNAL(tradeResultSignal(int)),
-            this,SLOT(tradeResultSlot(int)));
+            this,SLOT(tradeResultSlot(int)),Qt::QueuedConnection);
+
+    connect(this,SIGNAL(alipayTrade()),alipayApi,SLOT(tradBegin()),Qt::QueuedConnection);
+
 
     qRegisterMetaType<ProductHash>("ProductHash");//注册元对象
 
@@ -34,18 +41,13 @@ MainObject::MainObject(QObject *parent) : QObject(parent)
             this,SLOT(sqlAddProductSLot(ProductObject * ))
             ,Qt::QueuedConnection);
 
-
-
     //启动后台通信
     qDebug()<<"Start vmc ...COM7";
     vmcMainFlow = new VmcMainFlow(0,QString("COM1"));
     connect(vmcMainFlow,SIGNAL(EV_callBackSignal(quint8,const void*)),
             this,SLOT(EV_callBackSlot(quint8,const void*)),Qt::QueuedConnection);
     vmcMainFlow->vmcStart();
-
-
-
-
+    alipayThread->start();
 }
 
 MainObject::~MainObject()
@@ -70,14 +72,14 @@ void MainObject::tradeResultSlot(int res)
     //开始出货
     if(res == 1)
     {
-
+        vmcMainFlow->EV_trade(1,11,1,0);
     }
 }
 
 
-void MainObject::qmlActionSlot(int v)
+void MainObject::qmlActionSlot(int v,QString req)
 {
-    qDebug()<<"qmlActionSlot:"<<v;
+    qDebug()<<"qmlActionSlot:"<<v<<req;
     if(v == 1)
     {
        vmcpaySlot(1,11,1,0);
@@ -89,7 +91,10 @@ void MainObject::vmcpaySlot(int cabinet,int column,int type,long cost)
     qDebug()<<trUtf8("出货前准备检测支付结果")<<"cabinet:"<<cabinet
            <<" column:"<<column
           <<" type:"<<type<<" cost:"<<cost;
-    alipayApi->tradBegin();
+
+    qDebug()<<trUtf8("当前线程:")<<QThread::currentThread();
+    emit alipayTrade();
+   // alipayApi->tradBegin();
 }
 
 

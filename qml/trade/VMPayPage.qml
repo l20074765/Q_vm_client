@@ -5,7 +5,8 @@ Custom.VMWidget {
     anchors.fill: parent
 
     signal back_clicked()
-    property string pic_image:"../../images/alipay/code.png"
+    property string pic_image:"../../images/alipay/ali_code.png"
+    property string pic_image_gif : "../../images/alipay/loading_wait.gif"
 
     onVisibleChanged: {
         if(visible == true){
@@ -70,6 +71,7 @@ Custom.VMWidget {
             }
 
             ListView {
+                id:product_listView
                 anchors.fill: parent
                 model: fruitModel
 
@@ -134,14 +136,32 @@ Custom.VMWidget {
 
             Image {
                 id: payqure_image//二维码图片
-                x:payView_image.x + payView_image.width * 0.558
-                y:payView_image.y + payView_image.height * 0.412
-                width: payView_image.width * 0.225
-                height: payView_image.height * 0.332
+                x:payView_image.x + payView_image.width * 0.55
+                y:payView_image.y + payView_image.height * 0.402
+                width: payView_image.width * 0.238
+                height: payView_image.height * 0.348
                 source: pic_image
                 fillMode: Image.PreserveAspectCrop
                 clip: true
             }
+            Rectangle{
+                id:payqure_animateImage
+                x:payView_image.x + payView_image.width * 0.558
+                y:payView_image.y + payView_image.height * 0.412
+                width: payView_image.width * 0.225
+                height: payView_image.height * 0.332
+                AnimatedImage{
+                    id:pay_gif
+                    anchors.centerIn: parent;
+                    width: parent.width * 0.7
+                    height: parent.height * 0.7
+                    source: pic_image_gif
+                    fillMode: Image.PreserveAspectCrop
+                    clip: true
+                }
+            }
+
+
         }
     }
 
@@ -157,7 +177,16 @@ Custom.VMWidget {
         }
     }
 
-
+    function payqurePicSet(s){
+        if(s == 0){
+            payqure_animateImage.visible = true;
+            payqure_image.visible = false;
+        }
+        else{
+            payqure_image.visible = true;
+            payqure_animateImage.visible = false;
+        }
+    }
 
 
     function listViewClear(){
