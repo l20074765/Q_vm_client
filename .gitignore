@@ -10,5 +10,6 @@ Mak*
 *.Release
 moc_*
 *.pro.user
+build/
 
 
