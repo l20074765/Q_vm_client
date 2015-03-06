@@ -19,17 +19,41 @@ Custom.VMWidget {
         id:main_rect
         width: parent.width
         height: parent.height * parent.rectHR
-        anchors{top:title_bar.bottom}
-        //文本区
-        TextEdit{
-            id:text_edit
-            anchors.fill: parent
-            Text{
-                text:"本机故障\n暂停服务"
-                font.bold: true
-                font.pixelSize: parent.width * 0.1
-            }
+        anchors{
+            top:title_bar.bottom
         }
+
+        Text{
+            id:test1
+            width: parent.width
+            height: parent.height * 0.05
+
+            anchors{
+                top:parent.top
+                topMargin: 10
+            }
+
+            horizontalAlignment: Text.AlignHCenter
+            color: "darkred"
+            font.bold: true
+            font.pixelSize: parent.width * 0.08
+            text:qsTr("本机故障")
+        }
+        Text{
+            id:test2
+            width: parent.width
+            height: parent.height * 0.05
+            anchors{
+                top:test1.bottom
+                topMargin: 10
+            }
+            horizontalAlignment: Text.AlignHCenter
+            color: "red"
+            font.bold: true
+            font.pixelSize: parent.width * 0.06
+            text:qsTr("暂停服务")
+        }
+
     }
 
     //状态栏区域

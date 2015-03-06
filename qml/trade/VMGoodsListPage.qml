@@ -69,7 +69,6 @@ Custom.VMWidget {
             model: product_model
             focus: true
             currentIndex: 0
-
         }
 
 
@@ -120,7 +119,6 @@ Custom.VMWidget {
     function vmGetCurProductItem(){
         var p = product_gridView.currentIndex;
         return product_model.get(p)
-        //return product_gridView.currentItem;
     }
 
 }

@@ -21,6 +21,7 @@ INCLUDEPATH +=$$PWD \
               $$PWD/src/alipay \
             $$PWD/src/jsoncpp \
             $$PWD/src/video \
+            $$PWD/src/qrencode
 
 
 LIBS +=  -L$$PWD -L$$PWD/libs
@@ -49,7 +50,10 @@ SOURCES += \
     src/jsoncpp/json_value.cpp \
     src/jsoncpp/json_valueiterator.inl \
     src/jsoncpp/json_writer.cpp \
-    src/video/vmvideo.cpp
+    src/video/vmvideo.cpp \
+    src/alipay/alixmlobj.cpp \
+    src/alipay/qrenwidget.cpp \
+    src/alipay/qrenpixwidget.cpp
 
 HEADERS += \
     src/mainwindow.h \
@@ -70,7 +74,10 @@ HEADERS += \
     src/jsoncpp/reader.h \
     src/jsoncpp/value.h \
     src/jsoncpp/writer.h \
-    src/video/vmvideo.h
+    src/video/vmvideo.h \
+    src/alipay/alixmlobj.h \
+    src/alipay/qrenwidget.h \
+    src/alipay/qrenpixwidget.h
 
 
 DISTFILES += \
@@ -92,8 +99,18 @@ DISTFILES += \
     qml/maintain/MTMainTainPage.qml \
     qml/maintain/MTTradePage.qml \
     qml/maintain/MTProductPage.qml \
-    qml/maintain/MTColumnPage.qml
+    qml/maintain/MTColumnPage.qml \
+    qml/maintain/MTTradeManage.qml \
+    qml/maintain/MTSystemManage.qml \
+    qml/maintain/MTTradeManagePage.qml \
+    qml/maintain/MTDeviceManagePage.qml \
+    qml/maintain/MTSystemManagePage.qml
 
 
 
+
+include("./src/qrencode/qrencode.pri")
+
+RESOURCES += \
+    vm.qrc
 

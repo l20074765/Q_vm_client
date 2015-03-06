@@ -26,21 +26,21 @@ Custom.VMWidget{
             visible: true
         }
 
-        //2.交易数据
-        MTTradePage{
-            id:mtTradePage
+        //2.交易管理
+        MTTradeManagePage{
+            id:mtTradeManagePage
             anchors.fill: parent
         }
 
-        //3.商品管理
-        MTProductPage{
-            id:mtProductPage
+        //3.设备管理
+        MTDeviceManagePage{
+            id:mTDeviceManagePage
             anchors.fill: parent
         }
 
-        //4.货道管理
-        MTColumnPage{
-            id:mtColumnPage
+        //4.系统设置
+        MTSystemManagePage{
+            id:mTSystemManagePage
             anchors.fill: parent
         }
 
@@ -74,9 +74,9 @@ Custom.VMWidget{
             anchors.bottom: parent.bottom
             width: parent.width * 0.25
             height: parent.height
-            button_text: qsTr("交易数据")
+            button_text: qsTr("交易管理")
             onButton_clicked: {
-                vmPageSwitch(mtTradePage)
+                vmPageSwitch(mtTradeManagePage)
             }
         }
         MTButton{
@@ -85,9 +85,9 @@ Custom.VMWidget{
             anchors.bottom: parent.bottom
             width: parent.width * 0.25
             height: parent.height
-            button_text: qsTr("商品管理")
+            button_text: qsTr("设备管理")
             onButton_clicked: {
-                vmPageSwitch(mtProductPage)
+                vmPageSwitch(mTDeviceManagePage)
             }
         }
         MTButton{
@@ -96,9 +96,9 @@ Custom.VMWidget{
             anchors.bottom: parent.bottom
             width: parent.width * 0.25
             height: parent.height
-            button_text: qsTr("货道管理")
+            button_text: qsTr("系统设置")
             onButton_clicked: {
-                vmPageSwitch(mtColumnPage)
+                vmPageSwitch(mTSystemManagePage)
             }
         }
 

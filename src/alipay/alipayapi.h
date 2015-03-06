@@ -6,6 +6,11 @@
 #include <QPixmap>
 #include "alipayconfig.h"
 #include <QThread>
+#include <QXmlStreamReader>
+#include "productobject.h"
+#include "alixmlobj.h"
+
+#include <QHash>
 class QTimer;
 class QNetworkReply;
 class QNetworkAccessManager;
@@ -26,30 +31,36 @@ public:
     QMap<QString,QString> filterPara(const QMap<QString,QString> &mapArr);
     QString createLinkString(const QMap<QString,QString> &mapArr);
     QString buildRequestMysign(const QMap<QString,QString> &mapArr);
-signals:
-    void tradeOverSignal(QPixmap map);
-    void tradeResultSignal(int res);
-public slots:
-    void network_recved(QNetworkReply *reply); //支付http回应处理
-    void network_pic_recved(QNetworkReply *reply);//下载二维码回应处理
-    void timerout_ali_checked();
 
-    void tradBegin();
+    enum{
+        ALI_ACTION_PIC_OK,
+        ALI_ACTION_TRADE_SUC,
+        ALI_ACTION_TRADE_FAIL,
+        ALI_ACTION_TRADE_START,
+        ALI_ACTION_NETWORK_ERR,
+        ALI_ACTION_TRADE_CLEAR
+    };
+
+    QByteArray picArr;
+    QString picUrl;
+
+signals:
+    void aliActionSignal(int type,QObject *obj);
+public slots:
+    void aliRequestSlot(int type,QObject *obj);
+    void timerout_ali_checked();
+    void network_recved(QNetworkReply *reply); //支付http回应处理
 private:
     QNetworkAccessManager *network_man; //支付htpp管理
-    QNetworkAccessManager *network_pic_man;//下载二维码图片管理
     QTimer *timer_check;//查询订单状态定时器
-
-
     bool ali_isChecked;
     QString str_cur_ali_type;//当前与支付宝通信类型
     QString str_cur_ali_trade_no;//当前的订单交易号
-
-
     AlipayConfig *aliConfig;
-
-
-
+    void tradBegin(QList<ProductObject *> list);
+    void aliXmlResolve(QHash<QString,QString> *xmlHash,QXmlStreamReader *xml);
+    void aliResponseResolve(QHash<QString,QString> *xmlHash);
+    QHash<QString,QString> xmlHash;
 };
 
 #endif // ALIPAYAPI_H

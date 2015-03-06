@@ -12,15 +12,6 @@ VmSql::VmSql(QObject *parent) : QObject(parent)
     sqlConnected = false;
     m_model = NULL;
     m_modelCabinet = NULL;
-    productHash.clear();
-    connect(this,SIGNAL(sqlActionSignal(int,QObject*)),
-            this,SLOT(sqlRptSlot(int,QObject*)));
-
-
-
-
-
-
 }
 
 VmSql::~VmSql()
@@ -32,12 +23,27 @@ VmSql::~VmSql()
 
 
 //启动数据库
-void VmSql::requestHandle(int type,QObject *obj)
+void VmSql::sqlActionSlot(int type,QObject *obj)
 {
-    qDebug()<<trUtf8("数据库线程操作")<<"type="<<type;
-    if(type == SQL_TYPE_START)
+    qDebug()<<trUtf8("数据库线程操作")<<"type="<<type<<obj
+           <<QThread::currentThread();
+    if(type == SQL_START)
     {
         sql_start();
+    }
+    else if(type == SQL_GOODS_SELECT)
+    {
+        ProductObject *reqPro = qobject_cast<ProductObject *>(obj);
+        if(reqPro)
+        {
+            QString id = reqPro->id;
+            ProductObject *product = sqlFindProduct(id);
+            emit sqlActionSignal(SQL_GOODS_SELECT,product);
+            //主动销毁reqPro对象
+            qDebug()<<"Delete reqPro";
+            delete reqPro;
+        }
+
     }
 
 
@@ -52,6 +58,8 @@ void VmSql::sql_start()
     {
         sqlConnected = true;
         emit sqlActionSignal(SQL_CONNECT_OK,NULL);
+        tabelModelInit();
+        productTableCheck();
     }
     else
     {
@@ -59,16 +67,6 @@ void VmSql::sql_start()
     }
     qDebug()<<"VmSql::VmSql"<<ok;
 }
-
-void VmSql::sqlRptSlot(int type,QObject *obj)
-{
-    if(type == SQL_CONNECT_OK)
-    {
-         tabelModelInit();
-         productTableCheck();
-    }
-}
-
 
 
 bool VmSql::sqlConnection()
@@ -98,6 +96,7 @@ void VmSql::productTableCheck()
 
     qDebug()<<"productTableCheck:"<<m_model->columnCount()
            <<m_model->rowCount();
+
     bool ok;
     int key = m_model->record().indexOf("productNo");
     for(int i = 0;i < m_model->rowCount();i++)
@@ -114,14 +113,10 @@ void VmSql::productTableCheck()
         ProductObject *productObj = new ProductObject();
         productObj->id = productNo1;
         productObj->name = record.value("productName").toString();
-
         quint32 priceInt = record.value("salesPrice").toUInt(&ok);
-        productObj->salePrice = QString("%1.%2")
-                .arg(priceInt/100)
-                .arg(priceInt % 100,2,10,QLatin1Char('0'));
-
+        productObj->salePrice = priceInt;
         qDebug()<<"sqlAddProduct..."<<productObj->salePrice;
-        emit sqlActionSignal(SQL_ACTION_PRODUCT_ADD,productObj);
+        emit sqlActionSignal(SQL_PRODUCT_ADD,productObj);
     }
 
 
@@ -132,8 +127,6 @@ ProductObject *VmSql::sqlFindProduct(const QString &product_id)
 {
     qDebug()<<"sqlFindProduct:"<<product_id;
     int key = m_model->record().indexOf("productNo");
-
-
     for(int i = 0;i < m_model->rowCount();i++)
     {
         QSqlRecord record = m_model->record(i);
@@ -144,11 +137,9 @@ ProductObject *VmSql::sqlFindProduct(const QString &product_id)
              ProductObject *productObj = new ProductObject();
              productObj->id = producNo;
              productObj->name = record.value("productName").toString();
-
              quint32 priceInt = record.value("salesPrice").toUInt(&ok);
-             productObj->salePrice = QString("%1.%2")
-                     .arg(priceInt/100)
-                     .arg(priceInt % 100,2,10,QLatin1Char('0'));
+             productObj->salePrice = priceInt;
+             productObj->buyNum++;
 
              return productObj;
         }

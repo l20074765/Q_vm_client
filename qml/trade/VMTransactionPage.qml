@@ -50,15 +50,12 @@ Custom.VMWidget {
                     top:parent.top
                     topMargin: 5
                 }
-
                 spacing: 5
                 Custom.Product{
                     id:product1
                     width: 350 * 0.5
                     height: 450 * 0.5
                     large: true
-
-
                 }
                 Rectangle{
                     width:350 * 0.5

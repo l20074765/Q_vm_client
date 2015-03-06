@@ -10,8 +10,8 @@ Rectangle {
     property bool large: false  //是否显示大图片
     property int borderMargin: 2
 
-    width: 350*0.25
-    height: 450*0.25
+    width: 350*0.20
+    height: 450*0.20
     border{
      width: borderMargin
      color: "gray"
@@ -21,8 +21,8 @@ Rectangle {
     //图片显示区域
     Image {
         id: pic_image
-        width: large ? (parent.width - borderMargin * 2) :  (parent.width- borderMargin * 2) * 0.75
-        height: large ? (parent.height - borderMargin * 2) :  (parent.height- borderMargin * 2) * 0.75
+        width: large ? (parent.width - borderMargin * 2) :  (parent.width- borderMargin * 2) * 0.65
+        height: large ? (parent.height - borderMargin * 2) :  (parent.height- borderMargin * 2) * 0.65
         anchors{
             top:parent.top
             topMargin: large ? 0 : (parent.height - borderMargin * 2) * 0.03

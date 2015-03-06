@@ -36,11 +36,38 @@ Custom.VMWidget {
         //文本区
         TextEdit{
             id:text_edit
-            anchors.fill: parent
+            width: parent.width
+            height: parent.height * 0.3
+            anchors{
+                top:parent.top
+                topMargin: 20
+            }
             Text{
                 text:"出货失败\n"
                 font.bold: true
                 font.pixelSize: parent.width * 0.1
+            }
+        }
+
+        Image {
+            id: tradeover_image
+            width: 140
+            height: 46
+            anchors{
+                top:text_edit.bottom
+                topMargin: 20
+                horizontalCenter: parent.horizontalCenter
+
+            }
+            source: "../../images/tool/js-2.png"
+            fillMode: Image.PreserveAspectCrop
+            clip: true
+
+            MouseArea{
+                anchors.fill: parent
+                onClicked: {
+                    back_clicked();
+                }
             }
         }
     }

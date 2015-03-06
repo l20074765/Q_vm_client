@@ -3,7 +3,7 @@ import "maintain" as MainTain
 import "ads" as Ads
 import "custom" as Custom
 import "trade" as Trade
-
+import Qtvm 1.0
 
 //主界面
 Rectangle {
@@ -12,6 +12,7 @@ Rectangle {
     property Item curPage:vmFaultPage
     property Item lastPage:vmFaultPage
     signal qmlActionSignal(int type,string req)
+
 
     //1.广告页面
     Ads.VMAdsPage{
@@ -50,7 +51,8 @@ Rectangle {
             vmPayPage.vmPayAddProduct(p);
             vmPayPage.payqurePicSet(0);
             vmPageSwitch(vmPayPage);
-            qmlActionSignal(1,p.product_id);
+            qmlActionSignal(MainObject.QML_TYPE_GOODS_SELECT,p.product_id)
+            qmlActionSignal(MainObject.QML_TYPE_TRADE,p.product_id);
         }
         onBack_clicked: {
             vmPageSwitch(vmGoodsListPage);
@@ -62,7 +64,7 @@ Rectangle {
         id:vmPayPage
         anchors.fill: parent
         onBack_clicked: {
-            vmPayPage.listViewClear();
+            vmTradeClear();
             vmPageSwitch(vmGoodsListPage);
         }
 
@@ -79,6 +81,8 @@ Rectangle {
         anchors.fill: parent
         onBack_clicked: {
            vmPageSwitch(vmAdsPage);
+           vmTradeClear();
+
         }
     }
 
@@ -107,26 +111,14 @@ Rectangle {
         }
         else if(s == 4) //维护
         {
-
             vmPageSwitch(vmMTMainPage);
         }
         else //故障
         {
-           //vmPageSwitch(vmFaultPage)
             vmPageSwitch(vmFaultPage)
-
         }
         return 1;
     }
-
-    function vmcproductChanged(){
-        console.log("vmcproductChanged\n")        
-        var product = goodsListPage.vmCreateProduct();
-        product.productName = "测试商品"
-        product.productPrice = "单价:1.00元"
-
-    }
-
 
 
     function vmcproductAdd(){
@@ -141,7 +133,11 @@ Rectangle {
         var product = vmGoodsListPage.vmCreateProduct();
         product.product_name = p.name
         product.product_id = p.id;
-        product.product_price = p.salePrice
+        var s1 = p.salePrice / 100;
+        var s2 = p.salePrice % 100;
+        product.product_price =  p.salePriceStr;
+
+
         //显示完成后需要告知后台销毁该对象
         vm.addProductFinish(product.product_index)
 
@@ -149,20 +145,19 @@ Rectangle {
 
 
     //上报二维码图片
-    function alipay_pic_ok(){
+    function alipay_pic_ok(s){
         console.log("支付宝二维码图片开始获取");
-        //vmPayPage.pic_image = "../../images/alipay/ali_code.png"
-        vmPayPage.payqurePicSet(1);
+        vmPayPage.payqurePicSet(1,s);
     }
 
     //支付结果
     function tradeResult(res){
         console.log("支付结果上报:" + res);
-        if(res == 1){ //支付成功
+        if(res == MainObject.QML_PAYOUT_SUC){ //支付成功
             vmPageSwitch(vmTradeoutPage);
         }
-        else{
-
+        else if(res == MainObject.QML_PAYOUT_NET_ERR){
+            vmPageSwitch(vmTradeFailPage);
         }
     }
 
@@ -176,6 +171,29 @@ Rectangle {
     }
 
 
+    function vmTradeClear(){
+        vmPayPage.listViewClear();
+        vm.qmlActionSlot(MainObject.QML_TYPE_TRADE_CLEAR,"");
+    }
+
+
+    //qml负责与C++通信的槽函数入口
+    function qmlActionSlot(type,s){
+        console.log(qsTr("qmlActionSlot:") + "type = " + type + " s = " + s);
+        if(type == MainObject.QML_TYPE_PRODUCT_ADD){
+            vmcproductAdd();
+        }
+        else if(type == MainObject.QML_TYPE_VMC_STATE){
+            vmcStatehandle(s);
+        }
+        else if(type == MainObject.QML_TYPE_PIC_OK){
+            alipay_pic_ok(s);
+        }
+        else if(type == MainObject.QML_TYPE_PAYOUT){
+            tradeResult(s);
+        }
+
+    }
 
 }
 

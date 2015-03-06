@@ -5,26 +5,24 @@
 #include <QNetworkReply>
 #include <QPixmap>
 #include <QImage>
-#include <QXmlStreamReader>
 #include <QCryptographicHash>
 #include <QThread>
 #include "json.h"
+#include "qqrencode.h"
 #include <QDateTime>
 #include <QFile>
 
 #include <QtDebug>
 
+#include "mainobject.h"
 
 AlipayAPI::AlipayAPI(QObject *parent)
     : QObject(parent)
 {
     network_man = new QNetworkAccessManager(this);
     connect(network_man,SIGNAL(finished(QNetworkReply*)),
-            this,SLOT(network_recved(QNetworkReply*)),Qt::QueuedConnection);
+            this,SLOT(network_recved(QNetworkReply*)));
 
-    network_pic_man = new QNetworkAccessManager(this);
-    connect(network_pic_man,SIGNAL(finished(QNetworkReply*)),
-            this,SLOT(network_pic_recved(QNetworkReply*)),Qt::QueuedConnection);
     timer_check = new QTimer(this);
     connect(timer_check,SIGNAL(timeout()),this,SLOT(timerout_ali_checked()));
     ali_isChecked = false;
@@ -35,6 +33,26 @@ AlipayAPI::AlipayAPI(QObject *parent)
 AlipayAPI::~AlipayAPI()
 {
 
+}
+
+
+void AlipayAPI::aliRequestSlot(int type, QObject *obj)
+{
+    qDebug()<<"AlipayAPI::aliRequestSlot"<<type<<obj;
+    if(type == ALI_ACTION_TRADE_START)
+    {
+        MainObject *mainObj = qobject_cast<MainObject *>(obj);
+        if(mainObj)
+        {
+            QList<ProductObject *> list = mainObj->getProductSelectList();
+            tradBegin(list);
+        }
+
+    }
+    else if(type == ALI_ACTION_TRADE_CLEAR)
+    {
+        timer_check->stop();
+    }
 }
 
 //支付宝查询接口
@@ -55,185 +73,211 @@ void AlipayAPI::timerout_ali_checked()
 
 }
 
-void AlipayAPI::network_pic_recved(QNetworkReply *reply)
-{
-    if(reply->error() == QNetworkReply::NoError)
-    {
-        qDebug()<<"network_pic_recved:OK";
-        QPixmap pic;
-
-        pic.loadFromData(reply->readAll());
-        //至此图片下载成功 开始查询支付结果
-        QString fileName = "../../images/alipay/ali_code.png";
-        QFile::remove(fileName);
-        pic.save(fileName);
-        tradeOverSignal(pic);
-        timer_check->start(3000);
-    }
-    else
-    {
-        qDebug()<<"network_pic_recved:err";
-    }
-}
 
 
 void AlipayAPI::network_recved(QNetworkReply *reply)
 {
-    qDebug()<<"network_recved";
-
+    qDebug()<<trUtf8("接收支付宝回应:");
     if(reply->error() == QNetworkReply::NoError)
     {
-        bool ok;
         QByteArray json = reply->readAll();
         qDebug()<<json<<json.length();
         QXmlStreamReader xml(json);
-        while(!xml.atEnd() && !xml.hasError())
-        {
-            //读取下一个element.
-            QXmlStreamReader::TokenType token = xml.readNext();
-            //如果获取的仅为StartDocument,则进行下一个
-            if(token == QXmlStreamReader::StartDocument)
-            {
-                qDebug()<<"QXmlStreamReader::StartDocument:"
-                       <<xml.name()<<xml.readElementText();
-                continue;
-            }
-
-            //如果获取了StartElement,则尝试读取
-            if(token == QXmlStreamReader::StartElement)
-            {
-                QString nameStr = xml.name().toString();
-                if(nameStr == QString("is_success"))//请求是否成功
-                {
-                    //返回 "T"表示成功  "F"表示失败
-                    if(xml.readElementText() == QString("T"))
-                    {
-                        //qDebug()<<"请求发送成功";
-                    }
-                    else
-                    {
-                        //qDebug()<<"请求发送失败";
-                    }
-                }
-                else if(nameStr == QString("request"))//解析支付宝返回的请求 原样返回
-                {
-                    QXmlStreamAttributes attributes = xml.attributes();
-                    while(!xml.atEnd())
-                    {
-                        token = xml.readNext();
-                        if(token == QXmlStreamReader::StartElement)
-                        {
-                            if(xml.name() == "param")
-                            {
-                                attributes = xml.attributes();
-                                if(attributes.hasAttribute("name"))
-                                {
-                                    QString typeStr = attributes.value("name").toString();
-                                    if(typeStr == "service")//判断回应接口类型
-                                    {
-                                       QString tempStr = xml.readElementText();
-                                       if(tempStr == aliConfig->str_precreate)//预下单
-                                       {
-
-                                       }
-                                    }
-                                    qDebug()<<"attributes.hasAttribute(\"name\")"
-                                           <<typeStr;
-                                }
-                            }
-                        }
-                        else if(token == QXmlStreamReader::EndElement)
-                        {
-                            if(xml.name() == "request")//请求描述 完成
-                            {
-                                break;
-                            }
-                        }
-                    }
-
-
-                }
-                else if(nameStr == QString("response"))//解析支付宝 回应结果
-                {
-                    while(!xml.atEnd())
-                    {
-                        QXmlStreamReader::TokenType tokenRes = xml.readNext();
-                        if(tokenRes == QXmlStreamReader::StartElement)
-                        {
-                            if(xml.name() == "small_pic_url")//下载二维码图片
-                            {
-                                QString urlStr = xml.readElementText();
-                                QNetworkRequest request;
-                                request.setUrl(QUrl(urlStr));
-                                network_pic_man->get(request);
-                            }
-                            else if(xml.name() == "result_code")//成功
-                            {
-                                qDebug()<<"回应成功";
-                            }
-                            else if(xml.name() == "trade_status")//交易状态
-                            {
-                                if(str_cur_ali_type == aliConfig->str_query)//查询交易状态
-                                {
-                                    if(xml.readElementText() == "TRADE_SUCCESS")//支付成功
-                                    {                                        
-                                        timer_check->stop();
-                                        tradeResultSignal(1);
-                                    }
-                                    else if(xml.readElementText() == "TRADE_CLOSED")//交易结束
-                                    {                                       
-                                        timer_check->stop();
-                                        tradeResultSignal(0);
-                                    }
-                                }
-
-                            }
-                        }
-                        else if(tokenRes == QXmlStreamReader::EndElement)
-                        {
-                            if(xml.name() == "response")//回应结果读取完成
-                            {
-                                break;
-                            }
-                        }
-                    }
-                }
-                else if(nameStr == QString("sign"))//支付宝返回的校验码
-                {
-
-                }
-                else if(nameStr == QString("sign_type"))//支付宝返回的校验码类型 固定MD5如果不是则出错
-                {
-                    if(xml.readElementText() != QString("MD5"))
-                    {
-                        qDebug()<<"支付宝校验码类型不为MD5";
-                    }
-                }
-            }
-            if(token == QXmlStreamReader::EndElement)
-            {
-                qDebug()<<"QXmlStreamReader::EndElement:"<<xml.name();
-
-            }
-
-            if(token == QXmlStreamReader::EndDocument)
-            {
-                qDebug()<<"QXmlStreamReader::EndDocument:"<<xml.name();
-
-            }
-        }
-
+        aliXmlResolve(&this->xmlHash,&xml);
         xml.clear();
-
-
+        aliResponseResolve(&this->xmlHash);
     }
     else
     {
         qDebug()<<"reply err!!!!";
+        emit aliActionSignal(ALI_ACTION_NETWORK_ERR,NULL);
     }
 }
 
 
+void AlipayAPI::aliResponseResolve(QHash<QString, QString> *xmlHash)
+{
+    if(xmlHash == NULL) return;
+
+    //判断是否请求成功
+    if(xmlHash->value("is_success") != "T")//请求不成功
+    {
+        return;
+    }
+    if(xmlHash->value("result_code").toUpper()  != "SUCCESS")//回应不成功
+    {
+        return;
+    }
+    QString server = xmlHash->value("service");
+    if(server == aliConfig->str_precreate)//预下单
+    {
+        QString str = xmlHash->value("qr_code");
+        qDebug()<<"预下单图片"<<str;
+        this->picArr = str.toLower().toUtf8();
+        qDebug()<<trUtf8("接收支付宝二维码图片:")<<QString(this->picArr);
+        emit aliActionSignal(ALI_ACTION_PIC_OK,this);
+        timer_check->start(3000);
+    }
+    else if(server == aliConfig->str_query)//查询订单
+    {
+        QString trade_res = xmlHash->value("trade_status");
+        if(trade_res == "TRADE_SUCCESS")//支付成功
+        {
+            timer_check->stop();
+            emit aliActionSignal(ALI_ACTION_TRADE_SUC,NULL);
+        }
+        else if(trade_res == "TRADE_PENDING")//等待卖家收款
+        {
+
+        }
+        else if(trade_res == "TRADE_CLOSED")//交易关闭
+        {
+            timer_check->stop();
+            emit aliActionSignal(ALI_ACTION_TRADE_FAIL,NULL);
+        }
+        else if(trade_res == "WAIT_BUYER_PAY")//交易创建，等待买家付款。
+        {
+
+        }
+        else if(trade_res == "TRADE_FINISHED")//交易成功且结束，即不可再做任何操作
+        {
+
+        }
+    }
+
+
+
+}
+
+void AlipayAPI::aliXmlResolve(QHash<QString, QString> *xmlHash,QXmlStreamReader *xml)
+{
+    if(xmlHash == NULL || xml == NULL) return;
+    xmlHash->clear();
+    while(!xml->atEnd() && !xml->hasError())
+    {
+        //读取下一个element.
+        QXmlStreamReader::TokenType token = xml->readNext();
+        //如果获取的仅为StartDocument,则进行下一个
+        if(token == QXmlStreamReader::StartDocument)
+        {
+            qDebug()<<"QXmlStreamReader::StartDocument:";
+            continue;
+        }
+        //如果获取了StartElement,则尝试读取
+        if(token == QXmlStreamReader::StartElement)
+        {
+            QString nameStr = xml->name().toString();
+            if(nameStr == QString("is_success"))//请求是否成功
+            {
+                //返回 "T"表示成功  "F"表示失败
+                if(xml->readElementText() == trUtf8("T"))
+                {
+                    xmlHash->insert("is_success","T");
+                }
+                else
+                {
+                    xmlHash->insert("is_success","F");
+                    return;
+                }
+            }
+            else if(nameStr == QString("request"))//解析支付宝返回的请求 原样返回
+            {
+                QXmlStreamAttributes attributes = xml->attributes();
+                while(!xml->atEnd())
+                {
+                    token = xml->readNext();
+                    if(token == QXmlStreamReader::StartElement)
+                    {
+                        if(xml->name() == "param")
+                        {
+                            attributes = xml->attributes();
+                            if(attributes.hasAttribute("name"))
+                            {
+                                QString typeStr = attributes.value("name").toString();
+                                if(typeStr == "service")//判断回应接口类型
+                                {
+                                   QString serStr = xml->readElementText();
+                                   xmlHash->insert("service",serStr);
+                                }
+                                else if(typeStr == "out_trade_no")//订单号验证
+                                {
+                                    QString tradeNoStr = xml->readElementText();
+                                    xmlHash->insert("out_trade_no",tradeNoStr);
+                                }
+                                qDebug()<<"attributes.hasAttribute(\"name\")"
+                                       <<typeStr;
+                            }
+                        }
+                    }
+                    else if(token == QXmlStreamReader::EndElement)
+                    {
+                        if(xml->name() == "request")//请求描述 完成
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+            else if(nameStr == QString("response"))//解析支付宝 回应结果
+            {
+                while(!xml->atEnd())
+                {
+                    QXmlStreamReader::TokenType tokenRes = xml->readNext();
+                    if(tokenRes == QXmlStreamReader::StartElement)
+                    {
+                        if(xml->name() == "qr_code")//二维码串号 表示预下单成功
+                        {
+                            xmlHash->insert("qr_code",xml->readElementText());
+
+                        }
+                        else if(xml->name() == "small_pic_url")
+                        {
+                            xmlHash->insert("small_pic_url",xml->readElementText());
+                        }
+                        else if(xml->name() == "result_code")//成功
+                        {
+                            QString str = xml->readElementText();
+                            xmlHash->insert("result_code",str);
+                        }
+                        else if(xml->name() == "trade_status")//交易状态
+                        {
+                            xmlHash->insert("trade_status",xml->readElementText());
+                        }
+                    }
+                    else if(tokenRes == QXmlStreamReader::EndElement)
+                    {
+                        if(xml->name() == "response")//回应结果读取完成
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+            else if(nameStr == QString("sign"))//支付宝返回的校验码
+            {
+
+            }
+            else if(nameStr == QString("sign_type"))//支付宝返回的校验码类型 固定MD5如果不是则出错
+            {
+                if(xml->readElementText() != QString("MD5"))
+                {
+                    qDebug()<<trUtf8("支付宝校验码类型不为MD5");
+                }
+            }
+        }
+        if(token == QXmlStreamReader::EndElement)
+        {
+            qDebug()<<"QXmlStreamReader::EndElement:"<<xml->name();
+
+        }
+
+        if(token == QXmlStreamReader::EndDocument)
+        {
+            qDebug()<<"QXmlStreamReader::EndDocument:"<<xml->name();
+
+        }
+    }
+}
 
 QString AlipayAPI::buildRequest(const QMap<QString, QString> &mapArr)
 {
@@ -260,7 +304,7 @@ QString AlipayAPI::buildRequest(const QMap<QString, QString> &mapArr)
     network_request.setUrl(QUrl(strUrl));
 
     network_man->post(network_request,requestDataArr);
-    qDebug()<<"buildRequest:"<<requestDataArr;
+    qDebug()<<trUtf8("发送支付宝请求:")<<requestDataArr;
 
     return "";
 }
@@ -324,10 +368,11 @@ QMap<QString, QString> AlipayAPI::filterPara(const QMap<QString, QString> &mapAr
 
 
 //开始交易请求生成二维码
-void AlipayAPI::tradBegin()
+void AlipayAPI::tradBegin(QList<ProductObject *> list)
 {
-    qDebug()<<"AlipayAPI:"<<trUtf8("当前线程:")<<QThread::currentThread();
+    if(list.isEmpty()) return;
 
+    qDebug()<<"AlipayAPI:"<<trUtf8("当前线程:")<<QThread::currentThread();
     QMap<QString,QString> map;
     //接口名称
     str_cur_ali_type = aliConfig->str_precreate;
@@ -336,22 +381,32 @@ void AlipayAPI::tradBegin()
     map.insert("seller_email", aliConfig->seller_email);//卖家支付宝帐户
     map.insert("_input_charset",aliConfig->charset.toLower());//编码
     map.insert("product_code","QR_CODE_OFFLINE");//二维码
-    map.insert("total_fee","0.1");//订单总金额
+
+    //解析商品
+    Json::Value jsonArr;
+    quint64 totalPrice = 0;
+    for(int i = 0; i < list.count();i++)
+    {
+        Json::Value jsonObj;
+        ProductObject *product = list.at(i);
+        jsonObj["goodsName"] = product->name.toStdString();
+        QString quantStr = QString("%1").arg(product->buyNum);
+        jsonObj["quantity"] =  quantStr.toStdString();
+        QString priceStr = product->getSalePriceStr();
+        totalPrice += product->salePrice;
+        jsonObj["price"] = priceStr.toStdString();
+        jsonArr.append(jsonObj);
+    }
+
+    QString jsonStr = QString::fromStdString(jsonArr.toStyledString());
+    QString totalPriceStr = QString("%1.%2").arg(totalPrice / 100)
+            .arg(totalPrice % 100,2,10,QLatin1Char('0'));
+    map.insert("total_fee",totalPriceStr);//订单总金额
     QString dateStr = QDateTime::currentDateTime().toString("yyyyMMddHHmmsszzz");
     map.insert("out_trade_no",dateStr);//商户网站唯一订单号
     str_cur_ali_trade_no = dateStr;
-    map.insert("subject","订单下载");
-
-    Json::Value jsonObj;
-    Json::Value jsonArr;
-    jsonObj["goodsName"] = trUtf8("不知名矿泉水").toStdString();
-    jsonObj["quantity"] = "1";
-    jsonObj["price"] = "0.1";
-    jsonArr.append(jsonObj);
-    QString jsonStr = QString::fromStdString(jsonArr.toStyledString());
+    map.insert("subject",trUtf8("商品下单"));
     map.insert("goods_detail",jsonStr.toUtf8());
-    qDebug()<<"jsonArr:"<<jsonStr.toUtf8();
-
 
     buildRequest(map);
 

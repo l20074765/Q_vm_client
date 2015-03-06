@@ -4,8 +4,6 @@
 #include <QThread>
 #include <QSqlDatabase>
 #include <QSqlTableModel>
-#include <QHash>
-
 
 #include "productobject.h"
 
@@ -23,19 +21,15 @@ public:
 
     void productTableCheck();
 
-    QHash<QString,ProductObject *> &getProductHash(){return (productHash);}
-
     enum{
         SQL_CONNECT_FAIL = 0,
-        SQL_CONNECT_OK
+        SQL_CONNECT_OK,
+        SQL_PRODUCT_ADD,
+        SQL_PRODUCT_DEC,
+        SQL_START,
+        SQL_GOODS_SELECT
     };
-    enum{
-        SQL_ACTION_PRODUCT_ADD,
-        SQL_ACTION_PRODUCT_DEC
-    };
-    enum{
-        SQL_TYPE_START
-    };
+
     ProductObject *sqlFindProduct(const QString &product_id);
 
 
@@ -44,11 +38,8 @@ signals:
 protected:
 
 public slots:
-    void requestHandle(int type,QObject *obj);
+    void sqlActionSlot(int type,QObject *obj);
     void tabelModelInit();
-    void sqlRptSlot(int type,QObject *obj);
-
-
 private:
     void sql_start();
 private:
@@ -57,7 +48,8 @@ private:
     QSqlTableModel *m_model;
     QSqlTableModel *m_modelCabinet;
     QList<QSqlTableModel *> m_modelCabinetList;
-    QHash<QString,ProductObject *> productHash;
+
+
 };
 
 #endif // VMSQL_H

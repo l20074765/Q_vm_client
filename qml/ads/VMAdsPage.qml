@@ -6,6 +6,7 @@ Rectangle {
     width: 350
     height: 450
     anchors.fill: parent
+    visible: false
     signal ads_clicked  //广告页面点击信号
     property int adsIndex: 0
     property string ads_path_str: "../../images/ads/"
@@ -15,7 +16,12 @@ Rectangle {
     onVisibleChanged: {
         console.log("广告页面显示更改" + visible);
         if(visible == true){
-            ads_turn();
+            ads_turn();           
+        }
+        else
+        {
+            ads_timer.stop();
+            vm_video.stop();
         }
     }
 
@@ -72,7 +78,7 @@ Rectangle {
     //定时切图
     Timer{
         id:ads_timer
-        interval: 100; running: true; repeat: true;
+        interval: 100; running: false; repeat: true;
         onTriggered: {
             ads_timer.interval = 8000;
             ads_turn();
