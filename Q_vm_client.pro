@@ -104,7 +104,8 @@ DISTFILES += \
     qml/maintain/MTSystemManage.qml \
     qml/maintain/MTTradeManagePage.qml \
     qml/maintain/MTDeviceManagePage.qml \
-    qml/maintain/MTSystemManagePage.qml
+    qml/maintain/MTSystemManagePage.qml \
+    qml/maintain/MTProductDetailPage.qml
 
 
 

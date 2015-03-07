@@ -8,8 +8,6 @@ Custom.VMWidget {
     //商品组件数组
     property alias products:product_model.count
     anchors.fill: parent
-
-
     onVisibleChanged: {
         if(visible == true){
             title_bar.title_timer_set(1);
@@ -19,7 +17,6 @@ Custom.VMWidget {
         }
 
     }
-
     //主界面区域
     Rectangle{
         id:main_rect

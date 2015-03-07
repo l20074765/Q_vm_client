@@ -47,6 +47,7 @@ private:
     QSqlDatabase m_db;
     QSqlTableModel *m_model;
     QSqlTableModel *m_modelCabinet;
+    QSqlTableModel *m_modelColumn;//货道配置
     QList<QSqlTableModel *> m_modelCabinetList;
 
 

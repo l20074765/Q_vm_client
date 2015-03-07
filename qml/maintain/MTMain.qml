@@ -8,7 +8,11 @@ Custom.VMWidget{
     property Item lastPage: mtMainTainPage
     onVisibleChanged: {
         if(visible == true){
-            vmPageSwitch(mtMainTainPage)
+            vmPageSwitch(mtMainTainPage);
+            mtTradeManagePage.mtTrade_productCreate();
+        }
+        else{
+            mtTradeManagePage.mtTrade_productClear();
         }
     }
 
@@ -76,7 +80,8 @@ Custom.VMWidget{
             height: parent.height
             button_text: qsTr("交易管理")
             onButton_clicked: {
-                vmPageSwitch(mtTradeManagePage)
+                vmPageSwitch(mtTradeManagePage);
+                mtTradeManagePage.mtTradeSelectPage(99);
             }
         }
         MTButton{

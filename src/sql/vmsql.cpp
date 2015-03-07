@@ -83,8 +83,13 @@ void VmSql::tabelModelInit()
 {
     m_model = new QSqlTableModel(this,m_db);
     m_modelCabinet = new QSqlTableModel(this,m_db);
+    m_modelColumn = new QSqlTableModel(this,m_db);
+
     m_modelCabinet->setTable("vmc_cabinet1");
     m_modelCabinet->setEditStrategy(QSqlTableModel::OnManualSubmit);
+
+    m_modelColumn->setTable("vmc_column");
+    m_modelColumn->setEditStrategy(QSqlTableModel::OnManualSubmit);
 }
 
 
