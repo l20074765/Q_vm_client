@@ -74,6 +74,10 @@ Rectangle {
     Trade.VMTradeoutPage{
         id:vmTradeoutPage
         anchors.fill: parent
+        onBack_clicked: {
+           vmPageSwitch(vmAdsPage);
+           vmTradeClear();
+        }
     }
     //7.出货失败界面
     Trade.VMTradeFailPage{
@@ -90,6 +94,8 @@ Rectangle {
     MainTain.MTMain{
         id:vmMTMainPage
         anchors.fill: parent
+
+
     }
 
 
@@ -111,7 +117,7 @@ Rectangle {
         }
         else if(s == 4) //维护
         {
-            vmPageSwitch(vmMTMainPage);
+            vmPageSwitch(vmMTMainPage);           
         }
         else //故障
         {
@@ -122,9 +128,8 @@ Rectangle {
 
 
     function vmcproductAdd(){
-        var p = vm.getAddProductObj()
+        var p =  productManage.getAddProductObj();
         console.log("QML:vmcproductAdd\n" + p)
-
         if(p == null)//商品不存在
         {
             console.log("获取商品不存在");
@@ -136,10 +141,6 @@ Rectangle {
         var s1 = p.salePrice / 100;
         var s2 = p.salePrice % 100;
         product.product_price =  p.salePriceStr;
-
-
-        //显示完成后需要告知后台销毁该对象
-        vm.addProductFinish(product.product_index)
 
     }
 
@@ -153,7 +154,19 @@ Rectangle {
     //支付结果
     function tradeResult(res){
         console.log("支付结果上报:" + res);
+        if(res == 1){ //支付成功
+            vmTradeoutPage.resultStr = "出货成功"
+            vmPageSwitch(vmTradeoutPage);
+        }
+        else{
+            vmPageSwitch(vmTradeFailPage);
+        }
+    }
+
+    function payResult(res){
+        console.log("支付结果上报:" + res);
         if(res == MainObject.QML_PAYOUT_SUC){ //支付成功
+            vmTradeoutPage.resultStr = "正在出货"
             vmPageSwitch(vmTradeoutPage);
         }
         else if(res == MainObject.QML_PAYOUT_NET_ERR){
@@ -179,7 +192,8 @@ Rectangle {
 
     //qml负责与C++通信的槽函数入口
     function qmlActionSlot(type,s){
-        console.log(qsTr("qmlActionSlot:") + "type = " + type + " s = " + s);
+        console.log(qsTr("QML-qmlActionSlot:") + "type = " + type + " s = " + s);
+
         if(type == MainObject.QML_TYPE_PRODUCT_ADD){
             vmcproductAdd();
         }
@@ -190,8 +204,15 @@ Rectangle {
             alipay_pic_ok(s);
         }
         else if(type == MainObject.QML_TYPE_PAYOUT){
-            tradeResult(s);
+            payResult(s);
         }
+        else if(type == MainObject.QML_TYPE_TRADE_OK){
+            tradeResult(1);
+        }
+        else if(type == MainObject.QML_TYPE_TRADE_FAIL){
+            tradeResult(0);
+        }
+
 
     }
 

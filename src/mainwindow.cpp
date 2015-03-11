@@ -8,9 +8,8 @@
 #include <QDir>
 #include <QWidget>
 #include "vmvideo.h"
-#include <QSettings>
-
 #include "qrenwidget.h"
+#include "setting.h"
 
 
 
@@ -18,27 +17,27 @@ MainWindow::MainWindow(QWidget *parent) :
     QDeclarativeView(parent)
 {
     mainObject = new MainObject(this);
-
     engine()->addImportPath("modules");
     this->engine()->addPluginPath("./plugins");
     //让qml随窗口变化而变化
     this->setResizeMode(QDeclarativeView::SizeRootObjectToView);
     setAttribute(Qt::WA_AutoOrientation,true);
 
+    //setWindowOpacity(0.4);
+
+
+
     //注册组件到QML 让qml创建类 这种方式不好 让C++与qml通讯 采用上面的方式
     //提醒注册组件必须要在 this->setSource(url);之前进行 否则qml找不到组件
     qmlRegisterType<MainObject>("Qtvm", 1, 0, "MainObject");
     qmlRegisterType<ProductObject>("Qtvm",1,0,"ProductObject");
+    qmlRegisterType<ColumnObject>("Qtvm",1,0,"ColumnObject");
     qmlRegisterType<VMVideo>("Qtvm",1,0,"VMVideo");
     qmlRegisterType<QrenWidget>("Qtvm",1,0,"QrenWidget");
 
+   // vmConfig = new Setting(this);
     QUrl url;
-    QSettings *read = new QSettings("config.ini",QSettings::IniFormat);
-
-    bool ok;
-    int qmlDebug = read->value("CONFIG/QmlDebug").toInt(&ok);
-    delete read;
-    if(qmlDebug == 1)
+    if(vmConfig.isQmlDebug())
         url = QUrl::fromLocalFile("../../qml/main.qml");
     else
         url = QUrl::fromLocalFile("qml/main.qml");
@@ -47,6 +46,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     context = this->rootContext();
     context->setContextProperty("vm",mainObject);
+
+    ProductManage *productManage = mainObject->getProductManage();
+    context->setContextProperty("productManage",productManage);
+
+    ColumnManage *columnManage = mainObject->getColumnManage();
+    context->setContextProperty("columnManage",columnManage);
 
     //setOpacity(0.8);
     mainItem = qobject_cast<QDeclarativeItem *>(this->rootObject());
@@ -64,7 +69,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    qDebug()<<"MainWindow::~MainWindow";
+}
 
+
+void MainWindow::closeEvent(QCloseEvent *v)
+{
+     //MainWindow::closeEvent(v);
+     qDebug()<<"MainWindow::closeEvent";
 }
 
 

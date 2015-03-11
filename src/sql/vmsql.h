@@ -3,10 +3,9 @@
 #include <QObject>
 #include <QThread>
 #include <QSqlDatabase>
-#include <QSqlTableModel>
-
 #include "productobject.h"
-
+#include "columnobject.h"
+#include "vmorderobj.h"
 
 class VmSql : public QObject
 {
@@ -16,10 +15,9 @@ public:
     ~VmSql();
 
     bool sqlConnection();
-
     inline bool isSqlConnected(){return this->sqlConnected;}
-
     void productTableCheck();
+    void columnTableCheck();
 
     enum{
         SQL_CONNECT_FAIL = 0,
@@ -27,11 +25,13 @@ public:
         SQL_PRODUCT_ADD,
         SQL_PRODUCT_DEC,
         SQL_START,
-        SQL_GOODS_SELECT
+        SQL_GOODS_SELECT,
+        SQL_COLUMN_ADD
     };
 
     ProductObject *sqlFindProduct(const QString &product_id);
 
+    VmOrderObj *sqlFindProductObj(const QString &product_id);
 
 signals:
     void sqlActionSignal(int type,QObject *obj);
@@ -39,17 +39,11 @@ protected:
 
 public slots:
     void sqlActionSlot(int type,QObject *obj);
-    void tabelModelInit();
 private:
     void sql_start();
 private:
     bool sqlConnected;
     QSqlDatabase m_db;
-    QSqlTableModel *m_model;
-    QSqlTableModel *m_modelCabinet;
-    QSqlTableModel *m_modelColumn;//货道配置
-    QList<QSqlTableModel *> m_modelCabinetList;
-
 
 };
 

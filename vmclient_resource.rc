@@ -33,10 +33,6 @@ VS_VERSION_INFO VERSIONINFO
 		BEGIN
 			VALUE "Translation", 0x0409, 1200
 		END
-		BLOCK "VarFileInfo"
-		BEGIN
-			VALUE "Translation", 0x409, 1200
-		END
 	END
 /* End of Version info */
 

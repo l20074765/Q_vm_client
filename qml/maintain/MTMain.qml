@@ -1,18 +1,22 @@
 import QtQuick 1.1
 import "../custom" as Custom
-
+import "../trade" as Trade
 Custom.VMWidget{
     id:mtMainTainPagRect
     anchors.fill:parent
     property Item curPage: mtMainTainPage
     property Item lastPage: mtMainTainPage
+
+
     onVisibleChanged: {
-        if(visible == true){
-            vmPageSwitch(mtMainTainPage);
+        if(visible == true){            
             mtTradeManagePage.mtTrade_productCreate();
+            mtTradeManagePage.mtTrade_columnCreate();
+            vmPageSwitch(mtMainTainPage);
         }
         else{
             mtTradeManagePage.mtTrade_productClear();
+            mtTradeManagePage.mtTrade_columnClear();
         }
     }
 
@@ -34,6 +38,7 @@ Custom.VMWidget{
         MTTradeManagePage{
             id:mtTradeManagePage
             anchors.fill: parent
+
         }
 
         //3.设备管理

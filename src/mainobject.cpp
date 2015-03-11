@@ -7,14 +7,22 @@
 #include <QFile>
 #include <QDir>
 #include <QTimer>
-
+#include <QVariant>
+#include "setting.h"
 
 MainObject::MainObject(QObject *parent) : QObject(parent)
 {
     qDebug()<<trUtf8("Create MainObject");
     vmcState = 0;
-    productList.clear();
-    productQmlHash.clear();
+
+
+
+    //创建商品接口类
+    productmanage = new ProductManage(this);
+
+    columnManage = new ColumnManage(this);
+
+    vmOrder = new VmOrder(this);
 
     //数据库接口类
     vmsql = new VmSql();
@@ -39,10 +47,14 @@ MainObject::MainObject(QObject *parent) : QObject(parent)
 
     qRegisterMetaType<ProductHash>("ProductHash");//注册元对象
     //启动后台通信
-    qDebug()<<"Start vmc ...COM7";
-    vmcMainFlow = new VmcMainFlow(0,QString("COM1"));
-    connect(vmcMainFlow,SIGNAL(EV_callBackSignal(quint8,const void*)),
-            this,SLOT(EV_callBackSlot(quint8,const void*)),Qt::QueuedConnection);
+    qDebug()<<"Start vmc ..."<<vmConfig.getVmPort();
+
+    vmcMainFlow = new VmcMainFlow(0,vmConfig.getVmPort());
+    connect(vmcMainFlow,SIGNAL(vmcActionSignal(int,QObject *)),
+            this,SLOT(vmcActionSlot(int,QObject *)),Qt::QueuedConnection);
+    connect(this,SIGNAL(vmcActionSignal(int,QObject *)),
+            vmcMainFlow,SLOT(vmcActionSlot(int,QObject *)),Qt::QueuedConnection);
+
     vmcMainFlow->vmcStart();
 
 
@@ -53,6 +65,9 @@ MainObject::MainObject(QObject *parent) : QObject(parent)
     //启动定时器
     timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(timeroutSlot()));
+
+
+
 
 }
 
@@ -107,7 +122,7 @@ void MainObject::aliActionSlot(int type, QObject *obj)
         qmlt.setValue(t);
         var.setValue((int)QML_PAYOUT_SUC);
         emit qmlActionSignal(qmlt,var);
-        vmcMainFlow->EV_trade(1,11,1,0);//开始出货
+        emit vmcActionSignal(VmcMainFlow::VMC_ACTION_TRADE,vmOrder);
     }
     else if(type == AlipayAPI::ALI_ACTION_TRADE_FAIL)//支付失败
     {
@@ -127,41 +142,37 @@ void MainObject::aliActionSlot(int type, QObject *obj)
 
 
 
-
+//qml 与 C++连接槽函数
 void MainObject::qmlActionSlot(int v,QString req)
 {
     qDebug()<<"MainObject::qmlActionSlot:"<<v<<req;
     if(v == QML_TYPE_TRADE)
-    {
-       vmcpaySlot(1,11,1,0);
+    {       
+        emit aliRequstSignal(AlipayAPI::ALI_ACTION_TRADE_START,vmOrder);
     }
     else if(v == QML_TYPE_GOODS_SELECT)
-    {
-       if(!req.isEmpty())
-       {
-           ProductObject *product =  productHash.value(req);
+    {   
+       if(vmOrder->hasOrder(req)){
+          vmOrder->addOrderBuyNum(req);//已添加商品直接新增购买数量
+       }
+       else{
+           VmOrderObj *product = vmsql->sqlFindProductObj(req);
            if(product)
            {
                qDebug()<<"Select product id:"<<product->id
                       <<"Name:"<<product->name;
-               if(productSelectList.contains(product))
-               {
-                  product->buyNum++;
-               }
-               else
-               {
-                   product->buyNum = 1;
-                   productSelectList<<product;
-               }
-
-
+               vmOrder->addOrderList(product);
            }
        }
     }
     else if(v == QML_TYPE_TRADE_CLEAR)
     {
-        productSelectList.clear();
+        //productmanage->clearProductBuyList();
         emit aliRequstSignal(AlipayAPI::ALI_ACTION_TRADE_CLEAR,NULL);
+    }
+    else if(v == QML_TYPE_PRODUCT_SUM)//回应商品总数
+    {
+        //return productHash.count();
     }
 }
 
@@ -170,11 +181,33 @@ void MainObject::vmcpaySlot(int cabinet,int column,int type,long cost)
     qDebug()<<trUtf8("出货前准备检测支付结果")<<"cabinet:"<<cabinet
            <<" column:"<<column<<" type:"<<type<<" cost:"<<cost;
     qDebug()<<trUtf8("当前线程:")<<QThread::currentThread();
-    emit aliRequstSignal(AlipayAPI::ALI_ACTION_TRADE_START,this);
+    emit aliRequstSignal(AlipayAPI::ALI_ACTION_TRADE_START,vmOrder);
 }
 
 
 
+
+void MainObject::vmcActionSlot(int type, QObject *obj)
+{
+    qDebug()<<"MainObject::vmcActionSlot"<<type<<obj;
+    if(type == VmcMainFlow::VMC_ACTION_STATE)
+    {
+        VmcObj *vmc = qobject_cast<VmcObj *>(obj);
+        if(vmc){
+            int state = vmc->state;
+            emit qmlActionSignal(QVariant((int)QML_TYPE_VMC_STATE),QVariant(state));
+        }
+
+    }
+    else if(type == VmcMainFlow::VMC_ACTION_TRADE_OK){
+        vmOrder->clearOrderList();
+        emit qmlActionSignal(QVariant((int)QML_TYPE_TRADE_OK),QVariant(int(0)));
+    }
+    else if(type == VmcMainFlow::VMC_ACTION_TRADE_FAIL){
+        vmOrder->clearOrderList();
+        emit qmlActionSignal(QVariant((int)QML_TYPE_TRADE_FAIL),QVariant(int(0)));
+    }
+}
 
 
 /************************************************************************************
@@ -205,8 +238,6 @@ void MainObject::EV_callBackSlot(const quint8 type,const void *ptr)
        {
 
        }
-
-
     }
     else if(type == EV_ENTER_MANTAIN)//退出维护
     {
@@ -215,6 +246,22 @@ void MainObject::EV_callBackSlot(const quint8 type,const void *ptr)
     else if(type == EV_EXIT_MANTAIN)//推出维护
     {
         this->setVmcState(EV_STATE_FAULT);
+    }
+    else if(type == EV_COLUMN_RPT)
+    {
+        ST_COLUMN *q,*p;
+        ST_COLUMN_RPT *column = (ST_COLUMN_RPT *)ptr;
+        if(column == NULL) return;
+        p = &column->head;
+        //遍历链表
+        while(p->next != NULL)
+        {
+            q = p->next;
+            qDebug()<<"no=%d"<<q->no<<"state=%d"<<q->state;
+            p = q;
+
+        }
+        qDebug()<<"EV_COLUMN_RPT";
     }
 }
 
@@ -262,13 +309,16 @@ void MainObject::setVmcState(const int state)
  * **********************************************************************************/
 void MainObject::sqlActionSlot(int type, QObject *obj)
 {
-    qDebug()<<"MainObject::sqlActionSlot"<<type<<obj;
+    qDebug()<<"MainObject::sqlActionSlot:type="<<type<<"obj="<<obj;
     if(type == VmSql::SQL_PRODUCT_ADD)
     {
         ProductObject *product = qobject_cast<ProductObject *>(obj);
         if(product)
         {
-             sqlAddProductSLot(product);
+            productmanage->addProduct(product);
+            QVariant var;
+            QVariant type((int)QML_TYPE_PRODUCT_ADD);
+            emit qmlActionSignal(type,var);
         }
 
     }
@@ -287,50 +337,25 @@ void MainObject::sqlActionSlot(int type, QObject *obj)
         {
             qDebug()<<"Select product id:"<<product->id
                    <<"Name:"<<product->name;
-            productSelectList<<product;
+          //  productSelectList<<product;
         }
     }
-}
-
-
-void MainObject::sqlAddProductSLot(ProductObject *  obj)
-{
-    qDebug()<<"sqlAddProductSlot.."<<obj;
-    productHash.insert(obj->id,obj);
-    productList<<obj;
-    QVariant type,var;
-    int t = QML_TYPE_PRODUCT_ADD;
-    type.setValue(t);
-    emit qmlActionSignal(type,var);
-}
-
-
-ProductObject * MainObject::getAddProductObj()
-{
-    if(productList.isEmpty())
-        return NULL;
-    ProductObject *obj = productList.first(); //添加
-    productList.removeFirst();//删除链表
-    return obj;
-}
-
-
-void MainObject::addProductFinish(QVariant p)
-{
-
-#if 0
-    //对象显示完成后需要销毁该对象
-    if(productObj)
+    else if(type == VmSql::SQL_COLUMN_ADD)
     {
-        productQmlHash.insert(productObj->id,p);
-        qDebug()<<p;
-        //销毁前
-        //qDebug()<<QString("销毁对象")<<productObj;
-        delete productObj;
-        productObj = NULL;
+        ColumnObject *column = qobject_cast<ColumnObject *>(obj);
+        if(column){
+            columnManage->addColumn(column);
+        }
     }
-#endif
+
 }
+
+
+
+
+
+
+
 
 
 

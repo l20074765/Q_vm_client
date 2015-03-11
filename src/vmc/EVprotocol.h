@@ -167,6 +167,24 @@ typedef struct _st_payout_rpt_{
 }ST_PAYOUT_RPT;
 
 
+//货道单链表
+struct ST_COLUMN{
+    uint8 state;//每道的状态 0正常 1故障 2 无货 3 暂不可用
+    uint8 no; //货道号
+    struct ST_COLUMN *next;
+};
+
+
+
+//上报货道结构体
+typedef struct _st_column_rpt_{
+    uint8 cabinet_no;//柜子号
+    uint32 sum;      //该柜子总的货道数量
+    uint8 type;             //柜子类型
+    struct ST_COLUMN head;
+}ST_COLUMN_RPT;
+
+
 //VMC当前状态
 #define EV_STATE_DISCONNECT		0    //断开连接
 #define EV_STATE_INITTING		1    //正在初始化
@@ -205,6 +223,7 @@ EV_EXPORT int   EV_API  EV_vmcStart(char *portName,EV_CALLBACK_HANDLE callBack);
 EV_EXPORT void  EV_API  EV_vmcStop();
 EV_EXPORT int   EV_API  EV_trade(int cabinet,int column,int type,long cost);
 EV_EXPORT int   EV_API  EV_payout(long value);
+EV_EXPORT int   EV_API  EV_payback();
 EV_EXPORT int   EV_API  EV_getStatus();
 EV_EXPORT long  EV_API  EV_getRemainAmount();
 EV_EXPORT int   EV_API  EV_bentoRegister(char *portName);
@@ -215,6 +234,17 @@ EV_EXPORT int   EV_API  EV_bentoCheck(int cabinet,char *msg);
 EV_EXPORT int   EV_API  EV_cashControl(int flag);
 EV_EXPORT int   EV_API  EV_cabinetControl(int cabinet, int dev, int flag);
 EV_EXPORT int   EV_API  EV_setDate(const void *date);
+
+/*********************************************************************************************************
+** Function name	:		EV_getColumn
+** Descriptions		:		获取柜子中的货道属性
+** input parameters	:       cabinet 柜子号
+** output parameters:		无
+** Returned value	:		1:指令发送成功
+*********************************************************************************************************/
+EV_EXPORT int  EV_API  EV_getColumn(int cabinet);
+
+
 
 #endif
 #ifdef __cplusplus

@@ -3,7 +3,6 @@
 
 #include <QDeclarativeView>
 #include "mainobject.h"
-
 class QDeclarativeContext;
 class QDeclarativeItem;
 class QGraphicsObject;
@@ -17,7 +16,8 @@ public:
 
 
 signals:
-
+protected:
+    void closeEvent(QCloseEvent *);
 public slots:
     void setUiState(quint8 state);
     void qmlCreateProduct();
@@ -26,7 +26,6 @@ private:
     MainObject *mainObject;
     QDeclarativeItem *mainItem;
     QDeclarativeContext *context;
-
 
 
 };

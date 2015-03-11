@@ -104,7 +104,7 @@ Custom.VMWidget {
                          });
         var product = product_model.get(product_model.count - 1);
         product.product_index = product_model.count - 1;
-        console.log("创建商品:" + product);
+        //console.log("创建商品:" + product);
         return product;
     }
 
@@ -116,6 +116,12 @@ Custom.VMWidget {
     function vmGetCurProductItem(){
         var p = product_gridView.currentIndex;
         return product_model.get(p)
+    }
+
+    function vmGetProductListModel(){
+        return product_model;
+
+
     }
 
 }

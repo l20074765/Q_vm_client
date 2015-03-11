@@ -21,12 +21,18 @@ INCLUDEPATH +=$$PWD \
               $$PWD/src/alipay \
             $$PWD/src/jsoncpp \
             $$PWD/src/video \
-            $$PWD/src/qrencode
+            $$PWD/src/qrencode \
+            $$PWD/src/log
 
 
 LIBS +=  -L$$PWD -L$$PWD/libs
 
 DEFINES +=VM_DECLARATIVE
+
+win32{
+    LIBS+= $$PWD/libs/EVprotocol.dll
+
+}
 
 
 
@@ -53,7 +59,15 @@ SOURCES += \
     src/video/vmvideo.cpp \
     src/alipay/alixmlobj.cpp \
     src/alipay/qrenwidget.cpp \
-    src/alipay/qrenpixwidget.cpp
+    src/alipay/qrenpixwidget.cpp \
+    src/setting.cpp \
+    src/sql/productmanage.cpp \
+    src/sql/columnmanage.cpp \
+    src/sql/columnobject.cpp \
+    src/vmc/vmcobj.cpp \
+    src/sql/productselectobj.cpp \
+    src/sql/vmorderobj.cpp \
+    src/sql/vmorder.cpp
 
 HEADERS += \
     src/mainwindow.h \
@@ -77,7 +91,15 @@ HEADERS += \
     src/video/vmvideo.h \
     src/alipay/alixmlobj.h \
     src/alipay/qrenwidget.h \
-    src/alipay/qrenpixwidget.h
+    src/alipay/qrenpixwidget.h \
+    src/setting.h \
+    src/sql/productmanage.h \
+    src/sql/columnmanage.h \
+    src/sql/columnobject.h \
+    src/vmc/vmcobj.h \
+    src/sql/productselectobj.h \
+    src/sql/vmorderobj.h \
+    src/sql/vmorder.h
 
 
 DISTFILES += \

@@ -82,6 +82,7 @@ Rectangle {
     // 2. 商品管理页面
     MTProductPage{
         id:mtTrade_productPage
+        objectName: "trade_productPage_obj"
         anchors.fill: parent
         visible: false
         onGoodsList_clicked: {
@@ -129,7 +130,14 @@ Rectangle {
     }
 
     function mtTrade_productCreate(){
+
         mtTrade_productPage.mtProductCreat();
+    }
+    function mtTrade_columnCreate(){
+        mtTrade_columnPage.columnCreate();
+    }
+    function mtTrade_columnClear(){
+        mtTrade_columnPage.columnClear();
     }
 
 }

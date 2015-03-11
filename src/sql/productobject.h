@@ -22,9 +22,7 @@ public:
 
     QString getName(){return name;}
     void setName(const QString &name){this->name = name;}
-
     QString getSalePriceStr();
-
     quint32 getSalePrice(){return salePrice;}
     void setSalePrice(const quint32 &salePrice){this->salePrice = salePrice;}
 
@@ -41,6 +39,8 @@ private:
 
 
 };
+
+
 
 
 

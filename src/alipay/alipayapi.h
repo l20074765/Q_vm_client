@@ -57,7 +57,7 @@ private:
     QString str_cur_ali_type;//当前与支付宝通信类型
     QString str_cur_ali_trade_no;//当前的订单交易号
     AlipayConfig *aliConfig;
-    void tradBegin(QList<ProductObject *> list);
+    void tradBegin(QObject *obj);
     void aliXmlResolve(QHash<QString,QString> *xmlHash,QXmlStreamReader *xml);
     void aliResponseResolve(QHash<QString,QString> *xmlHash);
     QHash<QString,QString> xmlHash;

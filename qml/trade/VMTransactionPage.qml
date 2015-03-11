@@ -1,7 +1,7 @@
 import QtQuick 1.0
 import "../custom" as Custom
 Custom.VMWidget {
-    signal button_pay_clicked //定义购买按钮信号
+    signal button_pay_clicked() //定义购买按钮信号
     signal back_clicked()
     anchors.fill: parent
 

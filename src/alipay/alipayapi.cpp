@@ -1,4 +1,5 @@
 #include "alipayapi.h"
+
 #include <QTimer>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
@@ -7,14 +8,14 @@
 #include <QImage>
 #include <QCryptographicHash>
 #include <QThread>
-#include "json.h"
-#include "qqrencode.h"
 #include <QDateTime>
 #include <QFile>
-
 #include <QtDebug>
 
-#include "mainobject.h"
+#include "vmorder.h"
+#include "json.h"
+#include "qqrencode.h"
+
 
 AlipayAPI::AlipayAPI(QObject *parent)
     : QObject(parent)
@@ -40,14 +41,8 @@ void AlipayAPI::aliRequestSlot(int type, QObject *obj)
 {
     qDebug()<<"AlipayAPI::aliRequestSlot"<<type<<obj;
     if(type == ALI_ACTION_TRADE_START)
-    {
-        MainObject *mainObj = qobject_cast<MainObject *>(obj);
-        if(mainObj)
-        {
-            QList<ProductObject *> list = mainObj->getProductSelectList();
-            tradBegin(list);
-        }
-
+    {      
+         tradBegin(obj);
     }
     else if(type == ALI_ACTION_TRADE_CLEAR)
     {
@@ -368,9 +363,10 @@ QMap<QString, QString> AlipayAPI::filterPara(const QMap<QString, QString> &mapAr
 
 
 //开始交易请求生成二维码
-void AlipayAPI::tradBegin(QList<ProductObject *> list)
+void AlipayAPI::tradBegin(QObject *obj)
 {
-    if(list.isEmpty()) return;
+    VmOrder *order = qobject_cast<VmOrder *>(obj);
+    if(order == NULL) return;
 
     qDebug()<<"AlipayAPI:"<<trUtf8("当前线程:")<<QThread::currentThread();
     QMap<QString,QString> map;
@@ -385,10 +381,15 @@ void AlipayAPI::tradBegin(QList<ProductObject *> list)
     //解析商品
     Json::Value jsonArr;
     quint64 totalPrice = 0;
-    for(int i = 0; i < list.count();i++)
+    quint32 count = order->getOrderCount();
+    for(int i = 0; i < count;i++)
     {
+        VmOrderObj *product = order->getOrderObjByIndex(i);
+        if(product == NULL){
+            qDebug()<<"AlipayAPI::tradBegin product == NULL";
+            continue;
+        }
         Json::Value jsonObj;
-        ProductObject *product = list.at(i);
         jsonObj["goodsName"] = product->name.toStdString();
         QString quantStr = QString("%1").arg(product->buyNum);
         jsonObj["quantity"] =  quantStr.toStdString();

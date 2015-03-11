@@ -6,10 +6,10 @@ Rectangle {
     visible: false
     onVisibleChanged: {
         if(visible == true){
-            columnCreate();
-        }
-        else{
-            product_model.clear();
+            if(product_model.count != columnManage.columnCount){
+                product_model.clear();
+                columnCreate();
+            }
         }
     }
 
@@ -38,7 +38,8 @@ Rectangle {
                         color: "gray"
                         width: 1
                     }
-                    color: "red"
+                    color: (column_state == 1) ? "blue": (column_state == 3 ? "yellow": "red")
+                    opacity: 0.9
                     Text {
                         anchors.centerIn: parent
                         text: column_id
@@ -46,10 +47,8 @@ Rectangle {
                         font{
                             pixelSize: 12
                             bold: true
-
                         }
                     }
-
                 }
             }
         }
@@ -72,8 +71,6 @@ Rectangle {
             focus: true
             currentIndex: 0
         }
-
-
     }
 
 
@@ -108,14 +105,30 @@ Rectangle {
         }
     }
 
-
+    function vmCreateColumn(){
+        product_model.append({
+                          "column_id": 1,
+                          "column_state":1,
+                         });
+        var column = product_model.get(product_model.count - 1);
+        column.product_index = product_model.count - 1;
+       // console.log("创建商品:" + product + product.product_index);
+        return column;
+    }
 
     function columnCreate(){
-        for(var i = 0;i < 100;i++){
-            product_model.append({"column_id": "1"});
-            var product = product_model.get(product_model.count - 1);
-            product.column_id = product_model.count - 1;
+        console.log("货道列表模型 " + columnManage.columnCount);
+        for(var i = 0;i < columnManage.columnCount;i++){
+            var col = columnManage.getColumnObjByIndex(i);
+            var column = vmCreateColumn();
+            column.column_id = col.id % 1000;
+            console.log("id=" + col.id + "state:" + col.state);
+            column.column_state = col.state;
         }
+    }
+
+    function columnClear(){
+        product_model.clear();
     }
 
 }

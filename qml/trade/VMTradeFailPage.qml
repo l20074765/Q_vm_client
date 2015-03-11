@@ -43,6 +43,8 @@ Custom.VMWidget {
                 topMargin: 20
             }
             Text{
+                anchors.centerIn: parent
+                horizontalAlignment: Text.AlignHCenter
                 text:"出货失败\n"
                 font.bold: true
                 font.pixelSize: parent.width * 0.1

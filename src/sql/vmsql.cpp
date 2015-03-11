@@ -2,16 +2,14 @@
 
 
 #include <QSqlRecord>
-
 #include <QtDebug>
 #include <QMetaType>
-
+#include <QSqlQuery>
+#include <QtDebug>
 
 VmSql::VmSql(QObject *parent) : QObject(parent)
 {
     sqlConnected = false;
-    m_model = NULL;
-    m_modelCabinet = NULL;
 }
 
 VmSql::~VmSql()
@@ -58,8 +56,8 @@ void VmSql::sql_start()
     {
         sqlConnected = true;
         emit sqlActionSignal(SQL_CONNECT_OK,NULL);
-        tabelModelInit();
         productTableCheck();
+        columnTableCheck();
     }
     else
     {
@@ -79,77 +77,125 @@ bool VmSql::sqlConnection()
     return m_db.open();
 }
 
-void VmSql::tabelModelInit()
+
+
+
+
+
+void VmSql::columnTableCheck()
 {
-    m_model = new QSqlTableModel(this,m_db);
-    m_modelCabinet = new QSqlTableModel(this,m_db);
-    m_modelColumn = new QSqlTableModel(this,m_db);
-
-    m_modelCabinet->setTable("vmc_cabinet1");
-    m_modelCabinet->setEditStrategy(QSqlTableModel::OnManualSubmit);
-
-    m_modelColumn->setTable("vmc_column");
-    m_modelColumn->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    QSqlQuery query(m_db);
+    query.exec("SELECT * FROM vmc_column");
+    while(query.next())
+    {
+        bool ok;
+        ColumnObject *column = new ColumnObject();
+        quint32 id = query.value(0).toUInt(&ok);
+        column->id = id;
+        column->bin = id / 1000;
+        column->column = id % 1000;
+        column->state = query.value(3).toUInt(&ok);
+        column->productNo = query.value(4).toUInt(&ok);
+        qDebug()<<"column:"<<column;
+        emit sqlActionSignal(SQL_COLUMN_ADD,column);
+    }
 }
 
 
+
+//遍历商品数据库
 void VmSql::productTableCheck()
 {
-    m_model->setTable("vmc_product");
-    m_model->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    m_model->select();
-
-    qDebug()<<"productTableCheck:"<<m_model->columnCount()
-           <<m_model->rowCount();
-
-    bool ok;
-    int key = m_model->record().indexOf("productNo");
-    for(int i = 0;i < m_model->rowCount();i++)
-    {
-        QSqlRecord record = m_model->record(i);
-
-        QString productNo = record.value("productNo").toString();
-        qDebug()<<"productNo:"<<productNo;
-
-        //第二种方式通过索引搜索 使用大数据 推荐
-        QString productNo1 = record.value(key).toString();        
-        qDebug()<<"productNo1:"<<productNo1;
-        //处理数据
+    QSqlQuery query(m_db);
+    query.exec("SELECT * FROM vmc_product");
+    while(query.next()){
+        bool ok;
+       // QString id = query.value(0).toString();
+        QString productNo = query.value(1).toString();
+        QString productName = query.value(4).toString();
+        quint32 productPrice = query.value(11).toUInt(&ok);
         ProductObject *productObj = new ProductObject();
-        productObj->id = productNo1;
-        productObj->name = record.value("productName").toString();
-        quint32 priceInt = record.value("salesPrice").toUInt(&ok);
-        productObj->salePrice = priceInt;
-        qDebug()<<"sqlAddProduct..."<<productObj->salePrice;
+        productObj->id = productNo;
+        productObj->name = productName;
+        productObj->salePrice = productPrice;
+        //qDebug()<<"sqlAddProduct...obj="<<productObj;
         emit sqlActionSignal(SQL_PRODUCT_ADD,productObj);
     }
-
-
 }
 
+
+VmOrderObj *VmSql::sqlFindProductObj(const QString &product_id)
+{
+
+    VmOrderObj *obj = new VmOrderObj();
+    //查找商品
+    qDebug()<<"sqlFindProductObj..."<<product_id;
+    QSqlQuery query(m_db);
+    QString str = QString("SELECT * FROM vmc_product where productNo = '%1'")
+                            .arg(product_id);
+
+    bool ok = query.exec(str);
+    qDebug()<<"sqlFindProductObj...ok="<<ok<<str;
+    if(ok){
+        while(query.next()){
+
+            obj->id = product_id;
+            obj->name = query.value(4).toString();
+            obj->salePrice = query.value(11).toUInt(&ok);
+            qDebug()<<"sqlFindProductObj name="<<obj->name;
+            obj->buyNum = 1;
+            break;
+        }
+    }
+
+    if(obj->id  >  0){
+        //查找 商品绑定的货道
+        str = QString("SELECT * FROM vmc_column where productNo = '%1'")
+                                .arg(product_id);
+        ok = query.exec(str);
+        while(query.next()){
+            //选择第一个绑定的商品ID的货道
+            quint8 state = query.value(3).toUInt(&ok);
+            quint8 remain = query.value(5).toUInt(&ok);
+            if(state != 1 || remain == 0) //没货 或者货道故障 找下一个货道
+                continue;
+            ColumnObject *column = new ColumnObject();
+            column->bin = query.value(1).toUInt(&ok);
+            column->column = query.value(2).toUInt(&ok);
+            column->state = state;
+            column->remain = remain;
+            column->capacity = query.value(6).toUInt(&ok);
+            obj->columnList<<column;
+            qDebug()<<"sqlFindProductObj column="<<column->column;
+        }
+    }
+
+    if(!obj->id.isEmpty() && obj->columnList.count()){
+        return obj;
+    }
+    else{
+        delete obj;
+        return NULL;
+    }
+
+}
 
 ProductObject *VmSql::sqlFindProduct(const QString &product_id)
 {
     qDebug()<<"sqlFindProduct:"<<product_id;
-    int key = m_model->record().indexOf("productNo");
-    for(int i = 0;i < m_model->rowCount();i++)
+    QSqlQuery query(m_db);
+    QString str = QString("SELECT * FROM vmc_product where productNo = %1")
+                            .arg(product_id);
+    bool ok = query.exec(str);
+    if(query.next())
     {
-        QSqlRecord record = m_model->record(i);
-        QString producNo = record.value(key).toString();
-        bool ok;
-        if(producNo == product_id)//找到数据
-        {
-             ProductObject *productObj = new ProductObject();
-             productObj->id = producNo;
-             productObj->name = record.value("productName").toString();
-             quint32 priceInt = record.value("salesPrice").toUInt(&ok);
-             productObj->salePrice = priceInt;
-             productObj->buyNum++;
-
-             return productObj;
-        }
+        ProductObject *productObj = new ProductObject();
+        productObj->id = product_id;
+        productObj->name = query.value(4).toString();
+        productObj->salePrice = query.value(11).toUInt(&ok);
+        productObj->buyNum++;
+        return productObj;
     }
-
 
     return NULL;
 }

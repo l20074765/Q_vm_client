@@ -1,11 +1,20 @@
 import QtQuick 1.1
 import "../custom" as Custom
+import "../trade" as Trade
 Rectangle {
     width: 100
     height: 62
     visible: false
     signal goodsList_clicked()
-
+    onVisibleChanged: {
+        if(visible == true){
+            if(product_model.count != productManage.productCount){
+                console.log("商品列表不一致 重新获取商品");
+                mtProductClear();
+                mtProductCreat();
+            }
+        }
+    }
 
     // 2.商品列表区
     //主界面区域
@@ -107,20 +116,24 @@ Rectangle {
                          });
         var product = product_model.get(product_model.count - 1);
         product.product_index = product_model.count - 1;
-        console.log("创建商品:" + product);
+       // console.log("创建商品:" + product + product.product_index);
         return product;
     }
+
     function mtProductCreat(){
-        for(var i = 0;i < 1000;i++){
-            vmCreateProduct()
+        console.log("商品列表模型 " + productManage.productCount);
+        for(var i = 0;i < productManage.productCount;i++){
+            var productObj = productManage.getProductObjByIndex(i);
+            var product = vmCreateProduct();
+            product.product_id = productObj.id;
+            product.product_name = productObj.name;
+            product.product_price = productObj.salePriceStr;
         }
     }
 
     function mtProductClear(){
         product_model.clear();
     }
-
-
 
 
 }
