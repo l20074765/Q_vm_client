@@ -7,6 +7,8 @@ Custom.VMWidget {
     signal back_clicked()
     //商品组件数组
     property alias products:product_model.count
+    property ListModel product_listModel:product_model
+
     anchors.fill: parent
     onVisibleChanged: {
         if(visible == true){
@@ -66,6 +68,7 @@ Custom.VMWidget {
             model: product_model
             focus: true
             currentIndex: 0
+
         }
 
 

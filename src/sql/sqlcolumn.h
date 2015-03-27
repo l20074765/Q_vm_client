@@ -1,9 +1,9 @@
-#ifndef COLUMNOBJECT_H
-#define COLUMNOBJECT_H
+#ifndef SQLCOLUMN_H
+#define SQLCOLUMN_H
 
 #include <QObject>
 
-class ColumnObject : public QObject
+class SqlColumn : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(quint32 id READ getId)
@@ -11,8 +11,10 @@ class ColumnObject : public QObject
     Q_PROPERTY(quint32 state READ getState)
     Q_PROPERTY(QString productNo READ getProductNo)
 public:
-    explicit ColumnObject(QObject *parent = 0);
-    ~ColumnObject();
+    explicit SqlColumn(QObject *parent = 0);
+    ~SqlColumn();
+
+
     quint32 getId(){return id;}
     quint32 getBin(){return bin;}
     quint32 getState(){return state;}
@@ -26,9 +28,10 @@ public:
     quint32 remain;//余量
     quint32 capacity;//容量
     quint8  result;//出货结果
+
 signals:
 
 public slots:
 };
 
-#endif // COLUMNOBJECT_H
+#endif // SQLCOLUMN_H

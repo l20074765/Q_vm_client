@@ -1,7 +1,6 @@
 #include "vmcmainflow.h"
 #include <QtDebug>
-#include "productobject.h"
-#include "vmorder.h"
+#include "orderlist.h"
 
 VmcMainFlow  *mainThis = NULL;//定义全局main指针
 
@@ -9,7 +8,7 @@ VmcMainFlow  *mainThis = NULL;//定义全局main指针
 VmcMainFlow::VmcMainFlow(QObject *parent, const QString &portName)
     :QObject(parent),portName(portName)
 {
-    vmOrder = NULL;
+
     init();
     lib_ev.setFileName("libs/EVprotocol");
     if(lib_ev.load())
@@ -44,28 +43,100 @@ void VmcMainFlow::setVmcState(const int state)
 {
     qDebug()<<"VmcMainFlow::setVmcState"<<state;
     this->vmcState = state;
+    emit ActionSignal(QVariant((int)VMC_ACTION_STATE),QVariant((int)state));
 }
 
-void VmcMainFlow::vmcActionSlot(int type, QObject *obj)
+void VmcMainFlow::ActionSlot(QVariant type,QVariant obj)
 {
-    qDebug()<<"VmcMainFlow::vmcActionSlot"<<type<<obj;
+    qDebug()<<"VmcMainFlow::vmcActionSlot type="<<type<<" obj="<<obj;
     if(type == VMC_ACTION_TRADE){
-
-        vmOrder = qobject_cast<VmOrder *>(obj);
-        if(vmOrder == NULL){
-            qDebug()<<"VmcMainFlow::vmcActionSlot  vmOrder == NULL";
+        OrderList *orderList = qobject_cast<OrderList *>(obj.value<QObject *>());
+        if(orderList == NULL){
+            qDebug()<<"VmcMainFlow::vmcActionSlot  orderList == NULL";
             return;
         }
+        this->orderList = orderList;
         orderIndex = 0;
         orderColumnIndex = 0;
-        VmOrderObj *orderObj = vmOrder->getOrderObjByIndex(orderIndex);
-        if(orderObj && orderObj->columnList.count()){
-            ColumnObject *column = orderObj->columnList.at(orderColumnIndex);
-            vmcTrade(column->bin,column->column,1,0);
-        }
+        tradeFormOrder();
+
     }
 
 }
+
+
+void VmcMainFlow::tradeFormOrder()
+{
+    if(orderList->list.count() <= orderIndex){
+        qWarning()<<"VmcMainFlow::tradeFormOrder---orderList->list.count() < orderIndex"
+                 <<"orderList->list.count()="<<orderList->list.count()
+                <<" orderIndex="<<orderIndex;
+        return;
+    }
+    Order *order = orderList->list.at(orderIndex);
+
+    if(order == NULL || order->columnList.count() <= orderColumnIndex){
+        qWarning()<<"VmcMainFlow::tradeFormOrder---order->columnList.count() <= orderColumnIndex";
+        return;
+    }
+
+    for(int i = orderColumnIndex;i < order->columnList.count();i++){
+        SqlColumn *column = order->columnList.at(i);
+        if(column->state == 1 || column->remain > 0){
+            orderColumnIndex = i;
+            vmcTrade(column->bin,column->column,1,0);//发送出货命令
+            return;
+        }
+        else
+            continue;
+    }
+
+}
+
+
+void VmcMainFlow::tradeResultToOrder(int res)
+{
+    if(res == 0){
+        qWarning()<<"VmcMainFlow::tradeResultToOrder---res == 0";
+        QVariant var((int)VMC_ACTION_TRADE_FAIL);
+        emit ActionSignal(var,0);
+        return;
+    }
+    //出货成功继续出货
+    Order *order = orderList->list.at(orderIndex);
+    SqlColumn *column = order->columnList.at(orderColumnIndex);
+    if(order->buyNum)
+        order->buyNum--;
+    if(column->remain)
+        column->remain--;
+
+    //该商品还需出货
+    if(order->buyNum){
+        for(int i = orderColumnIndex;i < order->columnList.count();i++){
+            SqlColumn *tempColumn = order->columnList.at(i);
+            //该货道还有货继续出货
+            if(tempColumn->remain){
+                orderColumnIndex = i;
+                vmcTrade(tempColumn->bin,tempColumn->column,1,0);
+                break;
+            }
+        }
+    }
+    else{
+        //一个商品购买完成
+        if(orderIndex == (orderList->list.count() - 1))//出货完成
+        {
+            QVariant var((int)VMC_ACTION_TRADE_OK);
+            emit ActionSignal(var,0);
+        }
+        else{
+            orderIndex++;
+            orderColumnIndex = 0;
+            tradeFormOrder();
+        }
+    }
+}
+
 
 void VmcMainFlow::EV_callBackSlot(const quint8 type,const void *ptr)
 {
@@ -77,8 +148,6 @@ void VmcMainFlow::EV_callBackSlot(const quint8 type,const void *ptr)
         if(getVmcState() != s)
         {
             setVmcState(s);
-            vmcObj->state = s;
-            emit vmcActionSignal(VMC_ACTION_STATE,vmcObj);
         }
     }
     else if(type == EV_ENTER_MANTAIN)//
@@ -86,16 +155,12 @@ void VmcMainFlow::EV_callBackSlot(const quint8 type,const void *ptr)
         if(getVmcState() != EV_STATE_MANTAIN)
         {
            setVmcState(EV_STATE_MANTAIN);
-           vmcObj->state = EV_STATE_MANTAIN;
-           emit vmcActionSignal(VMC_ACTION_STATE,vmcObj);
         }
 
     }
     else if(type == EV_EXIT_MANTAIN)//推出维护
     {
-        setVmcState(EV_STATE_FAULT);
-        vmcObj->state = EV_STATE_FAULT;
-        emit vmcActionSignal(VMC_ACTION_STATE,vmcObj);
+        setVmcState(EV_STATE_FAULT);    
     }
     else if(type == EV_COLUMN_RPT)
     {
@@ -119,55 +184,21 @@ void VmcMainFlow::EV_callBackSlot(const quint8 type,const void *ptr)
     else if(type == EV_OFFLINE)//离线
     {
         setVmcState(EV_STATE_FAULT);
-        vmcObj->state = EV_STATE_FAULT;
-        emit vmcActionSignal(VMC_ACTION_STATE,vmcObj);
     }
     else if(type == EV_TRADE_RPT)//出货结果上报
     {
         ST_TRADE *trade = (ST_TRADE *)ptr;
         if(trade == NULL){
-            emit vmcActionSignal(VMC_ACTION_TRADE_FAIL,NULL);
+           // emit ActionSignal(VMC_ACTION_TRADE_FAIL,NULL);
+            tradeResultToOrder(0);
         }
         else{
             if(trade->result != 0){
-                emit vmcActionSignal(VMC_ACTION_TRADE_FAIL,NULL);
+                tradeResultToOrder(0);
+               // emit ActionSignal(VMC_ACTION_TRADE_FAIL,NULL);
             }
             else{
-                //出货成功继续出货
-                VmOrderObj *vmOrderObj = vmOrder->getOrderObjByIndex(orderIndex);
-                if(vmOrderObj->buyNum)
-                    vmOrderObj->buyNum--;
-                ColumnObject *column = vmOrderObj->columnList.at(orderColumnIndex);
-                if(column->remain)
-                    column->remain--;
-                //该商品还需出货
-                if(vmOrderObj->buyNum){
-                    for(int i = orderColumnIndex;i < vmOrderObj->columnList.count();i++){
-                        ColumnObject *tempColumn = vmOrderObj->columnList.at(i);
-                        //该货道还有货继续出货
-                        if(tempColumn->remain){
-                            orderColumnIndex = i;
-                            vmcTrade(tempColumn->bin,tempColumn->column,1,0);
-                            break;
-                        }
-                    }
-                }
-                else{
-                    //一个商品购买完成
-                    if(orderIndex == (vmOrder->getOrderCount() - 1))//出货完成
-                    {
-                        emit vmcActionSignal(VMC_ACTION_TRADE_OK,NULL);
-                    }
-                    else{
-                        orderIndex++;
-                        orderColumnIndex = 0;
-                        VmOrderObj *nextProduct = vmOrder->getOrderObjByIndex(orderIndex);
-                        if(nextProduct && nextProduct->columnList.count()){
-                            ColumnObject *column = nextProduct->columnList.at(orderColumnIndex);
-                            vmcTrade(column->bin,column->column,1,0);
-                        }
-                    }
-                }
+                tradeResultToOrder(1);
             }
         }
     }

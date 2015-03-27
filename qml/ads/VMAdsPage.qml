@@ -30,7 +30,7 @@ Rectangle {
         id: ads_image
         source: ads_path_str + ads_pic_str
         width: parent.width
-        height:parent.height*0.85
+        height:parent.height*0.9
         anchors{top:parent.top}
         fillMode: Image.PreserveAspectCrop
         clip: true //开启裁剪图像
@@ -39,7 +39,7 @@ Rectangle {
     VMVideo{
         id:vm_video
         width: parent.width
-        height: parent.height*0.85
+        height: parent.height*0.9
         anchors.fill: parent
         onVideo_finished:{
             console.log(qsTr("视频播放完毕"));
@@ -53,7 +53,7 @@ Rectangle {
         id:ads_bar
         source: "../../images/tool/bar-inservice.png"
         width: parent.width
-        height:parent.height*0.15
+        height:parent.height*0.1
         anchors{top:ads_image.bottom}
         fillMode: Image.PreserveAspectCrop
         clip: true //开启裁剪图像

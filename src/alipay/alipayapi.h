@@ -7,10 +7,10 @@
 #include "alipayconfig.h"
 #include <QThread>
 #include <QXmlStreamReader>
-#include "productobject.h"
 #include "alixmlobj.h"
 
 #include <QHash>
+#include <QVariant>
 class QTimer;
 class QNetworkReply;
 class QNetworkAccessManager;
@@ -45,9 +45,10 @@ public:
     QString picUrl;
 
 signals:
-    void aliActionSignal(int type,QObject *obj);
+    void aliActionSignal(QVariant type,QVariant obj);
 public slots:
-    void aliRequestSlot(int type,QObject *obj);
+    void aliActionSlot(QVariant type,QVariant obj);
+
     void timerout_ali_checked();
     void network_recved(QNetworkReply *reply); //支付http回应处理
 private:

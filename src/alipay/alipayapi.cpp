@@ -12,7 +12,7 @@
 #include <QFile>
 #include <QtDebug>
 
-#include "vmorder.h"
+#include "orderlist.h"
 #include "json.h"
 #include "qqrencode.h"
 
@@ -37,12 +37,13 @@ AlipayAPI::~AlipayAPI()
 }
 
 
-void AlipayAPI::aliRequestSlot(int type, QObject *obj)
+void AlipayAPI::aliActionSlot(QVariant type, QVariant obj)
 {
     qDebug()<<"AlipayAPI::aliRequestSlot"<<type<<obj;
     if(type == ALI_ACTION_TRADE_START)
-    {      
-         tradBegin(obj);
+    {
+        QObject *obj1 = obj.value<QObject *>();
+        tradBegin(obj1);
     }
     else if(type == ALI_ACTION_TRADE_CLEAR)
     {
@@ -85,7 +86,8 @@ void AlipayAPI::network_recved(QNetworkReply *reply)
     else
     {
         qDebug()<<"reply err!!!!";
-        emit aliActionSignal(ALI_ACTION_NETWORK_ERR,NULL);
+        QVariant var1((int)ALI_ACTION_NETWORK_ERR);
+        emit aliActionSignal(var1,0);
     }
 }
 
@@ -110,7 +112,9 @@ void AlipayAPI::aliResponseResolve(QHash<QString, QString> *xmlHash)
         qDebug()<<"预下单图片"<<str;
         this->picArr = str.toLower().toUtf8();
         qDebug()<<trUtf8("接收支付宝二维码图片:")<<QString(this->picArr);
-        emit aliActionSignal(ALI_ACTION_PIC_OK,this);
+        QVariant type((int)ALI_ACTION_PIC_OK);
+        QVariant var;
+        emit aliActionSignal(type,var);
         timer_check->start(3000);
     }
     else if(server == aliConfig->str_query)//查询订单
@@ -119,7 +123,8 @@ void AlipayAPI::aliResponseResolve(QHash<QString, QString> *xmlHash)
         if(trade_res == "TRADE_SUCCESS")//支付成功
         {
             timer_check->stop();
-            emit aliActionSignal(ALI_ACTION_TRADE_SUC,NULL);
+            QVariant type((int)ALI_ACTION_TRADE_SUC);
+            emit aliActionSignal(type,QVariant((int)0));
         }
         else if(trade_res == "TRADE_PENDING")//等待卖家收款
         {
@@ -128,7 +133,8 @@ void AlipayAPI::aliResponseResolve(QHash<QString, QString> *xmlHash)
         else if(trade_res == "TRADE_CLOSED")//交易关闭
         {
             timer_check->stop();
-            emit aliActionSignal(ALI_ACTION_TRADE_FAIL,NULL);
+            QVariant type((int)ALI_ACTION_TRADE_FAIL);
+            emit aliActionSignal(type,QVariant((int)0));
         }
         else if(trade_res == "WAIT_BUYER_PAY")//交易创建，等待买家付款。
         {
@@ -365,8 +371,8 @@ QMap<QString, QString> AlipayAPI::filterPara(const QMap<QString, QString> &mapAr
 //开始交易请求生成二维码
 void AlipayAPI::tradBegin(QObject *obj)
 {
-    VmOrder *order = qobject_cast<VmOrder *>(obj);
-    if(order == NULL) return;
+    OrderList *orderList = qobject_cast<OrderList *>(obj);
+    if(orderList == NULL) return;
 
     qDebug()<<"AlipayAPI:"<<trUtf8("当前线程:")<<QThread::currentThread();
     QMap<QString,QString> map;
@@ -381,23 +387,25 @@ void AlipayAPI::tradBegin(QObject *obj)
     //解析商品
     Json::Value jsonArr;
     quint64 totalPrice = 0;
-    quint32 count = order->getOrderCount();
-    for(int i = 0; i < count;i++)
-    {
-        VmOrderObj *product = order->getOrderObjByIndex(i);
-        if(product == NULL){
-            qDebug()<<"AlipayAPI::tradBegin product == NULL";
+
+    for(int i = 0;i < orderList->list.count();i++){
+        Order *order = orderList->list.at(i);
+        if(order == NULL){
+            qDebug()<<"AlipayAPI::tradBegin order == NULL";
             continue;
         }
         Json::Value jsonObj;
-        jsonObj["goodsName"] = product->name.toStdString();
-        QString quantStr = QString("%1").arg(product->buyNum);
+        jsonObj["goodsName"] = order->name.toStdString();
+        QString quantStr = QString("%1").arg(order->buyNum);
         jsonObj["quantity"] =  quantStr.toStdString();
-        QString priceStr = product->getSalePriceStr();
-        totalPrice += product->salePrice;
+        QString priceStr = order->getSalePriceStr();
+        totalPrice += order->salePrice;
         jsonObj["price"] = priceStr.toStdString();
         jsonArr.append(jsonObj);
     }
+
+
+
 
     QString jsonStr = QString::fromStdString(jsonArr.toStyledString());
     QString totalPriceStr = QString("%1.%2").arg(totalPrice / 100)

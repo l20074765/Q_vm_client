@@ -1,5 +1,4 @@
 #include<QTextCodec>
-#include "mainwindow.h"
 #include <QtDebug>
 #include <QDir>
 #include<QApplication>
@@ -7,6 +6,8 @@
 #include <stdlib.h>
 #include <QMutex>
 #include "custom.h"
+#include "mainflow.h"
+#include <QDateTime>
 QtMsgHandler systemMsgOutput = 0;
 
 //日志定位输出
@@ -69,8 +70,9 @@ int main(int argc,char *argv[])
     qDebug()<<QObject::trUtf8("测试日志输出")<<QT_VERSION_STR
            <<qApp->applicationVersion()<<app.applicationDirPath();
     app.addLibraryPath(app.applicationDirPath() + QString("/plugins"));
-    MainWindow window;
-    window.show();
+
+    MainFlow view;
+    view.show();
     return app.exec();
 }
 

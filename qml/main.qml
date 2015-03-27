@@ -11,8 +11,7 @@ Rectangle {
     anchors.fill: parent
     property Item curPage:vmFaultPage
     property Item lastPage:vmFaultPage
-    signal qmlActionSignal(int type,string req)
-
+    signal qmlActionSignal(variant type,variant obj)
 
     //1.广告页面
     Ads.VMAdsPage{
@@ -51,8 +50,8 @@ Rectangle {
             vmPayPage.vmPayAddProduct(p);
             vmPayPage.payqurePicSet(0);
             vmPageSwitch(vmPayPage);
-            qmlActionSignal(MainObject.QML_TYPE_GOODS_SELECT,p.product_id)
-            qmlActionSignal(MainObject.QML_TYPE_TRADE,p.product_id);
+            qmlActionSignal(MainFlow.QML_ACTION_ORDER_ADD,p.product_id)
+            qmlActionSignal(MainFlow.QML_ACTION_TRADE,p.product_id);
         }
         onBack_clicked: {
             vmPageSwitch(vmGoodsListPage);
@@ -94,7 +93,7 @@ Rectangle {
     MainTain.MTMain{
         id:vmMTMainPage
         anchors.fill: parent
-
+        goodsListItem:vmGoodsListPage
 
     }
 
@@ -110,38 +109,17 @@ Rectangle {
 
     //交互接口
     function vmcStatehandle(s){
-        console.log(qsTr("主控板状态切换 state= ") + s )
-        if(s == 2)//正常
-        {
+        console.log(qsTr("主页面切换 state=") + s )
+        if(s == 2){         //正常
             vmPageSwitch(vmAdsPage)
         }
-        else if(s == 4) //维护
-        {
+        else if(s == 4) {   //维护
             vmPageSwitch(vmMTMainPage);           
         }
-        else //故障
-        {
+        else{               //故障
             vmPageSwitch(vmFaultPage)
         }
         return 1;
-    }
-
-
-    function vmcproductAdd(){
-        var p =  productManage.getAddProductObj();
-        console.log("QML:vmcproductAdd\n" + p)
-        if(p == null)//商品不存在
-        {
-            console.log("获取商品不存在");
-            return
-        }
-        var product = vmGoodsListPage.vmCreateProduct();
-        product.product_name = p.name
-        product.product_id = p.id;
-        var s1 = p.salePrice / 100;
-        var s2 = p.salePrice % 100;
-        product.product_price =  p.salePriceStr;
-
     }
 
 
@@ -154,7 +132,7 @@ Rectangle {
     //支付结果
     function tradeResult(res){
         console.log("支付结果上报:" + res);
-        if(res == 1){ //支付成功
+        if(res == MainFlow.QML_TRADE_OK){ //支付成功
             vmTradeoutPage.resultStr = "出货成功"
             vmPageSwitch(vmTradeoutPage);
         }
@@ -165,11 +143,11 @@ Rectangle {
 
     function payResult(res){
         console.log("支付结果上报:" + res);
-        if(res == MainObject.QML_PAYOUT_SUC){ //支付成功
+        if(res == MainFlow.QML_PAYOUT_SUC){ //支付成功
             vmTradeoutPage.resultStr = "正在出货"
             vmPageSwitch(vmTradeoutPage);
         }
-        else if(res == MainObject.QML_PAYOUT_NET_ERR){
+        else{
             vmPageSwitch(vmTradeFailPage);
         }
     }
@@ -183,38 +161,53 @@ Rectangle {
 
     }
 
-
     function vmTradeClear(){
         vmPayPage.listViewClear();
-        vm.qmlActionSlot(MainObject.QML_TYPE_TRADE_CLEAR,"");
+        //vm.qmlActionSlot(MainObject.QML_TYPE_TRADE_CLEAR,"");
     }
-
 
     //qml负责与C++通信的槽函数入口
-    function qmlActionSlot(type,s){
-        console.log(qsTr("QML-qmlActionSlot:") + "type = " + type + " s = " + s);
-
-        if(type == MainObject.QML_TYPE_PRODUCT_ADD){
-            vmcproductAdd();
+    function qmlActionSlot(type,obj){
+        console.log(qsTr("处理QML请求:") + "type = " + type + " s = " + obj);
+        if(type == MainFlow.QML_VMC_STATE){
+            vmcStatehandle(obj);
         }
-        else if(type == MainObject.QML_TYPE_VMC_STATE){
-            vmcStatehandle(s);
+        else if(type == MainFlow.QML_SQL_PRODUCT_ADD){
+            vmcproductAdd(obj);
         }
-        else if(type == MainObject.QML_TYPE_PIC_OK){
+        else if(type == MainFlow.QML_SQL_COLUMN_ADD){
+            vmMTMainPage.sqlActionSlot(type,obj);
+        }
+        else if(type == MainFlow.QML_ALI_PIC_OK){
             alipay_pic_ok(s);
         }
-        else if(type == MainObject.QML_TYPE_PAYOUT){
-            payResult(s);
+        else if(type == MainFlow.QML_PAYOUT_TYPE){
+            payResult(obj);
         }
-        else if(type == MainObject.QML_TYPE_TRADE_OK){
-            tradeResult(1);
+        else if(type == MainFlow.QML_TRADE_TYPE){
+            tradeResult(obj);
         }
-        else if(type == MainObject.QML_TYPE_TRADE_FAIL){
-            tradeResult(0);
-        }
-
-
     }
+
+    //新增商品
+    function vmcproductAdd(obj){
+        for(var i = 0;i < obj.size;i++){
+            var product = obj.at(i);
+            console.log("提取商品"  + product);
+            if(product == null){
+                console.log("获取商品不存在");
+                continue;
+            }
+            var p = vmGoodsListPage.vmCreateProduct();
+            p.product_name = product.name;
+            p.product_id = product.id;
+            p.product_price =  product.salePriceStr;
+            product.obj_destroy();
+        }
+        obj.queueClear();
+    }
+
+
 
 }
 

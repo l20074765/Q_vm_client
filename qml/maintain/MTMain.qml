@@ -4,19 +4,23 @@ import "../trade" as Trade
 Custom.VMWidget{
     id:mtMainTainPagRect
     anchors.fill:parent
+
+    signal sqlActionSignal(variant type,variant obj)
+
     property Item curPage: mtMainTainPage
     property Item lastPage: mtMainTainPage
 
 
+    property Item  goodsListItem:null
+
     onVisibleChanged: {
-        if(visible == true){            
-            mtTradeManagePage.mtTrade_productCreate();
-            mtTradeManagePage.mtTrade_columnCreate();
+        if(visible == true){
+            console.log("维护主页面显示:" + goodsListItem)
+            mtTradeManagePage.mtTrade_productCreate(goodsListItem);
             vmPageSwitch(mtMainTainPage);
         }
         else{
             mtTradeManagePage.mtTrade_productClear();
-            mtTradeManagePage.mtTrade_columnClear();
         }
     }
 
@@ -124,6 +128,14 @@ Custom.VMWidget{
         mtMainTainPagRect.lastPage.visible = false
         mtMainTainPagRect.curPage.visible = true
 
+    }
+
+
+
+    function sqlActionSlot(type,obj){
+        console.log("后台维护操作SQL:" + "type=" + type + " obj=" + obj);
+
+        mtTradeManagePage.columnPage.columnCreate(obj)
     }
 
 

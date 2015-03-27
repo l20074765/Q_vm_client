@@ -4,15 +4,6 @@ Rectangle {
     width: 100
     height: 62
     visible: false
-    onVisibleChanged: {
-        if(visible == true){
-            if(product_model.count != columnManage.columnCount){
-                product_model.clear();
-                columnCreate();
-            }
-        }
-    }
-
     // 2.货道管理展示区域
     //主界面区域
     Rectangle{
@@ -61,8 +52,8 @@ Rectangle {
             width: parent.width
             height: parent.height
             anchors.fill: parent
-            property real cellW: (parent.width) / 10.0
-            property real cellH: (parent.height) / 12.0
+            property real cellW: (parent.width) / 4.0
+            property real cellH: (parent.height) / 4.0
             cellWidth: cellW
             cellHeight: cellH
             flickableDirection:Flickable.VerticalFlick
@@ -112,19 +103,19 @@ Rectangle {
                          });
         var column = product_model.get(product_model.count - 1);
         column.product_index = product_model.count - 1;
-       // console.log("创建商品:" + product + product.product_index);
         return column;
     }
 
-    function columnCreate(){
-        console.log("货道列表模型 " + columnManage.columnCount);
-        for(var i = 0;i < columnManage.columnCount;i++){
-            var col = columnManage.getColumnObjByIndex(i);
+    function columnCreate(obj){
+        console.log("货道列表模型" + "obj="+ obj + " count=" + obj.size);
+        for(var i = 0;i < obj.size;i++){
+            var col = obj.at(i);
+            console.log("提取货道" + "col=" + col);
             var column = vmCreateColumn();
             column.column_id = col.id % 1000;
-            console.log("id=" + col.id + "state:" + col.state);
             column.column_state = col.state;
         }
+        obj.queueClear();
     }
 
     function columnClear(){

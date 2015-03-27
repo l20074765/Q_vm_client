@@ -4,20 +4,21 @@
 #include <QObject>
 #include <QLibrary>
 #include "EVprotocol.h"
-#include <QVariant>
 #include "vmcobj.h"
+#include <QVariant>
 
-
-class VmOrder;
+class OrderList;
 
 class VmcMainFlow : public QObject
 {
     Q_OBJECT
+
+    Q_ENUMS(VmcEnumType)
 public:
     explicit VmcMainFlow(QObject *parent = 0,const QString &portName = "COM1");
     ~VmcMainFlow();
 
-    enum{
+    enum VmcEnumType{
         VMC_ACTION_STATE = 0, //状态变化
         VMC_ACTION_TRADE,
         VMC_ACTION_TRADE_FAIL,
@@ -37,11 +38,11 @@ signals:
     void EV_callBackSignal(const quint8 type,const void *ptr);
 
 
-    void vmcActionSignal(int type,QObject *obj);
+    void ActionSignal(QVariant type,QVariant obj);
 public slots:
     void EV_callBackSlot(const quint8 type,const void *ptr);
 
-    void vmcActionSlot(int type,QObject *obj);
+    void ActionSlot(QVariant type,QVariant obj);
 
     void EV_start_slot();
 private:
@@ -57,9 +58,16 @@ private:
 
     VmcObj *vmcObj;
 
-    VmOrder *vmOrder;
-    quint32 orderIndex;
-    quint32 orderColumnIndex;
+
+    int orderIndex;
+    int orderColumnIndex;
+
+
+
+
+    OrderList *orderList;
+    void tradeFormOrder();
+    void tradeResultToOrder(int res);
 
 };
 

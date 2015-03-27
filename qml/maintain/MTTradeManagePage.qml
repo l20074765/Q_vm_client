@@ -7,6 +7,9 @@ Rectangle {
     visible: false
     property Item curPage: mtTrade_mainPage
     property Item lastPage: mtTrade_mainPage
+
+
+    property MTColumnPage columnPage: mtTrade_columnPage
     // 1. 交易管理主页
     Rectangle{
         id:mtTrade_mainPage
@@ -129,16 +132,11 @@ Rectangle {
         mtTrade_productPage.mtProductClear();
     }
 
-    function mtTrade_productCreate(){
+    function mtTrade_productCreate(goodsListItem){
 
-        mtTrade_productPage.mtProductCreat();
+        mtTrade_productPage.mtProductCreat(goodsListItem);
     }
-    function mtTrade_columnCreate(){
-        mtTrade_columnPage.columnCreate();
-    }
-    function mtTrade_columnClear(){
-        mtTrade_columnPage.columnClear();
-    }
+
 
 }
 

@@ -1,21 +1,20 @@
-#ifndef PRODUCTOBJECT_H
-#define PRODUCTOBJECT_H
+#ifndef SQLPRODUCT_H
+#define SQLPRODUCT_H
 
 #include <QObject>
-#include <QMetaType>
 
-
-
-class ProductObject: public QObject
+class SqlProduct : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString id READ getId WRITE setId NOTIFY idChanged)
+    Q_PROPERTY(QString id READ getId WRITE setId)
     Q_PROPERTY(QString name READ getName WRITE setName)
     Q_PROPERTY(QString salePriceStr READ getSalePriceStr)
     Q_PROPERTY(quint32 salePrice READ getSalePrice WRITE setSalePrice)
 public:
-    explicit ProductObject(QObject *parent = 0);
-    ~ProductObject();
+    explicit SqlProduct(QObject *parent = 0);
+    ~SqlProduct();
+
+
 
     QString getId(){return id;}
     void setId(const QString &id){this->id = id;}
@@ -26,24 +25,19 @@ public:
     quint32 getSalePrice(){return salePrice;}
     void setSalePrice(const quint32 &salePrice){this->salePrice = salePrice;}
 
+
+
+
+
     QString id;
     QString name;
     quint32 salePrice;
     quint32 buyNum;//购买数量
-
 signals:
-    void idChanged();
+
 public slots:
-
-private:
-
+    void obj_destroy();
 
 };
 
-
-
-
-
-
-
-#endif // PRODUCTOBJECT_H
+#endif // SQLPRODUCT_H

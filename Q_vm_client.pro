@@ -42,12 +42,8 @@ QML_IMPORT_PATH += $$PWD/plugins  \
 
 SOURCES += \
     src/main.cpp \
-    src/mainwindow.cpp \
     src/custom.cpp \
-    src/mainobject.cpp \
     src/vmc/vmcmainflow.cpp \
-    src/sql/productobject.cpp \
-    src/sql/vmsql.cpp \
     src/alipay/alipayapi.cpp \
     src/alipay/alipayconfig.cpp \
     src/jsoncpp/json_internalarray.inl \
@@ -61,22 +57,20 @@ SOURCES += \
     src/alipay/qrenwidget.cpp \
     src/alipay/qrenpixwidget.cpp \
     src/setting.cpp \
-    src/sql/productmanage.cpp \
-    src/sql/columnmanage.cpp \
-    src/sql/columnobject.cpp \
     src/vmc/vmcobj.cpp \
-    src/sql/productselectobj.cpp \
-    src/sql/vmorderobj.cpp \
-    src/sql/vmorder.cpp
+    src/sql/vmsqlite.cpp \
+    src/sql/sqlproduct.cpp \
+    src/sql/sqlproductlist.cpp \
+    src/mainflow.cpp \
+    src/sql/sqlcolumn.cpp \
+    src/sql/sqlcolumnlist.cpp \
+    src/sql/order.cpp \
+    src/sql/orderlist.cpp
 
 HEADERS += \
-    src/mainwindow.h \
     src/vmc/EVprotocol.h \
     src/custom.h \
-    src/mainobject.h \
     src/vmc/vmcmainflow.h \
-    src/sql/productobject.h \
-    src/sql/vmsql.h \
     src/alipay/alipayapi.h \
     src/alipay/alipayconfig.h \
     src/jsoncpp/autolink.h \
@@ -93,13 +87,15 @@ HEADERS += \
     src/alipay/qrenwidget.h \
     src/alipay/qrenpixwidget.h \
     src/setting.h \
-    src/sql/productmanage.h \
-    src/sql/columnmanage.h \
-    src/sql/columnobject.h \
     src/vmc/vmcobj.h \
-    src/sql/productselectobj.h \
-    src/sql/vmorderobj.h \
-    src/sql/vmorder.h
+    src/sql/vmsqlite.h \
+    src/sql/sqlproduct.h \
+    src/sql/sqlproductlist.h \
+    src/mainflow.h \
+    src/sql/sqlcolumn.h \
+    src/sql/sqlcolumnlist.h \
+    src/sql/order.h \
+    src/sql/orderlist.h
 
 
 DISTFILES += \
