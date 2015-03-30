@@ -161,7 +161,7 @@ void MainFlow::qmlActionSlot(QVariant type, QVariant obj)
         vmsqlite->addOrder(productId,orderList);
     }
     else if(mt == QML_ACTION_TRADE){
-        QVariant type((int)VMSqlite::SQL_ORDER_MAKE);
+        QVariant type((int)AlipayAPI::ALI_ACTION_TRADE_START);
         QVariant obj1;
         obj1.setValue(((QObject *)orderList));
         emit aliActionSignal(type,obj1);//先从数据提取完整订单

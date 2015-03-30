@@ -82,6 +82,7 @@ void VmcMainFlow::tradeFormOrder()
 
     for(int i = orderColumnIndex;i < order->columnList.count();i++){
         SqlColumn *column = order->columnList.at(i);
+        qDebug()<<tr("出货货道:")<<column->id;
         if(column->state == 1 || column->remain > 0){
             orderColumnIndex = i;
             vmcTrade(column->bin,column->column,1,0);//发送出货命令
@@ -249,6 +250,7 @@ void VmcMainFlow::EV_start_slot()
 
 int VmcMainFlow::vmcTrade(int cabinet, int column, int type, long cost)
 {
+    qDebug()<<tr("出货命令:")<<"cabinet="<<cabinet<<" column="<<column;
     typedef int (*EV_trade)(int , int , int , long );
     EV_trade trade = (EV_trade)lib_ev.resolve("EV_trade");
     if(trade)

@@ -374,7 +374,6 @@ void AlipayAPI::tradBegin(QObject *obj)
     OrderList *orderList = qobject_cast<OrderList *>(obj);
     if(orderList == NULL) return;
 
-    qDebug()<<"AlipayAPI:"<<trUtf8("当前线程:")<<QThread::currentThread();
     QMap<QString,QString> map;
     //接口名称
     str_cur_ali_type = aliConfig->str_precreate;
@@ -387,6 +386,7 @@ void AlipayAPI::tradBegin(QObject *obj)
     //解析商品
     Json::Value jsonArr;
     quint64 totalPrice = 0;
+
 
     for(int i = 0;i < orderList->list.count();i++){
         Order *order = orderList->list.at(i);

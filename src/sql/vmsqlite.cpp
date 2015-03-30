@@ -113,11 +113,12 @@ void VMSqlite::checkTableColumn()
         column->bin = column->id / 1000;
         column->column = column->id % 1000;
         column->state = query.value(3).toUInt(&ok);
-        column->productNo = query.value(4).toUInt(&ok);
-        qDebug()<<"VMSqlite::checkTableColumn column:"<<column;
+        column->productNo = query.value(4).toString();
+        qDebug()<<"VMSqlite::checkTableColumn column:"<<column<<column->productNo;
         columnList->hash.insert(column->id,column);
         columnList->queue<<column;
         columnList->multiHash.insert(column->productNo,column);
+
     }
 
     emit sqlActionSignal(SQL_COLUMN_ADD,(QObject *)columnList);
@@ -258,7 +259,6 @@ void VMSqlite::addOrder(const QString &productId, OrderList *orderList)
 
 
     SqlProduct *product = productList->hashValue(productId);
-    return;
     if(product == NULL){
         qWarning()<<tr("VMSqlite::addOrder---product == NULL");
         return;

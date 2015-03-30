@@ -168,7 +168,7 @@ Rectangle {
 
     //qml负责与C++通信的槽函数入口
     function qmlActionSlot(type,obj){
-        console.log(qsTr("处理QML请求:") + "type = " + type + " s = " + obj);
+        console.log(qsTr("处理QML请求:") + "type = " + type + " obj = " + obj);
         //console.log("QML当前线程:" + Qt.)
         if(type == MainFlow.QML_VMC_STATE){
             vmcStatehandle(obj);
@@ -180,7 +180,7 @@ Rectangle {
             vmMTMainPage.sqlActionSlot(type,obj);
         }
         else if(type == MainFlow.QML_ALI_PIC_OK){
-            alipay_pic_ok(s);
+            alipay_pic_ok(obj);
         }
         else if(type == MainFlow.QML_PAYOUT_TYPE){
             payResult(obj);
