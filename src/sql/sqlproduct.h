@@ -36,7 +36,7 @@ public:
 signals:
 
 public slots:
-    void obj_destroy();
+   // void obj_destroy();
 
 };
 

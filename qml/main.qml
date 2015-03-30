@@ -34,7 +34,7 @@ Rectangle {
         onGoodsList_clicked: {
             var p = vmGoodsListPage.vmGetCurProductItem()
             vmTransactionPage.setGoodsInfo(p)
-            console.log("进入交易界面" + p);
+            console.log("进入交易界面 " + p);
             vmPageSwitch(vmTransactionPage);
         }
         onBack_clicked: {
@@ -169,6 +169,7 @@ Rectangle {
     //qml负责与C++通信的槽函数入口
     function qmlActionSlot(type,obj){
         console.log(qsTr("处理QML请求:") + "type = " + type + " s = " + obj);
+        //console.log("QML当前线程:" + Qt.)
         if(type == MainFlow.QML_VMC_STATE){
             vmcStatehandle(obj);
         }
@@ -191,8 +192,9 @@ Rectangle {
 
     //新增商品
     function vmcproductAdd(obj){
-        for(var i = 0;i < obj.size;i++){
-            var product = obj.at(i);
+        var productList = obj;
+        for(var i = 0;i < productList.size;i++){
+            var product = productList.at(i);
             console.log("提取商品"  + product);
             if(product == null){
                 console.log("获取商品不存在");
@@ -202,9 +204,8 @@ Rectangle {
             p.product_name = product.name;
             p.product_id = product.id;
             p.product_price =  product.salePriceStr;
-            product.obj_destroy();
         }
-        obj.queueClear();
+        productList.queueClear();
     }
 
 

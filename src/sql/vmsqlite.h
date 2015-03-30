@@ -36,11 +36,14 @@ public:
 
 
     void addOrder(const QString &productId,OrderList *orderList);
+
+    SqlProductList *getSqlProductList(){return this->productList;}
+    SqlColumnList *getSqlColumnList(){return this->columnList;}
 signals:
-    void sqlActionSignal(QVariant type,QVariant obj);
+    void sqlActionSignal(int type,QObject *obj);
 
 public slots:
-    void sqlActionSlot(QVariant type,QVariant obj);
+    void sqlActionSlot(int type,QObject * obj);
 private:
     QSqlDatabase m_db;
     bool sqlConnected;

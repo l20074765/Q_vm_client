@@ -1,11 +1,13 @@
 #include "vmsqlite.h"
 #include <QtDebug>
 
+
 VMSqlite::VMSqlite(QObject *parent) : QObject(parent)
 {
     sqlConnected = false;
     productList = new SqlProductList(this);
     columnList = new SqlColumnList(this);
+
 }
 
 VMSqlite::~VMSqlite()
@@ -15,12 +17,10 @@ VMSqlite::~VMSqlite()
 
 
 //启动数据库
-void VMSqlite::sqlActionSlot(QVariant type,QVariant obj)
+void VMSqlite::sqlActionSlot(int type,QObject *obj)
 {
-
-    int mt = type.value<int>();
-    qDebug()<<trUtf8("数据库线程操作")<<" type="<<type<<" obj="<<obj
-           <<QThread::currentThread()<<"mt="<<mt;
+    qDebug()<<trUtf8("数据库线程操作")<<" type="<<type<<" obj="<<obj;
+    int mt = type;
     if(mt == SQL_START)
     {
         sqlStart();
@@ -88,18 +88,17 @@ void VMSqlite::checkTableProduct()
     while(query.next()){
         bool ok;
        // QString id = query.value(0).toString();
-        SqlProduct *product = new SqlProduct();
+        SqlProduct *product = new SqlProduct(0);
         product->id = query.value(1).toString();
         product->name = query.value(4).toString();
         product->salePrice = query.value(6).toUInt(&ok);
         qDebug()<<"VMSqlite::checkTableProduct...obj="<<product;
-        productList->hash.insert(product->id,product);
+        productList->hashInsert(product->id,product);
         productList->queue.append(product);
     }
-    QObject *obj = productList;
-    QVariant var;
-    var.setValue(obj);
-    emit sqlActionSignal(QVariant((int)SQL_PRODUCT_ADD),var);
+
+    emit sqlActionSignal(SQL_PRODUCT_ADD,(QObject *)productList);
+
 }
 
 void VMSqlite::checkTableColumn()
@@ -120,10 +119,8 @@ void VMSqlite::checkTableColumn()
         columnList->queue<<column;
         columnList->multiHash.insert(column->productNo,column);
     }
-    QVariant type((int)SQL_COLUMN_ADD);
-    QVariant var;
-    var.setValue((QObject *)columnList);
-    emit sqlActionSignal(type,var);
+
+    emit sqlActionSignal(SQL_COLUMN_ADD,(QObject *)columnList);
 
 }
 
@@ -132,7 +129,7 @@ void VMSqlite::sqlStart()
     if(openSqlDatabase("vmc"))
     {
         sqlConnected = true;
-        emit sqlActionSignal(QVariant((int)SQL_CONNECT_OK) ,QVariant((int)0));
+        emit sqlActionSignal(SQL_CONNECT_OK ,NULL);
         createTableProduct();
         createTableColumn();
 
@@ -141,7 +138,7 @@ void VMSqlite::sqlStart()
     }
     else
     {
-        emit sqlActionSignal(QVariant((int)SQL_CONNECT_FAIL) ,QVariant((int)0));
+        emit sqlActionSignal(SQL_CONNECT_FAIL ,NULL);
     }
 }
 
@@ -243,6 +240,9 @@ bool VMSqlite::createTableColumn()
 
 void VMSqlite::addOrder(const QString &productId, OrderList *orderList)
 {
+    qDebug()<<"VMSqlite::addOrder--"<<"productId=="<<productId<<
+              " orderList="<<orderList;
+
     QList<Order *> list = orderList->list;
     for(int i = 0;i < list.count();i++){
         Order *order = list.at(i);
@@ -251,20 +251,20 @@ void VMSqlite::addOrder(const QString &productId, OrderList *orderList)
             return;
         }
     }
-
     //新添加商品
-    Order *order = new Order(orderList);
+    Order *order = new Order();
     order->buyNum = 1;
     order->id = productId;
 
-    SqlProduct *product = productList->hash.value(productId);
+
+    SqlProduct *product = productList->hashValue(productId);
+    return;
     if(product == NULL){
         qWarning()<<tr("VMSqlite::addOrder---product == NULL");
         return;
     }
     order->name = product->name;
     order->salePrice = product->salePrice;
-
     //绑定货道
     order->columnList.clear();
     order->columnList = columnList->multiHash.values(productId);

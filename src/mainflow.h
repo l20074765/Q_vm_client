@@ -9,11 +9,7 @@
 #include "orderlist.h"
 #include <QVariant>
 
-class QDeclarativeView;
-class QDeclarativeContext;
-class QDeclarativeItem;
 
-class QGraphicsObject;
 
 class MainFlow : public QObject
 {
@@ -37,6 +33,7 @@ public:
         QML_ALI_PIC_OK,
         QML_PAYOUT_TYPE,
         QML_TRADE_TYPE,
+        QML_MAINFLOW_START,
         QML_DEFAULT
     };
 
@@ -55,29 +52,23 @@ public:
 
     QStringList getAdsFileList();
 
-
-    void addOrder(const QString &productId);
-
-    void show();
+    VMSqlite *getVMSqlite(){return this->vmsqlite;}
+protected:
+    void init();
 signals:
     void qmlActionSignal(QVariant type,QVariant obj);
 
     void vmcActionSignal(QVariant type,QVariant obj);
-    void sqlActionSignal(QVariant type,QVariant obj);
+    void sqlActionSignal(int type,QObject *obj);
     void aliActionSignal(QVariant type,QVariant obj);
 public slots:
     void obj_destroy();
     void qmlActionSlot(QVariant type,QVariant obj);
 
     void vmcActionSlot(QVariant type,QVariant obj);
-    void sqlActionSlot(QVariant type,QVariant obj);
+    void sqlActionSlot(int type,QObject *obj);
     void aliActionSlot(QVariant type,QVariant obj);
 private:
-    QDeclarativeItem *mainItem;
-    QDeclarativeContext *context;
-    QDeclarativeView *view;
-
-
 
     //主控板通信接口类
     VmcMainFlow *vmcMainFlow;
@@ -85,15 +76,14 @@ private:
 
     //sqlite数据库接口类
     VMSqlite *vmsqlite;
-    QThread *sqlThread;//数据库线程类
 
     //订单管理类
     OrderList *orderList;
 
 
-    //支付宝类接口以及线程
+    //支付宝类接口
     AlipayAPI *alipayApi;
-    QThread *alipayThread;
+
 
 };
 

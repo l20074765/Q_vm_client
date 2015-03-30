@@ -23,10 +23,6 @@ QString SqlProduct::getSalePriceStr()
 }
 
 
-void SqlProduct::obj_destroy()
-{
-    //qDebug()<<"SqlProduct::obj_destroy..this="<<this;
-    delete this;
-}
+
 
 

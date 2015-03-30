@@ -7,7 +7,6 @@ TEMPLATE = app
 VERSION = 1.1.1
 TARGET = vmclient
 
-
 UI_DIR =$$PWD/build/ui
 MOC_DIR=$$PWD/build/moc
 OBJECTS_DIR=$$PWD/build/obj
@@ -65,7 +64,8 @@ SOURCES += \
     src/sql/sqlcolumn.cpp \
     src/sql/sqlcolumnlist.cpp \
     src/sql/order.cpp \
-    src/sql/orderlist.cpp
+    src/sql/orderlist.cpp \
+    src/mainview.cpp
 
 HEADERS += \
     src/vmc/EVprotocol.h \
@@ -95,7 +95,8 @@ HEADERS += \
     src/sql/sqlcolumn.h \
     src/sql/sqlcolumnlist.h \
     src/sql/order.h \
-    src/sql/orderlist.h
+    src/sql/orderlist.h \
+    src/mainview.h
 
 
 DISTFILES += \

@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <QMutex>
 #include "custom.h"
-#include "mainflow.h"
+#include "mainview.h"
 #include <QDateTime>
 QtMsgHandler systemMsgOutput = 0;
 
@@ -71,7 +71,7 @@ int main(int argc,char *argv[])
            <<qApp->applicationVersion()<<app.applicationDirPath();
     app.addLibraryPath(app.applicationDirPath() + QString("/plugins"));
 
-    MainFlow view;
+    MainView view;
     view.show();
     return app.exec();
 }
