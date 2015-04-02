@@ -3,6 +3,7 @@ QT+=declarative
 QT += phonon
 CONFIG += release warn_on
 
+
 TEMPLATE = app
 VERSION = 1.1.1
 TARGET = vmclient
@@ -124,7 +125,13 @@ DISTFILES += \
     qml/maintain/MTTradeManagePage.qml \
     qml/maintain/MTDeviceManagePage.qml \
     qml/maintain/MTSystemManagePage.qml \
-    qml/maintain/MTProductDetailPage.qml
+    qml/maintain/MTProductDetailPage.qml \
+    qml/maintain/MTColumn/Column.js \
+    qml/maintain/MTColumn/MyButton.qml \
+    qml/maintain/MTColumn/VMCabinet.qml \
+    qml/maintain/MTColumn/VMColumn.qml \
+    qml/maintain/MTColumn/VMColumnEdit.qml \
+    qml/maintain/MTColumn/VMColumnText.qml
 
 
 

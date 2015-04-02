@@ -1,70 +1,12 @@
 import QtQuick 1.1
-
+import "MTColumn" as MTColumn
+import "./MTColumn/Column.js" as Column
 Rectangle {
+    id:window
     width: 100
     height: 62
     visible: false
     // 2.货道管理展示区域
-    //主界面区域
-    Rectangle{
-        id:main_rect
-        width: parent.width
-        height: parent.height * 0.95
-        anchors{
-            top:title.bottom
-            topMargin: 5
-        }
-        //定义列表组件
-        Component{
-            id:product_delegate
-            Rectangle{
-                id:product_rect
-                width: product_gridView.cellW
-                height: product_gridView.cellH
-                Rectangle{
-                    width: parent.width * 0.8
-                    height:parent.height * 0.8
-                    anchors.centerIn: parent
-                    border{
-                        color: "gray"
-                        width: 1
-                    }
-                    color: (column_state == 1) ? "blue": (column_state == 3 ? "yellow": "red")
-                    opacity: 0.9
-                    Text {
-                        anchors.centerIn: parent
-                        text: column_id
-                        opacity: 0.4
-                        font{
-                            pixelSize: 12
-                            bold: true
-                        }
-                    }
-                }
-            }
-        }
-        ListModel{
-            id:product_model
-        }
-        //商品列表框
-        GridView{
-            id:product_gridView
-            width: parent.width
-            height: parent.height
-            anchors.fill: parent
-            property real cellW: (parent.width) / 4.0
-            property real cellH: (parent.height) / 4.0
-            cellWidth: cellW
-            cellHeight: cellH
-            flickableDirection:Flickable.VerticalFlick
-            delegate: product_delegate
-            model: product_model
-            focus: true
-            currentIndex: 0
-        }
-    }
-
-
 
     // 1.标题栏
     Rectangle{
@@ -75,6 +17,7 @@ Rectangle {
             top:parent.top
             topMargin: 0
         }
+        z:5
         border{
             color: "gray"
             width: 1
@@ -96,23 +39,133 @@ Rectangle {
         }
     }
 
-    function vmCreateColumn(){
-        product_model.append({
-                          "column_id": 1,
-                          "column_state":1,
-                         });
-        var column = product_model.get(product_model.count - 1);
-        column.product_index = product_model.count - 1;
-        return column;
+
+    //主界面区域
+    Rectangle{
+        id:main_rect
+        width: parent.width
+        height: parent.height * 0.95
+        anchors{
+            top:title.bottom
+        }
+        //主界面
+        Rectangle {
+            id: listView_rect
+            anchors.fill: parent
+            z:3
+            Rectangle{
+                id:cabinet_rect
+                width: parent.width
+                height: parent.height * 0.95
+                anchors.top:parent.top
+                z:1
+                ListView{
+                    id:listView
+                    anchors.fill: parent
+                    model: listModel
+                    delegate:list_delegate
+                    snapMode: ListView.SnapToItem
+                    spacing: 1
+                    orientation: ListView.Horizontal
+                    boundsBehavior: Flickable.StopAtBounds
+                    flickDeceleration: 5000  //滑动速度
+                    onMovementEnded:{
+                        console.log("onMovementEnded--触发");
+                        var i = indexAt(contentX,contentY);
+                        if(i != -1 && i != listView.currentIndex){
+                            listView.currentIndex = i;
+                        }
+                    }
+                    onMovementStarted: {
+                        console.log("onMovementStarted--触发");
+                    }
+                }
+                ListModel{
+                    id:listModel
+
+                }
+
+                Component{
+                    id:list_delegate
+                    MTColumn.VMCabinet{
+                        width: listView.width
+                        height: listView.height
+                        property int num: num
+                    }
+                }
+
+            }
+
+            //工具栏界面
+            Rectangle{
+                id:go_rect
+                width: parent.width
+                height: parent.height * 0.05
+                anchors{
+                    bottom: parent.bottom
+                }
+                z:3
+                //color: "transparent"
+                color:"gray"
+                visible: true
+                Row{
+                    anchors.centerIn: parent
+                    spacing: 10
+                    Image {
+                        id: go_previous_image
+                        source: "../../images/tool/go-previous.png"
+                    }
+                    Text {
+                        id: go_text
+                        text: (listView.currentIndex + 1) + "/" + listView.count
+                        font{
+                            bold: true
+                            pixelSize: go_rect.width * 0.08
+                        }
+                        color: "blue"
+                    }
+                    Image {
+                        id: go_next_image
+                        source: "../../images/tool/go-next.png"
+                    }
+                }
+                Timer{
+                    id:go_timer
+                    interval: 3000; running: false; repeat: true
+                    onTriggered:{
+                        go_timer.stop();
+                        go_rect.visible = false;
+                    }
+                }
+            }
+        }
     }
+
+
+
+
+
+    function createCabinet(no){
+        if(listView.count < no){
+            listModel.append({"num":no})
+            listView.cacheBuffer += listView.width
+            console.log("创建柜子 count="  + listModel.count + " cacheBuffer:" +
+                        listView.cacheBuffer)
+        }
+
+        listView.currentIndex = no - 1;
+        return listView.currentItem;
+    }
+
 
     function columnCreate(obj){
         console.log("货道列表模型" + "obj="+ obj + " count=" + obj.size);
         for(var i = 0;i < obj.size;i++){
             var col = obj.at(i);
-            console.log("提取货道" + "col=" + col);
-            var column = vmCreateColumn();
-            column.column_id = col.id % 1000;
+            console.log("提取货道" + "col=" + col + " id=" + col.id);
+            var cabinet = createCabinet(col.bin);
+            var column = cabinet.vmCreateColumn(col.column);
+            column.column_id = col.column;
             column.column_state = col.state;
         }
         obj.queueClear();
