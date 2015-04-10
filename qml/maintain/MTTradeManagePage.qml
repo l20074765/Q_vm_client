@@ -38,7 +38,6 @@ Rectangle {
             anchors.rightMargin: 10
             width: parent.width * 0.2
             height: parent.height * 0.8
-
             text: "返回"
             onClicked: {
                 rect_main.visible = false
