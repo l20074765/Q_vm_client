@@ -3,12 +3,11 @@ import QtQuick 1.1
 Rectangle{
     id:mtBar
     signal button_clicked()
-    property string button_text: qsTr("维护按钮")
+    property string button_text: "维护按钮"
     property real border_width: 2
-
     color: "white"
     width: 100
-    height: 200
+    height: 80
     border{
         width: border_width
         color: "gray"
