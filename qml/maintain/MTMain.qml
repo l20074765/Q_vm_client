@@ -1,23 +1,19 @@
 import QtQuick 1.1
 import "../custom" as Custom
 import "../trade" as Trade
+import "MainTain.js" as MainTainJs
 Custom.VMWidget{
-    id:mtMainTainPagRect
+    id:rect_mainTain
     anchors.fill:parent
+    z:3
     signal sqlActionSignal(variant type,variant obj)
-    property Item curPage: mtMainTainPage
-    property Item lastPage: mtMainTainPage
     property Item  goodsListItem:null
-    onVisibleChanged: {
-        if(visible == true){
-            console.log("维护主页面显示:" + goodsListItem)
-            //mtTradeManagePage.mtTrade_productCreate(goodsListItem);
-            vmPageSwitch(mtMainTainPage);
-        }
-        else{
-            mtTradeManagePage.mtTrade_productClear();
-        }
-    }
+    property MTProductPage productPage:null
+    property MTColumnPage columnPage:null
+    property MTSystemManagePage systemManagePage: null
+    property MTDeviceManagePage deviceManagePage: null
+    property MTTradeManagePage tradeManagePage: null
+
     //1.系统主页面
     Rectangle{
         id:mtMainTainPage
@@ -75,41 +71,58 @@ Custom.VMWidget{
                     id:mtMainBar
                     button_text: qsTr("商品管理")
                     onButton_clicked: {
-                        vmPageSwitch(mtMainTainPage)
+                        if(productPage == null){
+                           productPage =  MainTainJs.loadComponent(rect_mainTain,"MTProductPage.qml");
+                            for(var i = 0;i < 1000;i++){
+                                productPage.vmCreateProduct();
+                            }
+                        }
+                        productPage.visible = true;
                     }
                 }
                 MTButton{
                     button_text: qsTr("货道管理")
                     onButton_clicked: {
-                        vmPageSwitch(mtMainTainPage)
+                        if(columnPage == null){
+                           columnPage =  MainTainJs.loadComponent(rect_mainTain,"MTColumnPage.qml");
+                        }
+                        columnPage.visible = true;
                     }
                 }
                 MTButton{
                     id:mtTradeBar
                     button_text: qsTr("交易管理")
                     onButton_clicked: {
-                        vmPageSwitch(mtTradeManagePage);
-                        mtTradeManagePage.mtTradeSelectPage(99);
+                        if(tradeManagePage == null){
+                           tradeManagePage =  MainTainJs.loadComponent(rect_mainTain,"MTTradeManagePage.qml");
+                        }
+                        tradeManagePage.visible = true;
                     }
                 }
                 MTButton{
                     button_text: qsTr("操作日志")
                     onButton_clicked: {
-                        vmPageSwitch(mTSystemManagePage)
+                        //vmPageSwitch(mTSystemManagePage)
                     }
                 }
                 MTButton{
                     id:mtProductBar
                     button_text: qsTr("设备管理")
                     onButton_clicked: {
-                        vmPageSwitch(mTDeviceManagePage)
+                        if(deviceManagePage == null){
+                           deviceManagePage =  MainTainJs.loadComponent(rect_mainTain,"MTDeviceManagePage.qml");
+                        }
+                        deviceManagePage.visible = true;
                     }
                 }
                 MTButton{
                     id:mtTradeBar2
                     button_text: qsTr("系统设置")
                     onButton_clicked: {
-                        vmPageSwitch(mTSystemManagePage)
+                        if(systemManagePage == null){
+                           systemManagePage =  MainTainJs.loadComponent(rect_mainTain,"MTSystemManagePage.qml");
+                        }
+                        systemManagePage.visible = true;
                     }
                 }
 
@@ -118,20 +131,6 @@ Custom.VMWidget{
 
 
     }
-
-
-
-
-
-    //页面切换函数
-    function vmPageSwitch(page){
-        mtMainTainPagRect.lastPage = mtMainTainPagRect.curPage
-        mtMainTainPagRect.curPage = page
-        mtMainTainPagRect.lastPage.visible = false
-        mtMainTainPagRect.curPage.visible = true
-
-    }
-
 
 
     function sqlActionSlot(type,obj){

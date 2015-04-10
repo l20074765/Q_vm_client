@@ -1,6 +1,7 @@
 import QtQuick 1.1
 import "../custom" as Custom
 import "../trade" as Trade
+import "./MTColumn" as MTColumn
 Rectangle {
     id:mt_productPage
     width: 100
@@ -8,12 +9,32 @@ Rectangle {
     visible: false
     signal goodsList_clicked()
 
+    // 1.标题栏
+    Rectangle{
+        id:title
+        width: parent.width
+        height: parent.height * 0.05
+        z:5
+        anchors{top:parent.top ;topMargin: 0}
+        border{color: "gray";width: 1}
+        Text {
+            anchors.centerIn: parent
+            verticalAlignment: Text.AlignVCenter
+            text: qsTr("商品管理")
+            font{
+                bold: true
+                pixelSize: 20
+            }
+        }
+    }
+
     // 2.商品列表区
     //主界面区域
     Rectangle{
         id:main_rect
         width: parent.width
-        height: parent.height * 0.95
+        height: parent.height * 0.9
+        z:3
         anchors{
             top:title.bottom
             topMargin: 5
@@ -62,38 +83,35 @@ Rectangle {
             focus: true
             currentIndex: 0
         }
-
-
     }
 
-    // 1.标题栏
+    // 1.工具栏
     Rectangle{
-        id:title
+        id:rect_tool
         width: parent.width
         height: parent.height * 0.05
-        anchors{
-            top:parent.top
-            topMargin: 0
-        }
-        border{
-            color: "gray"
-            width: 1
-        }
-        Text {
-            width: parent.width * 0.4
-            height: parent.height
-            anchors{
-                left: parent.left
-                leftMargin: 5
+        z:5
+        anchors.top:main_rect.bottom
+        border{ color: "gray";width: 1 }
+        Row{
+            anchors.centerIn: parent
+            spacing: 10
+            MTColumn.MyButton{
+                text: "新增商品"
+                onClicked: {
+                }
             }
+        }
 
-            horizontalAlignment: Text.AlignLeft
-            verticalAlignment: Text.AlignVCenter
-
-            text: qsTr("商品管理")
-            font{
-                bold: true
-                pixelSize: 20
+        MTColumn.MyButton{
+            width: parent.width * 0.2
+            height: parent.height * 0.6
+            anchors.right: parent.right
+            anchors.rightMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
+            text: "返回"
+            onClicked: {
+                mt_productPage.visible = false
             }
         }
     }
@@ -108,7 +126,6 @@ Rectangle {
                          });
         var product = product_model.get(product_model.count - 1);
         product.product_index = product_model.count - 1;
-       // console.log("创建商品:" + product + product.product_index);
         return product;
     }
 

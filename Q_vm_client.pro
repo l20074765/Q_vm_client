@@ -117,7 +117,6 @@ DISTFILES += \
     qml/maintain/MTButton.qml \
     qml/maintain/MTMain.qml \
     qml/maintain/MTMainTainPage.qml \
-    qml/maintain/MTTradePage.qml \
     qml/maintain/MTProductPage.qml \
     qml/maintain/MTColumnPage.qml \
     qml/maintain/MTTradeManage.qml \
@@ -132,7 +131,8 @@ DISTFILES += \
     qml/maintain/MTColumn/VMColumn.qml \
     qml/maintain/MTColumn/VMColumnEdit.qml \
     qml/maintain/MTColumn/VMColumnText.qml \
-    qml/maintain/MTColumn/VMCoumnTextInput.qml
+    qml/maintain/MTColumn/VMCoumnTextInput.qml \
+    qml/maintain/MainTain.js
 
 
 

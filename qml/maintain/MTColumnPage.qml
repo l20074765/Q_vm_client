@@ -6,48 +6,27 @@ Rectangle {
     width: 100
     height: 62
     visible: false
-    // 2.货道管理展示区域
-
     // 1.标题栏
     Rectangle{
         id:title
         width: parent.width
         height: parent.height * 0.05
-        anchors{
-            top:parent.top
-            topMargin: 0
-        }
+        anchors{top:parent.top;topMargin: 0}
         z:5
-        border{
-            color: "gray"
-            width: 1
-        }
+        border{color: "gray"; width: 1}
         Text {
-            width: parent.width * 0.4
-            height: parent.height
-            anchors{
-                left: parent.left
-                leftMargin: 5
-            }
-            horizontalAlignment: Text.AlignLeft
+            anchors.centerIn: parent
             verticalAlignment: Text.AlignVCenter
             text: qsTr("货道管理")
-            font{
-                bold: true
-                pixelSize: 20
-            }
+            font{bold: true;pixelSize: 20}
         }
     }
-
-
-    //主界面区域
+    // 2.货道管理展示区域
     Rectangle{
         id:main_rect
         width: parent.width
-        height: parent.height * 0.95
-        anchors{
-            top:title.bottom
-        }
+        height: parent.height * 0.9
+        anchors{top:title.bottom}
         //主界面
         Rectangle {
             id: listView_rect
@@ -70,21 +49,18 @@ Rectangle {
                     boundsBehavior: Flickable.StopAtBounds
                     flickDeceleration: 5000  //滑动速度
                     onMovementEnded:{
-                        console.log("onMovementEnded--触发");
                         var i = indexAt(contentX,contentY);
                         if(i != -1 && i != listView.currentIndex){
                             listView.currentIndex = i;
                         }
                     }
                     onMovementStarted: {
-                        console.log("onMovementStarted--触发");
                     }
                 }
                 ListModel{
                     id:listModel
 
                 }
-
                 Component{
                     id:list_delegate
                     MTColumn.VMCabinet{
@@ -93,55 +69,64 @@ Rectangle {
                         property int num: num
                     }
                 }
-
-            }
-
-            //工具栏界面
-            Rectangle{
-                id:go_rect
-                width: parent.width
-                height: parent.height * 0.05
-                anchors{
-                    bottom: parent.bottom
-                }
-                z:3
-                //color: "transparent"
-                color:"gray"
-                visible: true
-                Row{
-                    anchors.centerIn: parent
-                    spacing: 10
-                    Image {
-                        id: go_previous_image
-                        source: "../../images/tool/go-previous.png"
-                    }
-                    Text {
-                        id: go_text
-                        text: (listView.currentIndex + 1) + "/" + listView.count
-                        font{
-                            bold: true
-                            pixelSize: go_rect.width * 0.08
-                        }
-                        color: "blue"
-                    }
-                    Image {
-                        id: go_next_image
-                        source: "../../images/tool/go-next.png"
-                    }
-                }
-                Timer{
-                    id:go_timer
-                    interval: 3000; running: false; repeat: true
-                    onTriggered:{
-                        go_timer.stop();
-                        go_rect.visible = false;
-                    }
-                }
             }
         }
     }
 
+    //3. 工具栏界面
+    Rectangle{
+        width: parent.width
+        height: parent.height * 0.05
+        anchors{bottom: parent.bottom}
+        z:5
+        Rectangle{
+            id:go_rect
+            width: parent.width * 0.5
+            height: parent.height * 0.8
+            anchors.centerIn: parent
+            visible: true
+            Row{
+                anchors.centerIn: parent
+                spacing: 10
+                Image {
+                    id: go_previous_image
+                    source: "../../images/tool/go-previous.png"
+                }
+                Text {
+                    id: go_text
+                    text: (listView.currentIndex + 1) + "/" + listView.count
+                    font{
+                        bold: true
+                        pixelSize: go_rect.height
+                    }
+                    color: "blue"
+                }
+                Image {
+                    id: go_next_image
+                    source: "../../images/tool/go-next.png"
+                }
+            }
+            Timer{
+                id:go_timer
+                interval: 3000; running: false; repeat: true
+                onTriggered:{
+                    go_timer.stop();
+                    go_rect.visible = false;
+                }
+            }
+        }
+        MTColumn.MyButton{
+            width:parent.width * 0.2
+            height: parent.height * 0.8
+            anchors.right: parent.right
+            anchors.rightMargin: 10
+            text: "返回"
+            onClicked: {
+                window.visible = false;
+            }
+        }
 
+    }
 
 
 
