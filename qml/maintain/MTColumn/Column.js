@@ -1,11 +1,13 @@
 var itemComponent = null;
 var posnInWindow;
 var parentWIndow;
+var itemColumn;
+
 
 function loadComponent(parent) {
     parentWIndow = parent;
     console.log("loadComponent  " +  "parent="  + parentWIndow)
-    var itemColumn = null;
+
     //组件为空需要先创建组件
     if(itemComponent == null){
         itemComponent = Qt.createComponent("VMColumnEdit.qml");
@@ -15,18 +17,18 @@ function loadComponent(parent) {
             createItem();
     }
     else
-        createItem();
+       createItem();
 
     return itemColumn;
 }
 
 
 function createItem() {
-    var itemColumn = null;
+
     if (itemComponent.status == Component.Ready ) {
         console.log("ComponentReady:" + parentWIndow)
 
-        itemColumn = itemComponent.createObject(parentWIndow, {"x": 0 ,"y":0 , "z": 3});
+        itemColumn = itemComponent.createObject(parentWIndow, {"x": 0 ,"y":0 , "z": 9});
         var pos = itemColumn.mapToItem(parentWIndow,0,0);
 /*
         itemColumn.width = parentWIndow.width  * 0.8;
@@ -55,5 +57,17 @@ function destroyItem(obj)
         obj = null;
     }
 }
+
+
+function columnEdit(item){
+    itemColumn.text_cabinet = "1";
+    itemColumn.text_column = item.col_id;
+    itemColumn.text_remain = item.col_remain;
+}
+
+
+
+
+
 
 

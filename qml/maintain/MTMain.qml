@@ -4,15 +4,10 @@ import "../trade" as Trade
 Custom.VMWidget{
     id:mtMainTainPagRect
     anchors.fill:parent
-
     signal sqlActionSignal(variant type,variant obj)
-
     property Item curPage: mtMainTainPage
     property Item lastPage: mtMainTainPage
-
-
     property Item  goodsListItem:null
-
     onVisibleChanged: {
         if(visible == true){
             console.log("维护主页面显示:" + goodsListItem)

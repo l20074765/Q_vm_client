@@ -131,7 +131,8 @@ DISTFILES += \
     qml/maintain/MTColumn/VMCabinet.qml \
     qml/maintain/MTColumn/VMColumn.qml \
     qml/maintain/MTColumn/VMColumnEdit.qml \
-    qml/maintain/MTColumn/VMColumnText.qml
+    qml/maintain/MTColumn/VMColumnText.qml \
+    qml/maintain/MTColumn/VMCoumnTextInput.qml
 
 
 

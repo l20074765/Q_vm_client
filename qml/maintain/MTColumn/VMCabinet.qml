@@ -2,6 +2,7 @@ import QtQuick 1.1
 import "Column.js" as Column
 
 Rectangle {
+    id:cabinet_rect
     width: 768 * 1
     height: 768 * 1
     signal cellClicked()
@@ -60,11 +61,12 @@ Rectangle {
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    var m = parent.indexAt(mouse.x,mouse.y);
+                    var m = product_gridView.indexAt(mouse.x,mouse.y);
                     if(m != -1){
-                       console.log("当前index改变" + m)
-                       parent.currentIndex = m;
+                       product_gridView.currentIndex = m;
                        cellClicked();
+                       Column.loadComponent(cabinet_rect);
+                       Column.columnEdit(product_gridView.currentItem);
                     }
                 }
             }
@@ -87,27 +89,14 @@ Rectangle {
     //定义列表组件
     Component{
         id:product_delegate
-        Rectangle{
-            id:product_rect
-            width: product_gridView.cellW
-            height: product_gridView.cellH
-            color: "transparent"
-            VMColumn{
-                width: parent.width * 0.95
-                height:parent.height * 0.95
-                anchors.centerIn: parent
-                col_id:column_id
-                col_state:column_state
-                col_remain: column_remain
-                col_goods: column_goods
-
-            }
-
-
+        VMColumn{
+            width: product_gridView.cellW * 0.95
+            height:product_gridView.cellH * 0.95
+            col_id:column_id
+            col_state:column_state
+            col_remain: column_remain
+            col_goods: column_goods
         }
-
-
-
     }
 
     function vmCreateColumn(id){

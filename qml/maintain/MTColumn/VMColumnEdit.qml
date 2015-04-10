@@ -1,12 +1,16 @@
 import QtQuick 1.1
 import "Column.js" as Column
-import QtDesktop 0.1
+
 
 Rectangle {
     id:rect
     width: 300
     height: 162
     property Item parentItem
+    property string text_cabinet:"1"
+    property string text_column:"11"
+    property string text_remain:""
+    property string text_r:""
     focus: true
     color: "white"
     opacity: 0.9
@@ -56,18 +60,32 @@ Rectangle {
                 VMCoumnTextInput{
                     width: parent.width
                     height: parent.height * 0.08
+                    text_title:"货柜号:"
+                    text_contex: text_cabinet
                 }
                 VMCoumnTextInput{
                     width: parent.width
                     height: parent.height * 0.08
+                    text_title:"货道号:"
+                    text_contex: text_column
                 }
                 VMCoumnTextInput{
                     width: parent.width
                     height: parent.height * 0.08
+                    text_title:"商品号:"
+                    text_contex: ""
                 }
                 VMCoumnTextInput{
                     width: parent.width
                     height: parent.height * 0.08
+                    text_title:"剩余量:"
+                    text_contex: text_remain
+                }
+                VMCoumnTextInput{
+                    width: parent.width
+                    height: parent.height * 0.08
+                    text_title:"总容量:"
+                    text_contex: text_remain
                 }
             }
 

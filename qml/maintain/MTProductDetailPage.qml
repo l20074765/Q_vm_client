@@ -1,4 +1,5 @@
 import QtQuick 1.1
+import "MTColumn" as MTColumn
 
 Rectangle {
     width: 100
@@ -60,12 +61,27 @@ Rectangle {
             color: "gray"
             width: 1
         }
+        Row{
+            anchors.fill: parent
+            spacing: 10
+            MTColumn.VMCoumnTextInput{
 
-        TextInput{
-            id:productId_textInput
-            anchors.centerIn: parent
-            text: qsTr("商品编号")
+                text_title: qsTr("商品编号")
+                text_contex: "11"
+            }
+            MTColumn.VMCoumnTextInput{
+
+                text_title: qsTr("商品编号")
+                text_contex: "11"
+            }
+            MTColumn.VMCoumnTextInput{
+
+                text_title: qsTr("商品编号")
+                text_contex: "11"
+            }
         }
+
+
     }
 
 
