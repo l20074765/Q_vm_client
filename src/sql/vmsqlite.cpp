@@ -92,11 +92,12 @@ void VMSqlite::checkTableProduct()
         product->id = query.value(1).toString();
         product->name = query.value(4).toString();
         product->salePrice = query.value(6).toUInt(&ok);
+        QString filePic = product->imagePath + product->id + "/" + "1.jpg";
+        product->image = filePic;
         qDebug()<<"VMSqlite::checkTableProduct...obj="<<product;
         productList->hashInsert(product->id,product);
-        productList->queue.append(product);
     }
-
+    productList->getProductList();
     emit sqlActionSignal(SQL_PRODUCT_ADD,(QObject *)productList);
 
 }
@@ -114,11 +115,12 @@ void VMSqlite::checkTableColumn()
         column->column = column->id % 1000;
         column->state = query.value(3).toUInt(&ok);
         column->productNo = query.value(4).toString();
+        column->remain = query.value(5).toUInt(&ok);
+        column->capacity = query.value(6).toUInt(&ok);
         qDebug()<<"VMSqlite::checkTableColumn column:"<<column<<column->productNo;
         columnList->hash.insert(column->id,column);
-        columnList->queue<<column;
+        columnList->list<<column;
         columnList->multiHash.insert(column->productNo,column);
-
     }
 
     emit sqlActionSignal(SQL_COLUMN_ADD,(QObject *)columnList);

@@ -20,6 +20,7 @@ Rectangle {
         onAds_clicked: {
             if(curPage == vmAdsPage)
                 vmPageSwitch(vmGoodsListPage);
+
         }
     }
     //2.故障页面
@@ -204,8 +205,9 @@ Rectangle {
             p.product_name = product.name;
             p.product_id = product.id;
             p.product_price =  product.salePriceStr;
+            p.product_image = product.image;//
+
         }
-        productList.queueClear();
     }
 
 

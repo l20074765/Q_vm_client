@@ -8,11 +8,11 @@ Custom.VMWidget{
     z:3
     signal sqlActionSignal(variant type,variant obj)
     property Item  goodsListItem:null
-    property MTProductPage productPage:null
-    property MTColumnPage columnPage:null
-    property MTSystemManagePage systemManagePage: null
-    property MTDeviceManagePage deviceManagePage: null
-    property MTTradeManagePage tradeManagePage: null
+    property Item productPage:null
+    property Item columnPage:null
+    property Item systemManagePage: null
+    property Item deviceManagePage: null
+    property Item tradeManagePage: null
 
     //1.系统主页面
     Rectangle{
@@ -72,10 +72,8 @@ Custom.VMWidget{
                     button_text: qsTr("商品管理")
                     onButton_clicked: {
                         if(productPage == null){
-                           productPage =  MainTainJs.loadComponent(rect_mainTain,"MTProductPage.qml");
-                            for(var i = 0;i < 1000;i++){
-                                productPage.vmCreateProduct();
-                            }
+                           productPage =  MainTainJs.loadComponent(rect_mainTain,"MTProductPage.qml"); 
+                           productPage.productFlush();
                         }
                         productPage.visible = true;
                     }
@@ -85,6 +83,7 @@ Custom.VMWidget{
                     onButton_clicked: {
                         if(columnPage == null){
                            columnPage =  MainTainJs.loadComponent(rect_mainTain,"MTColumnPage.qml");
+                            columnPage.columnCreate(sqlColumnList);
                         }
                         columnPage.visible = true;
                     }
@@ -125,18 +124,12 @@ Custom.VMWidget{
                         systemManagePage.visible = true;
                     }
                 }
-
             }
         }
-
-
     }
-
 
     function sqlActionSlot(type,obj){
         console.log("后台维护操作SQL:" + "type=" + type + " obj=" + obj);
-
-        mtTradeManagePage.columnPage.columnCreate(obj)
     }
 
 

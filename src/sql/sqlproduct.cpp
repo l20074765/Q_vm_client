@@ -6,6 +6,8 @@ SqlProduct::SqlProduct(QObject *parent) : QObject(parent)
     name = "";
     salePrice = 100;
     buyNum = 0;
+    image = "../../images/product/default_product.png";
+    imagePath = "../../images/productImage/";
 }
 
 SqlProduct::~SqlProduct()

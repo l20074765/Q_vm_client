@@ -9,12 +9,13 @@ class SqlProduct : public QObject
     Q_PROPERTY(QString id READ getId WRITE setId)
     Q_PROPERTY(QString name READ getName WRITE setName)
     Q_PROPERTY(QString salePriceStr READ getSalePriceStr)
+    Q_PROPERTY(QString image READ getImage)
     Q_PROPERTY(quint32 salePrice READ getSalePrice WRITE setSalePrice)
 public:
     explicit SqlProduct(QObject *parent = 0);
     ~SqlProduct();
 
-
+    QString getImage(){return this->image;}
 
     QString getId(){return id;}
     void setId(const QString &id){this->id = id;}
@@ -33,6 +34,8 @@ public:
     QString name;
     quint32 salePrice;
     quint32 buyNum;//购买数量
+    QString image;
+    QString imagePath;
 signals:
 
 public slots:

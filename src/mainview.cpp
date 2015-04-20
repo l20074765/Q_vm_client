@@ -58,7 +58,6 @@ MainView::MainView(QObject *parent) : QObject(parent)
 
     context = view->rootContext();
     context->setContextProperty("vm",this->mainFlow);
-
     VMSqlite *sqllite = mainFlow->getVMSqlite();
     context->setContextProperty("vmSqlite",sqllite);
 
@@ -87,6 +86,9 @@ MainView::MainView(QObject *parent) : QObject(parent)
     qDebug()<<tr("MainView:当前线程")<<QThread::currentThread();
     mainThread->start();
     emit vmActionSignal(QVariant((int)MainFlow::QML_MAINFLOW_START),QVariant(0));
+
+
+
 }
 
 MainView::~MainView()

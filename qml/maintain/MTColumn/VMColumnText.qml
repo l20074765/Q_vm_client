@@ -12,13 +12,13 @@ Rectangle{
         anchors.fill: parent
         anchors.leftMargin: 5
         verticalAlignment: Text.AlignVCenter
-        horizontalAlignment: Text.AlignLeft
+        horizontalAlignment: Text.AlignHCenter
         font{
             pixelSize:12
-            bold: false
+            bold: true
         }
         color: "white"
         elide: Text.ElideMiddle
-        text: text_title  + text_label
+        text: text_label
     }
 }

@@ -2,13 +2,17 @@ import QtQuick 1.1
 import "../custom" as Custom
 import "../trade" as Trade
 import "./MTColumn" as MTColumn
+import "MainTain.js" as MainTainJs
+import "../custom" as Custom
+
 Rectangle {
     id:mt_productPage
     width: 100
     height: 62
     visible: false
     signal goodsList_clicked()
-
+    property string picPath: ""
+    property Item  productDetailItem:null
     // 1.标题栏
     Rectangle{
         id:title
@@ -42,46 +46,56 @@ Rectangle {
         //定义列表组件
         Component{
             id:product_delegate
-            Rectangle{
-                id:product_rect
-                width: product_gridView.cellW
-                height: product_gridView.cellH
-                Custom.Product{
-                    width: parent.width * 0.9
-                    height:parent.height * 0.9
-                    anchors.centerIn: parent
-                    productID: product_id
-                    productName:product_name
-                    productPrice: product_price
-                    productIndex: product_index
-                    onGoods_clicked: {
-                          //商品点击
-                        product_gridView.currentIndex = productIndex
-                        console.log("商品选中" + "index:" + productIndex.toString()
-                                    + " curIndex:" + product_gridView.currentIndex);
-                        goodsList_clicked();
-                    }
-                }
+            Custom.Product{
+                width: product_gridView.cellW * 0.9
+                height:product_gridView.cellH * 0.9
+                productID: product_id
+                productName:product_name
+                productPrice: product_price
+                productIndex: product_index
+                productImage: product_image
             }
         }
+
         ListModel{
             id:product_model
         }
+
         //商品列表框
         GridView{
             id:product_gridView
             width: parent.width
             height: parent.height
             anchors.fill: parent
-            property real cellW: (parent.width) / 4.0
-            property real cellH: (parent.height) / 5.0
+            property real cellW: (parent.width) / 4.1
+            property real cellH: (parent.height) / 5.1
             cellWidth: cellW
             cellHeight: cellH
             flickableDirection:Flickable.VerticalFlick
             delegate: product_delegate
             model: product_model
             focus: true
-            currentIndex: 0
+            currentIndex: 1
+
+            MouseArea{
+                anchors.fill: parent
+                onClicked: {
+                    var m = product_gridView.indexAt(mouseX,mouseY);
+                    console.log("选中商品:" + m +
+                                " count=" + product_gridView.count);
+                    if(m != -1){
+                        product_gridView.currentIndex = m;
+                        if(productDetailItem == null){
+                            productDetailItem =  MainTainJs.loadComponent(mt_productPage,"MTProductDetailPage.qml");
+                        }
+                        if(productDetailItem){
+                            productDetailItem.productInfoFlush(product_gridView.currentItem);
+                            productDetailItem.visible = true;
+                        }
+                    }
+                }
+            }
+
         }
     }
 
@@ -117,11 +131,26 @@ Rectangle {
     }
 
 
+    function productFlush(){
+        mtProductClear();
+        for(var i = 0;i < sqlProductList.size;i++){
+            var product = sqlProductList.at(i);
+            var p = vmCreateProduct();
+            p.product_name = product.name;
+            p.product_id = product.id;
+            p.product_price =  product.salePriceStr;
+            p.product_image = product.image;
+        }
+    }
+
+
+
     function vmCreateProduct(){
         product_model.append({
                           "product_id": "",
                           "product_name":"商品名称",
                           "product_price": "0.00",
+                          "product_image":"",
                           "product_index": 0
                          });
         var product = product_model.get(product_model.count - 1);
@@ -129,17 +158,7 @@ Rectangle {
         return product;
     }
 
-    function mtProductCreat(goodsListItem){
-        var prodeuct_listModel = goodsListItem.product_listModel;
-        console.log("商品列表模型 " + prodeuct_listModel.count);
-        for(var i = 0;i < prodeuct_listModel.count;i++){
-            var productObj = prodeuct_listModel.get(i);
-            var product = vmCreateProduct();
-            product.product_id = productObj.product_id;
-            product.product_name = productObj.product_name;
-            product.product_price = productObj.product_price;
-        }
-    }
+
 
     function mtProductClear(){
         product_model.clear();

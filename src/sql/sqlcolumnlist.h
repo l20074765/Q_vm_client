@@ -7,6 +7,7 @@
 #include <QQueue>
 #include <QHash>
 #include <QMultiHash>
+#include <QList>
 class SqlColumnList : public QObject
 {
     Q_OBJECT
@@ -15,19 +16,15 @@ public:
     explicit SqlColumnList(QObject *parent = 0);
     ~SqlColumnList();
 
-    int size(){return this->queue.size();}
-    void append(SqlColumn *obj){this->queue<<obj;}
+    int size(){return this->list.count();}
 
-
-
+    QList<SqlColumn *> list;
     QHash<quint32,SqlColumn *> hash;
-    QQueue<SqlColumn *> queue;
     QMultiHash<QString,SqlColumn *> multiHash;
 signals:
 
 public slots:
-    SqlColumn *at(int i){return this->queue.at(i);}
-    void queueClear(){this->queue.clear();}
+    SqlColumn *at(int i){return this->list.at(i);}
 private:
 
 };

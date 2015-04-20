@@ -28,6 +28,7 @@ public:
         QML_VMC_STATE = 0,
         QML_SQL_PRODUCT_ADD,
         QML_SQL_COLUMN_ADD,
+        QML_SQL_COLUMN_CHANGE,
         QML_ACTION_TRADE,
         QML_ACTION_ORDER_ADD,
         QML_ALI_PIC_OK,
@@ -52,7 +53,7 @@ public:
 
     QStringList getAdsFileList();
 
-    VMSqlite *getVMSqlite(){return this->vmsqlite;}
+    VMSqlite *getVMSqlite();
 protected:
     void init();
 signals:

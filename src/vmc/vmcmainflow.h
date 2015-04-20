@@ -14,6 +14,7 @@ class VmcMainFlow : public QObject
     Q_OBJECT
 
     Q_ENUMS(VmcEnumType)
+    Q_ENUMS(EV_ColumnStateType)
 public:
     explicit VmcMainFlow(QObject *parent = 0,const QString &portName = "COM1");
     ~VmcMainFlow();
@@ -23,6 +24,13 @@ public:
         VMC_ACTION_TRADE,
         VMC_ACTION_TRADE_FAIL,
         VMC_ACTION_TRADE_OK
+    };
+
+    enum EV_ColumnStateType{
+         EV_COLUMN_NORMAL = 0, //每道的状态 0正常 1故障 2 无货 3 暂不可用
+         EV_COLUMN_FAULT = 1,
+         EV_COLUMN_EMPTY = 2,
+         EV_COLUMN_DISABLE = 3
     };
 
     void init();

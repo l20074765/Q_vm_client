@@ -31,45 +31,39 @@ Rectangle {
         Rectangle {
             id: listView_rect
             anchors.fill: parent
-            z:3
-            Rectangle{
-                id:cabinet_rect
-                width: parent.width
-                height: parent.height * 0.95
-                anchors.top:parent.top
-                z:1
-                ListView{
-                    id:listView
-                    anchors.fill: parent
-                    model: listModel
-                    delegate:list_delegate
-                    snapMode: ListView.SnapToItem
-                    spacing: 1
-                    orientation: ListView.Horizontal
-                    boundsBehavior: Flickable.StopAtBounds
-                    flickDeceleration: 5000  //滑动速度
-                    onMovementEnded:{
-                        var i = indexAt(contentX,contentY);
-                        if(i != -1 && i != listView.currentIndex){
-                            listView.currentIndex = i;
-                        }
-                    }
-                    onMovementStarted: {
-                    }
-                }
-                ListModel{
-                    id:listModel
 
-                }
-                Component{
-                    id:list_delegate
-                    MTColumn.VMCabinet{
-                        width: listView.width
-                        height: listView.height
-                        property int num: num
+            ListView{
+                id:listView
+                anchors.fill: parent
+                model: listModel
+                delegate:list_delegate
+                snapMode: ListView.SnapToItem
+                spacing: 1
+                orientation: ListView.Horizontal
+                boundsBehavior: Flickable.StopAtBounds
+                flickDeceleration: 5000  //滑动速度
+                onMovementEnded:{
+                    var i = indexAt(contentX,contentY);
+                    if(i != -1 && i != listView.currentIndex){
+                        listView.currentIndex = i;
                     }
+                }
+                onMovementStarted: {
                 }
             }
+            ListModel{
+                id:listModel
+
+            }
+            Component{
+                id:list_delegate
+                MTColumn.VMCabinet{
+                    width: listView.width
+                    height: listView.height
+                    property int num: num
+                }
+            }
+
         }
     }
 
@@ -78,6 +72,7 @@ Rectangle {
         width: parent.width
         height: parent.height * 0.05
         anchors{bottom: parent.bottom}
+
         z:5
         Rectangle{
             id:go_rect
@@ -150,10 +145,15 @@ Rectangle {
             console.log("提取货道" + "col=" + col + " id=" + col.id);
             var cabinet = createCabinet(col.bin);
             var column = cabinet.vmCreateColumn(col.column);
-            column.column_id = col.column;
+            column.column_id = col.bin + "-" + col.column;
             column.column_state = col.state;
+            column.column_column = col.column;
+            column.column_bin = col.bin;
+            column.column_remain = col.remain;
+            column.column_total = col.total;
+            column.column_goods = col.productNo;
+
         }
-        obj.queueClear();
     }
 
     function columnClear(){

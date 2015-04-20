@@ -12,5 +12,6 @@ moc_*
 *.pro.user
 build/
 vm_build/
+*jpg
 
 

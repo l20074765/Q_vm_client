@@ -15,17 +15,6 @@ MainFlow::MainFlow(QObject *parent) : QObject(parent)
 {
     connect(this,SIGNAL(destroyed()),this,SLOT(obj_destroy()));
 
-}
-
-MainFlow::~MainFlow()
-{
-    qDebug()<<"MainFlow::~MainFlow()";
-}
-
-
-
-void MainFlow::init()
-{
     //启动后台通信
     qDebug()<<"Start vmc ..."<<vmConfig.getVmPort();
     vmcMainFlow = new VmcMainFlow(this,vmConfig.getVmPort());
@@ -37,31 +26,46 @@ void MainFlow::init()
     vmcMainFlow->setVmcState(EV_STATE_FAULT);
     vmcMainFlow->vmcStart();
 
+
     //sqlite 数据库接口类
     vmsqlite =  new VMSqlite(this);
-
     connect(this,SIGNAL(sqlActionSignal(int,QObject *)),
             vmsqlite,SLOT(sqlActionSlot(int,QObject *)));
     connect(vmsqlite,SIGNAL(sqlActionSignal(int,QObject *)),
             this,SLOT(sqlActionSlot(int,QObject *)));
 
-    //启动数据库
-    emit sqlActionSignal(VMSqlite::SQL_START,NULL);
-
-
     //订单管理接口类
     orderList = new OrderList(this);
 
-
     //支付宝接口类
     alipayApi = new AlipayAPI(this);
-
     connect(alipayApi,SIGNAL(aliActionSignal(QVariant,QVariant)),
             this,SLOT(aliActionSlot(QVariant,QVariant)));
     connect(this,SIGNAL(aliActionSignal(QVariant,QVariant)),
             alipayApi,SLOT(aliActionSlot(QVariant,QVariant)));
 
 }
+
+MainFlow::~MainFlow()
+{
+    qDebug()<<"MainFlow::~MainFlow()";
+}
+
+
+
+void MainFlow::init()
+{
+
+    //启动数据库
+    emit sqlActionSignal(VMSqlite::SQL_START,NULL);
+}
+
+VMSqlite *MainFlow::getVMSqlite()
+{
+    qDebug()<<"MainFlow::getVMSqlite---"<<vmsqlite;
+    return vmsqlite;
+}
+
 
 void MainFlow::obj_destroy()
 {
@@ -154,7 +158,8 @@ void MainFlow::aliActionSlot(QVariant type, QVariant obj)
 
 void MainFlow::qmlActionSlot(QVariant type, QVariant obj)
 {
-    qDebug()<<tr("MainFlow:当前线程")<<QThread::currentThread();
+    qDebug()<<tr("MainFlow:当前线程")<<QThread::currentThread()
+           <<tr("type=")<<type<<" obj="<<obj;
     int mt = type.value<int>();
     if(mt == QML_ACTION_ORDER_ADD){
         QString productId = obj.value<QString>();
@@ -168,6 +173,10 @@ void MainFlow::qmlActionSlot(QVariant type, QVariant obj)
     }
     else if(mt == QML_MAINFLOW_START){
         this->init();
+    }
+    else if(mt == QML_SQL_COLUMN_CHANGE){
+        QObject *columnObj = obj.value<QObject *>();
+        qDebug()<<"columnObj"<<columnObj;
     }
 }
 

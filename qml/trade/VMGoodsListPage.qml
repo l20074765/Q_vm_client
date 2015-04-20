@@ -40,6 +40,7 @@ Custom.VMWidget {
                     productName:product_name
                     productPrice: product_price
                     productIndex: product_index
+                    productImage: product_image
                     onGoods_clicked: {
                           //商品点击
                         product_gridView.currentIndex = productIndex
@@ -103,6 +104,7 @@ Custom.VMWidget {
                           "product_id": "",
                           "product_name":"商品名称",
                           "product_price": "0.00",
+                          "product_image":"",
                           "product_index": 0
                          });
         var product = product_model.get(product_model.count - 1);

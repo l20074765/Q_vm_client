@@ -3,9 +3,9 @@ import QtQuick 1.1
 Rectangle{
     width: parent.width
     height: parent.height * 0.08
-
     property alias text_title: test.text
     property alias text_contex:editor.text
+    property alias readOnly: editor.readOnly
     border{
         width: 1
         color: "gray"
@@ -23,6 +23,7 @@ Rectangle{
             pixelSize: parent.width * 0.05
         }
         verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignHCenter
         text: "货道号1:"
 
     }

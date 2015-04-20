@@ -10,7 +10,10 @@ class SqlColumn : public QObject
     Q_PROPERTY(quint32 bin READ getBin)
     Q_PROPERTY(quint32 column READ getColumn)
     Q_PROPERTY(quint32 state READ getState)
+    Q_PROPERTY(quint32 remain READ getRemain)
+    Q_PROPERTY(quint32 total READ getCapacity)
     Q_PROPERTY(QString productNo READ getProductNo)
+
 public:
     explicit SqlColumn(QObject *parent = 0);
     ~SqlColumn();
@@ -20,6 +23,8 @@ public:
     quint32 getBin(){return bin;}
     quint32 getColumn(){return column;}
     quint32 getState(){return state;}
+    quint32 getRemain(){return remain;}
+    quint32 getCapacity(){return capacity;}
     QString getProductNo(){return productNo;}
 
 

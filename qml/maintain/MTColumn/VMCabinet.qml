@@ -29,8 +29,6 @@ Rectangle {
                }
            }
         }
-
-
     }
 
 
@@ -39,9 +37,7 @@ Rectangle {
         width: parent.width
         height: parent.height * 0.8
         z:1
-        anchors{
-            top:title_rect.bottom
-        }
+        anchors{top:title_rect.bottom}
         //商品列表框
         GridView{
             id:product_gridView
@@ -56,7 +52,7 @@ Rectangle {
             delegate: product_delegate
             model: product_model
             focus: true
-            currentIndex: 0
+            currentIndex: 1 //不能设置0 否则出错
 
             MouseArea{
                 anchors.fill: parent
@@ -65,8 +61,9 @@ Rectangle {
                     if(m != -1){
                        product_gridView.currentIndex = m;
                        cellClicked();
-                       Column.loadComponent(cabinet_rect);
-                       Column.columnEdit(product_gridView.currentItem);
+                       var itemColumn = Column.loadComponent(cabinet_rect);
+                       var curItem =  product_gridView.currentItem;
+                       itemColumn.column = curItem;
                     }
                 }
             }
@@ -77,10 +74,57 @@ Rectangle {
         id:tool_rect
         width: parent.width
         height: parent.height * 0.1
-        anchors{
-            top:cmCabinet_rect.bottom
-        }
+        anchors{top:cmCabinet_rect.bottom}
         z:3
+        Row{
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+            anchors.topMargin: 5
+            spacing: 10
+            Rectangle{
+                width: tool_rect.width * 0.1;height: tool_rect.height * 0.5
+                color: "blue"
+                Text {
+                    anchors.centerIn: parent
+                    text: "正常"
+                    font{bold: true;pixelSize: parent.height * 0.4}
+                    color: "white"
+                }
+            }
+            Rectangle{
+                width: tool_rect.width * 0.1;height: tool_rect.height * 0.5
+                color: "yellow"
+                Text {
+                    anchors.centerIn: parent
+                    font{bold: true;pixelSize: parent.height * 0.4}
+                    text: "无货"
+                    color: "white"
+                }
+            }
+
+            Rectangle{
+                width: tool_rect.width * 0.1;height: tool_rect.height * 0.5
+                color: "red"
+                Text {
+                    anchors.centerIn: parent
+                    font{bold: true;pixelSize: parent.height * 0.4}
+                    text: "故障"
+                    color: "white"
+                }
+            }
+            Rectangle{
+                width: tool_rect.width * 0.1;height: tool_rect.height * 0.5
+                color: "gray"
+                Text {
+                    anchors.centerIn: parent
+                    font{bold: true;pixelSize: parent.height * 0.4}
+                    text: "禁用"
+                    color: "white"
+                }
+            }
+        }
+
+
     }
 
     ListModel{
@@ -93,6 +137,9 @@ Rectangle {
             width: product_gridView.cellW * 0.95
             height:product_gridView.cellH * 0.95
             col_id:column_id
+            col_bin:column_bin
+            col_column:column_column
+            col_total: column_total
             col_state:column_state
             col_remain: column_remain
             col_goods: column_goods
@@ -102,12 +149,14 @@ Rectangle {
     function vmCreateColumn(id){
         console.log("创建货道:" + id + " model=" + product_model)
         product_model.append({
-                          "column_id": id,
-                          "column_state":1,
-                          "column_remain":1,
-                          "column_goods":"jp00002",
-                          "col_index":0
-
+                                "column_id": id,
+                                "column_state":1,
+                                "column_remain":1,
+                                "column_goods":"jp00002",
+                                "column_bin":1,
+                                "column_total":1,
+                                "column_column":11,
+                                "col_index":0
                          });
         var column = product_model.get(product_model.count - 1);
         column.col_index = product_model.count - 1;

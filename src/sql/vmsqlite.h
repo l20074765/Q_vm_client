@@ -32,11 +32,7 @@ public:
     bool tableAvailable(const QString &tableName);
     bool createTableColumn();
     bool createTableProduct();
-
-
-
     void addOrder(const QString &productId,OrderList *orderList);
-
     SqlProductList *getSqlProductList(){return this->productList;}
     SqlColumnList *getSqlColumnList(){return this->columnList;}
 signals:

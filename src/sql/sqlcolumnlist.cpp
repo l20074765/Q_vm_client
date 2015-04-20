@@ -3,7 +3,7 @@
 SqlColumnList::SqlColumnList(QObject *parent) : QObject(parent)
 {
     hash.clear();
-    queue.clear();
+    list.clear();
 }
 
 SqlColumnList::~SqlColumnList()
