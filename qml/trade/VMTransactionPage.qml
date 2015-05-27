@@ -55,7 +55,7 @@ Custom.VMWidget {
                     id:product1
                     width: 350 * 0.5
                     height: 450 * 0.5
-                    large: true
+
                 }
                 Rectangle{
                     width:350 * 0.5

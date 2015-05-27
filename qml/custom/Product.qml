@@ -7,31 +7,35 @@ Rectangle {
     property string productPrice: "0.00"
     property string productImage:"../../images/product/default_product.png"
     property string productID:"jp0001"
-    property bool large: false  //是否显示大图片
     property int borderMargin: 2
-
-    width: 350*0.20
-    height: 450*0.20
+    width: 350
+    height: 450
+    radius: 5
     border{
      width: borderMargin
-     color: "gray"
+     color: "#bc6ca8"
     }
+    smooth: true
 
 
     //图片显示区域
     Image {
         id: pic_image
-        width: large ? (parent.width - borderMargin * 2) :  (parent.width- borderMargin * 2) * 0.65
-        height: large ? (parent.height - borderMargin * 2) :  (parent.height- borderMargin * 2) * 0.65
+        width:  (parent.width- borderMargin * 2) * 0.7
+        height: (parent.height- borderMargin * 2) * 0.7
+
         anchors{
             top:parent.top
-            topMargin: large ? 0 : (parent.height - borderMargin * 2) * 0.03
+            topMargin: (parent.height - borderMargin * 2) * 0.03
             horizontalCenter: parent.horizontalCenter
 
         }
+        smooth: true
         source: productImage
-        fillMode: Image.PreserveAspectCrop
-        clip: true
+        //fillMode:Image.PreserveAspectCrop
+        //clip: true
+        fillMode: Image.PreserveAspectFit
+
     }
 
     //商品信息区域
@@ -40,47 +44,40 @@ Rectangle {
         width: parent.width - borderMargin * 2
         height: (parent.height - borderMargin * 2) * 0.2
         anchors{
-            top:pic_image.bottom
-            topMargin: (parent.height - borderMargin * 2) * 0.02
-            horizontalCenter:   pic_image.horizontalCenter
+            bottom:parent.bottom
+            bottomMargin: 5
+            horizontalCenter: parent.horizontalCenter
         }
-        visible: large ? false:true
-        Text {
-            id: pic_name
-            width: parent.width
-            height: parent.height * 0.4
-            anchors{
-                top:parent.top
-                topMargin: parent.height * 0.03
-                horizontalCenter:   parent.orizontalCenter
-            }
-            font{
-               bold: true
-               pixelSize: parent.width * 0.12
-            }
-            horizontalAlignment: Text.AlignHCenter
-            text: productName
+        Column{
+           anchors.fill: parent
+           spacing: 5
+           Text {
+               id: pic_name
+               anchors{horizontalCenter: parent.horizontalCenter}
+               font{
+                  bold: true
+                  pixelSize: (parent.width < parent.height) ?
+                               parent.width * 0.2 : parent.height * 0.35
+               }
+               horizontalAlignment: Text.AlignHCenter
+               text: productName
 
+           }
+           Text {
+               id: pic_price
+               anchors{
+                   horizontalCenter:   parent.horizontalCenter}
+               font{
+                  bold: true
+                  pixelSize: (parent.width < parent.height) ?
+                               parent.width * 0.2 : parent.height * 0.35
+               }
+               horizontalAlignment: Text.AlignHCenter
+               text: qsTr("单价:") +  productPrice + qsTr("元")
+
+           }
         }
 
-        Text {
-            id: pic_price
-            width: parent.width
-            height: parent.height * 0.4
-            anchors{
-                bottom: parent.bottom
-                bottomMargin: parent.height * 0.02
-                horizontalCenter:   parent.horizontalCenter
-
-            }
-            font{
-               bold: true
-               pixelSize: parent.width * 0.12
-            }
-            horizontalAlignment: Text.AlignHCenter
-            text: qsTr("单价:") +  productPrice + qsTr("元")
-
-        }
 
     }
 

@@ -4,26 +4,26 @@ Rectangle{
     id:mtBar
     signal button_clicked()
     property string button_text: "维护按钮"
-    property real border_width: 2
     property alias pressed: mymouse.pressed
     color: pressed ? "white" :"gray"
-    opacity: 0.9
+    opacity: 1
     width: 100
     height: 80
     border{
-        width: border_width
+        width: 2
         color: "gray"
     }
+
+    //smooth: true
     Text {
         text: button_text
-        anchors.fill: parent
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
+        anchors.centerIn: parent
         font{
             bold:true
-            pixelSize: 18
+            pixelSize: (parent.height < parent.width) ?
+                           parent.height * 0.2 : parent.width * 0.2
         }
-        color: parent.pressed? "gray" :"white"
+        color: parent.pressed ? "gray" :"white"
     }
 
     MouseArea{

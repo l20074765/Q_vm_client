@@ -24,7 +24,7 @@ Custom.VMWidget{
         Rectangle{
             id:rect_title
             width: parent.width
-            height: parent.height * 0.2
+            height: parent.height * 0.5
             anchors.top: parent.top
             anchors.topMargin: 10
             Column{
@@ -37,7 +37,8 @@ Custom.VMWidget{
                     text: qsTr("系统维护")
                     font{
                         bold: true
-                        pixelSize: 20
+                        pixelSize:   (parent.height < parent.width) ?
+                                         parent.height * 0.08 : parent.width * 0.08
                     }
                 }
                 Text {
@@ -46,7 +47,8 @@ Custom.VMWidget{
                     horizontalAlignment: Text.AlignHCenter
                     font{
                         bold: true
-                        pixelSize: 16
+                        pixelSize: (parent.height < parent.width) ?
+                                       parent.height * 0.04 : parent.width * 0.04
                     }
                     text: qsTr("系统时间:") + mtMainTainPage.datatime
                 }
@@ -64,11 +66,17 @@ Custom.VMWidget{
             height: parent.height * 0.5
             anchors.top: rect_title.bottom
             Grid{
-                anchors.centerIn: parent
+                width: parent.width * 0.8
+                height: parent.height * 0.8
+                anchors.horizontalCenter: parent.horizontalCenter
+                //anchors.: parent.verticalCenter
                 spacing: 10
                 columns: 3
+
                 MTButton{
                     id:mtMainBar
+                    width: parent.width * 0.3
+                    height: parent.height *  0.35
                     button_text: qsTr("商品管理")
                     onButton_clicked: {
                         if(productPage == null){
@@ -79,6 +87,8 @@ Custom.VMWidget{
                     }
                 }
                 MTButton{
+                    width: parent.width * 0.3
+                    height: parent.height *  0.35
                     button_text: qsTr("货道管理")
                     onButton_clicked: {
                         if(columnPage == null){
@@ -90,6 +100,8 @@ Custom.VMWidget{
                 }
                 MTButton{
                     id:mtTradeBar
+                    width: parent.width * 0.3
+                    height: parent.height *  0.35
                     button_text: qsTr("交易管理")
                     onButton_clicked: {
                         if(tradeManagePage == null){
@@ -99,6 +111,8 @@ Custom.VMWidget{
                     }
                 }
                 MTButton{
+                    width: parent.width * 0.3
+                    height: parent.height *  0.35
                     button_text: qsTr("操作日志")
                     onButton_clicked: {
                         //vmPageSwitch(mTSystemManagePage)
@@ -106,6 +120,8 @@ Custom.VMWidget{
                 }
                 MTButton{
                     id:mtProductBar
+                    width: parent.width * 0.3
+                    height: parent.height *  0.35
                     button_text: qsTr("设备管理")
                     onButton_clicked: {
                         if(deviceManagePage == null){
@@ -116,6 +132,8 @@ Custom.VMWidget{
                 }
                 MTButton{
                     id:mtTradeBar2
+                    width: parent.width * 0.3
+                    height: parent.height *  0.35
                     button_text: qsTr("系统设置")
                     onButton_clicked: {
                         if(systemManagePage == null){

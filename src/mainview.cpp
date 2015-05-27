@@ -16,6 +16,7 @@
 MainView::MainView(QObject *parent) : QObject(parent)
 {
 
+    //开启后台子线程
     mainFlow = new MainFlow(0);
     mainThread = new QThread(this);
     mainFlow->moveToThread(mainThread);
@@ -84,7 +85,8 @@ MainView::MainView(QObject *parent) : QObject(parent)
             this,SLOT(vmActionSlot(QVariant,QVariant)),Qt::QueuedConnection);
 
     qDebug()<<tr("MainView:当前线程")<<QThread::currentThread();
-    mainThread->start();
+
+    mainThread->start();//启动后台子线程
     emit vmActionSignal(QVariant((int)MainFlow::QML_MAINFLOW_START),QVariant(0));
 
 
@@ -106,12 +108,13 @@ MainView::~MainView()
 void MainView::show()
 {
     view->show();
+    //view->showFullScreen();
 }
 
 
 void MainView::qmlActionSlot(QVariant type, QVariant obj)
 {
-    //讲qml信号 传递给 后端
+    //将qml信号 传递给 后端
      qDebug()<<tr("MainView:当前线程")<<QThread::currentThread();
      emit vmActionSignal(type,obj);
 
