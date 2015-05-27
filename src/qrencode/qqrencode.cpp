@@ -21,7 +21,7 @@ void QQrencode::draw_QRcode(QPainter *painter,const qreal w,const QString &text)
     //                             2, QR_ECLEVEL_L, QR_MODE_8, 0);
 
     //QRcode_encodeData 是生成带数据的二维码
-    QRcode *qrcode = QRcode_encodeData(w,(unsigned char *)text.toUtf8().data(),2,QR_ECLEVEL_M);
+    QRcode *qrcode = QRcode_encodeData(w,(unsigned char *)text.toUtf8().data(),3,QR_ECLEVEL_M);
     if(!qrcode)
         return;
 

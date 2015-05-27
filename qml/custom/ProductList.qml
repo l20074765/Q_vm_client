@@ -4,6 +4,24 @@ Rectangle{
     id:rect_window
     width: 100
     height: 200
+    property alias productGridView: product_gridView
+    //商品列表框
+    GridView{
+        id:product_gridView
+        width: parent.width
+        height: parent.height
+        anchors.fill: parent
+        property real cellW: (parent.width) / 4.1
+        property real cellH: (parent.height) / 5.1
+        cellWidth: cellW
+        cellHeight: cellH
+        flickableDirection:Flickable.VerticalFlick
+        delegate: product_delegate
+        model: product_model
+        focus: true
+        currentIndex: 1
+    }
+
     //定义列表组件
     Component{
         id:product_delegate
@@ -20,23 +38,6 @@ Rectangle{
 
     ListModel{
         id:product_model
-    }
-
-    //商品列表框
-    GridView{
-        id:product_gridView
-        width: parent.width
-        height: parent.height
-        anchors.fill: parent
-        property real cellW: (parent.width) / 4.1
-        property real cellH: (parent.height) / 5.1
-        cellWidth: cellW
-        cellHeight: cellH
-        flickableDirection:Flickable.VerticalFlick
-        delegate: product_delegate
-        model: product_model
-        focus: true
-        currentIndex: 1
     }
 
 
