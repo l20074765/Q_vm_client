@@ -8,6 +8,10 @@ Rectangle {
     z:9
     visible: false
 
+    MouseArea{ //禁能父控件
+        anchors.fill: parent
+    }
+
     // 1.标题栏
     Rectangle{
         id:rect_title
@@ -18,18 +22,49 @@ Rectangle {
         Text {
             anchors.centerIn: parent
             verticalAlignment: Text.AlignVCenter
-            text: qsTr("商品详细信息")
-            font{bold: true;pixelSize: 20}
+            text: qsTr("编辑商品")
+            font{
+                bold: true
+                pixelSize: (parent.height < parent.width) ?
+                             parent.height * 0.5: parent.width * 0.1;
+            }
         }
     }
 
     //2 商品图片区
     Rectangle{
         id:rect_productImage
-        width: parent.width * 0.35
+        width: parent.width * 0.45
         height: parent.height * 0.35
-        anchors{top:rect_title.bottom;topMargin: 2}
-        border{color: "blue";width: 1}
+        anchors{top:rect_title.bottom;topMargin: 5;
+                left: parent.left;leftMargin: 5}
+       // border{color: "blue";width: 1}
+        smooth: true
+        Image{
+            anchors.fill: parent
+            source: "../../images/productPic/1.jpg"
+            smooth: true
+            fillMode: Image.PreserveAspectFit
+        }
+    }
+
+    MTColumn.MyButton{
+        width: parent.width * 0.15
+        height: parent.width * 0.15
+        anchors{
+            right: parent.right
+            rightMargin: parent.width * 0.025
+            bottom: rect_productInfo.top
+            bottomMargin: parent.width * 0.025
+        }
+        text: "更改图片"
+        font{
+            bold: true
+            pixelSize: width * 0.16
+        }
+        onClicked: {
+            //rect_window.visible = false
+        }
     }
 
     //3.商品编号
@@ -43,35 +78,73 @@ Rectangle {
             anchors.fill: parent
             spacing: 10
             MTColumn.VMCoumnTextInput{
-                text_title: qsTr("商品编号")
+                width: parent.width
+                height: parent.height / 12
+                text_title: qsTr("商品编号:")
                 text_contex: "11"
             }
             MTColumn.VMCoumnTextInput{
-                text_title: qsTr("商品单价")
+                width: parent.width
+                height: parent.height / 12
+                text_title: qsTr("商品名称:")
+                text_contex: "11"
+            }
+            MTColumn.VMCoumnTextInput{
+                width: parent.width
+                height: parent.height / 12
+                text_title: qsTr("商品单价:")
                 text_contex: "11"
             }
         }
     }
 
-    //4.工具栏
+
+    // 1.工具栏
     Rectangle{
         id:rect_tool
-        z:5
         width: parent.width
         height: parent.height * 0.05
-        anchors.bottom:parent.bottom
+        z:5
+        anchors{
+            bottom: parent.bottom
+        }
+        smooth: true
+        border{ color: "gray";width: 1 }
+
         MTColumn.MyButton{
             width: parent.width * 0.2
-            height: parent.height * 0.6
+            height: parent.height * 0.75
+            anchors.centerIn: parent
+            text: "保存"
+            font{
+                bold: true
+                pixelSize: (height < width) ?
+                               height * 0.6 : width * 0.1;
+            }
+            onClicked: {
+                rect_window.visible = false
+            }
+        }
+
+
+        MTColumn.MyButton{
+            width: parent.width * 0.2
+            height: parent.height * 0.75
             anchors.right: parent.right
-            anchors.rightMargin: 10
+            anchors.rightMargin: 5
             anchors.verticalCenter: parent.verticalCenter
             text: "返回"
+            font{
+                bold: true
+                pixelSize: (height < width) ?
+                               height * 0.6 : width * 0.1;
+            }
             onClicked: {
                 rect_window.visible = false
             }
         }
     }
+
 
 
 

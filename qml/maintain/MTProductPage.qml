@@ -27,9 +27,30 @@ Rectangle {
             text: qsTr("商品管理")
             font{
                 bold: true
-                pixelSize: 20
+                pixelSize: (parent.height < parent.width) ?
+                             parent.height * 0.5: parent.width * 0.1;
             }
         }
+
+        MTColumn.MyButton{
+            width: parent.width * 0.2
+            height:parent.height * 0.8
+            anchors{
+                right: parent.right
+                rightMargin: 5
+                verticalCenter: parent.verticalCenter
+            }
+            font{
+                //bold: true
+                pixelSize: (height < width) ?
+                               height * 0.6 : width * 0.1;
+            }
+
+            text: "新增商品"
+            onClicked: {
+            }
+        }
+
     }
 
     // 2.商品列表区
@@ -47,8 +68,8 @@ Rectangle {
         Component{
             id:product_delegate
             Custom.Product{
-                width: product_gridView.cellW * 0.9
-                height:product_gridView.cellH * 0.9
+                width: product_gridView.cellW
+                height:product_gridView.cellH
                 productID: product_id
                 productName:product_name
                 productPrice: product_price
@@ -66,17 +87,17 @@ Rectangle {
             id:product_gridView
             width: parent.width
             height: parent.height
-            anchors.fill: parent
-            property real cellW: (parent.width) / 4.1
-            property real cellH: (parent.height) / 5.1
+            anchors.centerIn: parent
+            property real cellW: (width) / 4.02
+            property real cellH: (height) / 4.4
             cellWidth: cellW
             cellHeight: cellH
+
             flickableDirection:Flickable.VerticalFlick
             delegate: product_delegate
             model: product_model
             focus: true
             currentIndex: 1
-
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -105,25 +126,23 @@ Rectangle {
         width: parent.width
         height: parent.height * 0.05
         z:5
-        anchors.top:main_rect.bottom
-        border{ color: "gray";width: 1 }
-        Row{
-            anchors.centerIn: parent
-            spacing: 10
-            MTColumn.MyButton{
-                text: "新增商品"
-                onClicked: {
-                }
-            }
+        anchors{
+            bottom: parent.bottom
         }
-
+        smooth: true
+        border{ color: "gray";width: 1 }
         MTColumn.MyButton{
             width: parent.width * 0.2
-            height: parent.height * 0.6
+            height: parent.height * 0.75
             anchors.right: parent.right
-            anchors.rightMargin: 10
+            anchors.rightMargin: 5
             anchors.verticalCenter: parent.verticalCenter
             text: "返回"
+            font{
+                bold: true
+                pixelSize: (height < width) ?
+                               height * 0.6 : width * 0.1;
+            }
             onClicked: {
                 mt_productPage.visible = false
             }
