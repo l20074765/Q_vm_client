@@ -134,7 +134,8 @@ DISTFILES += \
     qml/maintain/MTColumn/VMCoumnTextInput.qml \
     qml/maintain/MainTain.js \
     qml/custom/ProductList.qml \
-    qml/custom/MyTextInput.qml
+    qml/custom/MyTextInput.qml \
+    qml/maintain/MTProductPicList.qml
 
 
 

@@ -15,7 +15,7 @@ class MainFlow : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QStringList adsFileList READ getAdsFileList)
-
+    Q_PROPERTY(QStringList productPicList READ getproductPicList)
 
     Q_ENUMS(QmlEnumType)
     Q_ENUMS(QmlPayoutType)
@@ -52,7 +52,7 @@ public:
     };
 
     QStringList getAdsFileList();
-
+    QStringList getproductPicList();
     VMSqlite *getVMSqlite();
 protected:
     void init();

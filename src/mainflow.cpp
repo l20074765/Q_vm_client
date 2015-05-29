@@ -73,7 +73,16 @@ void MainFlow::obj_destroy()
 }
 
 
-
+QStringList MainFlow::getproductPicList()
+{
+    QStringList list;
+    QDir dir("../../images/productPic");
+    QStringList filter;
+    filter<<"*.jpg"<<"*.png";
+    list = dir.entryList(filter);
+    qDebug()<<tr("测试遍历商品图片:")<<list;
+    return list;
+}
 
 QStringList MainFlow::getAdsFileList()
 {

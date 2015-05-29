@@ -1,5 +1,7 @@
 import QtQuick 1.1
-import "MTColumn" as MTColumn
+import "MainTain.js" as MainTainJs
+import "./MTColumn" as MTColumn
+
 
 Rectangle {
     id:rect_window
@@ -7,8 +9,11 @@ Rectangle {
     height: 62
     z:9
     visible: false
-
-    MouseArea{ //禁能父控件
+    property Item picListPage: null
+    property Item picItem: null
+    property string productPic: ""
+    property string productName: "商品名称"
+    MouseArea{ //禁止事件穿透
         anchors.fill: parent
     }
 
@@ -42,7 +47,7 @@ Rectangle {
         smooth: true
         Image{
             anchors.fill: parent
-            source: "../../images/productPic/1.jpg"
+            source: productPic
             smooth: true
             fillMode: Image.PreserveAspectFit
         }
@@ -63,9 +68,19 @@ Rectangle {
             pixelSize: width * 0.16
         }
         onClicked: {
-            //rect_window.visible = false
+            if(picListPage == null){
+                picListPage =  MainTainJs.loadComponent(rect_window,"MTProductPicList.qml");
+            }
+            if(picListPage){
+                //productDetailItem.productInfoFlush(product_gridView.currentItem);
+                picListPage.show();
+            }
+
         }
     }
+
+
+
 
     //3.商品编号
     Rectangle{
@@ -87,13 +102,13 @@ Rectangle {
                 width: parent.width
                 height: parent.height / 12
                 text_title: qsTr("商品名称:")
-                text_contex: "11"
+                text_contex: productName
             }
             MTColumn.VMCoumnTextInput{
                 width: parent.width
                 height: parent.height / 12
                 text_title: qsTr("商品单价:")
-                text_contex: "11"
+                text_contex: "1.00"
             }
         }
     }
