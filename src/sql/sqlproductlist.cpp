@@ -12,6 +12,23 @@ SqlProductList::~SqlProductList()
 
 }
 
+SqlProduct *SqlProductList::add(const QString &key)
+{
+    if(hash.contains(key)){
+        return NULL;
+    }
+    else{
+        SqlProduct *product = new SqlProduct(0);
+        if(product == NULL) {
+            qDebug()<<"SqlProductList-add"<<"product == NULL";
+            return NULL;
+        }
+        else{
+            this->hash.insert(key,product);
+            return product;
+        }
+    }
+}
 
 void SqlProductList::hashInsert(const QString &key,SqlProduct *obj)
 {

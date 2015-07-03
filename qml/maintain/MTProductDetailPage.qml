@@ -1,7 +1,7 @@
 import QtQuick 1.1
 import "MainTain.js" as MainTainJs
 import "./MTColumn" as MTColumn
-
+import Qtvm 1.0
 
 Rectangle {
     id:rect_window
@@ -12,7 +12,12 @@ Rectangle {
     property Item picListPage: null
     property Item picItem: null
     property string productPic: ""
-    property string productName: "商品名称"
+
+
+    property alias productId:proudct_id.text_contex
+    property alias productPrice:proudct_price.text_contex
+    property alias productName: proudct_name.text_contex
+
     MouseArea{ //禁止事件穿透
         anchors.fill: parent
     }
@@ -84,6 +89,7 @@ Rectangle {
     //3.商品编号
     Rectangle{
         id:rect_productInfo
+
         width: parent.width
         height: parent.height * 0.55
         anchors{top:rect_productImage.bottom ; topMargin: 2}
@@ -92,18 +98,21 @@ Rectangle {
             anchors.fill: parent
             spacing: 10
             MTColumn.VMCoumnTextInput{
+                id:proudct_id
                 width: parent.width
                 height: parent.height / 12
                 text_title: qsTr("商品编号:")
-                text_contex: "11"
+                text_contex: "vm0001"
             }
             MTColumn.VMCoumnTextInput{
+                id:proudct_name
                 width: parent.width
                 height: parent.height / 12
                 text_title: qsTr("商品名称:")
-                text_contex: productName
+                text_contex: "商品名称"
             }
             MTColumn.VMCoumnTextInput{
+                id:proudct_price
                 width: parent.width
                 height: parent.height / 12
                 text_title: qsTr("商品单价:")
@@ -136,8 +145,18 @@ Rectangle {
                                height * 0.6 : width * 0.1;
             }
             onClicked: {
-
-                rect_window.visible = false
+                var p = sqlProductList.add(productId);
+                if(p == null){
+                    console.log("新增商品失败 重复商品编号");
+                }
+                else{
+                    p.name = productName;
+                    p.id = productId;
+                    p.salePriceStr =  productPrice;
+                    //p.product_image = product.image;
+                    mainView.qmlActionSlot(MainFlow.QML_SQL_PRODUCT_CREATE,productId);
+                    rect_window.visible = false
+                }
             }
         }
 

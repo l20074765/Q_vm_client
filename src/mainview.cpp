@@ -58,6 +58,7 @@ MainView::MainView(QObject *parent) : QObject(parent)
     view->setMinimumSize(QSize(768*0.5,1366*0.5));
 
     context = view->rootContext();
+    context->setContextProperty("mainView",this);
     context->setContextProperty("vm",this->mainFlow);
     VMSqlite *sqllite = mainFlow->getVMSqlite();
     context->setContextProperty("vmSqlite",sqllite);

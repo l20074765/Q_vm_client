@@ -189,6 +189,18 @@ void MainFlow::qmlActionSlot(QVariant type, QVariant obj)
         QObject *columnObj = obj.value<QObject *>();
         qDebug()<<"columnObj"<<columnObj;
     }
+    else if(mt == QML_SQL_PRODUCT_CREATE){
+        QString productId = obj.value<QString>();
+        qDebug()<<"后台处理QML新建商品请求:"<<productId;
+        bool ok = vmsqlite->vmInsertProduct(productId)
+        SqlProduct *p = ` hashValue(productId);
+        if(p == NULL){
+            qDebug()<<"后台处理QML新建商品请求:提取商品失败";
+        }
+        else{
+            vmsqlite->insertProduct(p);
+        }
+    }
 }
 
 void MainFlow::vmcActionSlot(QVariant type, QVariant obj)

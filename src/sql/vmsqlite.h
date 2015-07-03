@@ -36,6 +36,8 @@ public:
     bool updateProduct(const SqlProduct *product);
     bool deleteProduct(const QString &productNo);
     void addOrder(const QString &productId,OrderList *orderList);
+
+    bool vmInsertProduct(const QString &productId);
     SqlProductList *getSqlProductList(){return this->productList;}
     SqlColumnList *getSqlColumnList(){return this->columnList;}
 signals:

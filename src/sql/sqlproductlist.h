@@ -24,6 +24,7 @@ signals:
 
 public slots:
     SqlProduct *at(int i){return this->list.at(i);}
+    SqlProduct *add(const QString &key);
 private:
 
     QHash<QString,SqlProduct *> hash;

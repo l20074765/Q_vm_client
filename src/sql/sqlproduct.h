@@ -8,7 +8,7 @@ class SqlProduct : public QObject
     Q_OBJECT
     Q_PROPERTY(QString id READ getId WRITE setId)
     Q_PROPERTY(QString name READ getName WRITE setName)
-    Q_PROPERTY(QString salePriceStr READ getSalePriceStr)
+    Q_PROPERTY(QString salePriceStr READ getSalePriceStr WRITE setSalePriceStr)
     Q_PROPERTY(QString image READ getImage)
     Q_PROPERTY(quint32 salePrice READ getSalePrice WRITE setSalePrice)
 public:
@@ -23,6 +23,8 @@ public:
     QString getName(){return name;}
     void setName(const QString &name){this->name = name;}
     QString getSalePriceStr();
+    void setSalePriceStr(const QString &text);
+
     quint32 getSalePrice(){return salePrice;}
     void setSalePrice(const quint32 &salePrice){this->salePrice = salePrice;}
 

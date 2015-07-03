@@ -15,6 +15,19 @@ SqlProduct::~SqlProduct()
 
 }
 
+
+void SqlProduct::setSalePriceStr(const QString &text)
+{
+    bool ok;
+    quint32 temp = text.toUInt(&ok,10);
+    if(ok){
+        salePrice = temp;
+    }
+    else{
+        salePrice = 0;
+    }
+}
+
 QString SqlProduct::getSalePriceStr()
 {
     QString str = QString("%1.%2")
