@@ -136,6 +136,7 @@ Rectangle {
                                height * 0.6 : width * 0.1;
             }
             onClicked: {
+
                 rect_window.visible = false
             }
         }

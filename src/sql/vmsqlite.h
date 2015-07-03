@@ -33,6 +33,7 @@ public:
     bool createTableColumn();
     bool createTableProduct();
     bool insertProduct(const SqlProduct *product);
+    bool updateProduct(const SqlProduct *product);
     bool deleteProduct(const QString &productNo);
     void addOrder(const QString &productId,OrderList *orderList);
     SqlProductList *getSqlProductList(){return this->productList;}

@@ -104,22 +104,22 @@ void VMSqlite::checkTableProduct()
 
 //    qDebug()<<"新增商品";
 //    SqlProduct p;
-
-//    p.aliasName = " a";
-//    p.salePrice = 10000;
-//    p.brandName = " b";
-//    p.name = "未知商品";
-//    p.productTXT = "wyeryey";
-//    p.sellTag = "sellTag";
+//    p.id = "jp0001";
+//    p.aliasName = " a111111";
+//    p.salePrice = 10009;
+//    p.brandName = " b1111111";
+//    p.name = "未知商品11";
+//    p.productTXT = "wyeryey111111111";
+//    p.sellTag = "sellTag11111111";
 //    for(int i = 0;i < 100;i++){
 //        p.id = QString("jp%1").arg(i,4,10,QLatin1Char('0'));
 //        insertProduct(&p);
 //    }
-    for(int i = 50;i < 100;i++){
-        QString temp = QString("jp%1").arg(i,4,10,QLatin1Char('0'));
-        deleteProduct(temp);
-    }
-
+//    for(int i = 50;i < 100;i++){
+//        QString temp = QString("jp%1").arg(i,4,10,QLatin1Char('0'));
+//        deleteProduct(temp);
+//    }
+//    updateProduct(&p);
 
 }
 
@@ -260,6 +260,31 @@ bool VMSqlite::createTableColumn()
     return false;
 }
 
+
+
+bool VMSqlite::updateProduct(const SqlProduct *product)
+{
+    QString tableName = "vmc_product";
+    if(!m_db.isOpen()){
+        qDebug()<<"deleteProduct:"<< "数据库未打开";
+        return false;
+    }
+
+    QString temp = QString("update %1 set sellTag='%2',brandName='%3',productName='%4',aliasName='%5',salesPrice='%6',productTXT='%7' where productNo='%8'")
+            .arg(tableName).arg(product->sellTag).arg(product->brandName)
+            .arg(product->name).arg(product->aliasName).arg(product->salePrice)
+            .arg(product->productTXT).arg(product->id);
+
+    qDebug()<<"deleteProduct:"<<"temp="<<temp;
+    QSqlQuery query = m_db.exec (temp);
+    if(query.lastError ().type ()==QSqlError::NoError){//如果上面的语句执行没有出错
+        return true;
+    }else{
+        qDebug()<<"deleteProduct:执行"<<temp<<"出错："<<query.lastError ().text ();
+        return false;
+    }
+
+}
 
 bool VMSqlite::deleteProduct(const QString &productNo)
 {

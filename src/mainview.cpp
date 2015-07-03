@@ -65,6 +65,7 @@ MainView::MainView(QObject *parent) : QObject(parent)
     SqlProductList *sqlProductList = sqllite->getSqlProductList();
     SqlColumnList *sqlColumnList = sqllite->getSqlColumnList();
 
+    //context->setContextProperty("sqlProduct",mainFlow->sqlProduct);
     context->setContextProperty("sqlProductList",sqlProductList);
     context->setContextProperty("sqlColumnList",sqlColumnList);
 

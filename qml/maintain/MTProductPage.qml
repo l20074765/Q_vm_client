@@ -48,6 +48,7 @@ Rectangle {
 
             text: "新增商品"
             onClicked: {
+                mtproductEnterEdit();
             }
         }
 
@@ -183,5 +184,14 @@ Rectangle {
         product_model.clear();
     }
 
+    function mtproductEnterEdit(){
+        if(productDetailItem == null){
+            productDetailItem =  MainTainJs.loadComponent(mt_productPage,"MTProductDetailPage.qml");
+        }
+        if(productDetailItem){
+           // productDetailItem.productInfoFlush(product_gridView.currentItem);
+            productDetailItem.visible = true;
+        }
+    }
 
 }

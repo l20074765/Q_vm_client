@@ -54,6 +54,9 @@ public:
     QStringList getAdsFileList();
     QStringList getproductPicList();
     VMSqlite *getVMSqlite();
+
+  //  SqlProduct *sqlProduct;
+
 protected:
     void init();
 signals:
@@ -84,6 +87,8 @@ private:
 
     //支付宝类接口
     AlipayAPI *alipayApi;
+
+
 
 
 };

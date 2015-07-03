@@ -15,6 +15,8 @@ MainFlow::MainFlow(QObject *parent) : QObject(parent)
 {
     connect(this,SIGNAL(destroyed()),this,SLOT(obj_destroy()));
 
+
+
     //启动后台通信
     qDebug()<<"Start vmc ..."<<vmConfig.getVmPort();
     vmcMainFlow = new VmcMainFlow(this,vmConfig.getVmPort());
