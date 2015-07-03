@@ -36,6 +36,11 @@ public:
     quint32 buyNum;//购买数量
     QString image;
     QString imagePath;
+    QString sellTag;
+    QString brandName;
+    QString aliasName;
+    QString productTXT;
+
 signals:
 
 public slots:

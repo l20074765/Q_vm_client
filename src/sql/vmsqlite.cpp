@@ -87,7 +87,6 @@ void VMSqlite::checkTableProduct()
     query.exec("SELECT * FROM vmc_product");
     while(query.next()){
         bool ok;
-       // QString id = query.value(0).toString();
         SqlProduct *product = new SqlProduct(0);
         product->id = query.value(1).toString();
         product->name = query.value(4).toString();
@@ -96,9 +95,31 @@ void VMSqlite::checkTableProduct()
         product->image = filePic;
         qDebug()<<"VMSqlite::checkTableProduct...obj="<<product;
         productList->hashInsert(product->id,product);
+
+
     }
     productList->getProductList();
     emit sqlActionSignal(SQL_PRODUCT_ADD,(QObject *)productList);
+
+
+//    qDebug()<<"新增商品";
+//    SqlProduct p;
+
+//    p.aliasName = " a";
+//    p.salePrice = 10000;
+//    p.brandName = " b";
+//    p.name = "未知商品";
+//    p.productTXT = "wyeryey";
+//    p.sellTag = "sellTag";
+//    for(int i = 0;i < 100;i++){
+//        p.id = QString("jp%1").arg(i,4,10,QLatin1Char('0'));
+//        insertProduct(&p);
+//    }
+    for(int i = 50;i < 100;i++){
+        QString temp = QString("jp%1").arg(i,4,10,QLatin1Char('0'));
+        deleteProduct(temp);
+    }
+
 
 }
 
@@ -188,15 +209,15 @@ bool VMSqlite::createTableProduct()
     if(m_db.isOpen ()){//如果数据库已经打开
         QString temp = "create table if not exists "+
                 tableName + " (" +
-                "id int unsigned primary key," +
+                "id integer primary key AUTOINCREMENT," +
                 "productNo varchar(100)," +
                 "sellTag varchar(200)," +
                 "brandName varchar(200)," +
                 "productName varchar(200)," +
                 "aliasName varchar(200)," +
-                "salesPrice decimal(10,0)," +
+                "salesPrice unsigned integer," +
                 "productTXT TEXT"
-                        ")";
+                        ")";// "salesPrice decimal(20,0)," +
         //创建一个表，如果这表不存在，
         QSqlQuery query = m_db.exec (temp);
         if(query.lastError ().type ()==QSqlError::NoError){//如果上面的语句执行没有出错
@@ -217,13 +238,13 @@ bool VMSqlite::createTableColumn()
     if(m_db.isOpen ()){//如果数据库已经打开
         QString temp = "create table if not exists "+
                         tableName + " (" +
-                        "id int unsigned primary key," +
-                        "cabinetNo int," +
-                        "columnNo int," +
-                        "columnState int," +
+                        "id integer primary key AUTOINCREMENT," +
+                        "cabinetNo integer," +
+                        "columnNo integer," +
+                        "columnState integer," +
                         "productNo varchar(100)," +
-                        "remain int," +
-                        "capacity int," +
+                        "remain integer," +
+                        "capacity integer," +
                         "message TEXT" +
                         ")";
         //创建一个表，如果这表不存在，
@@ -240,6 +261,51 @@ bool VMSqlite::createTableColumn()
 }
 
 
+bool VMSqlite::deleteProduct(const QString &productNo)
+{
+    QString tableName = "vmc_product";
+    if(!m_db.isOpen()){
+        qDebug()<<"deleteProduct:"<< "数据库未打开";
+        return false;
+    }
+
+    QString temp = QString("delete from %1 where productNo='%2'")
+            .arg(tableName).arg(productNo);
+
+    qDebug()<<"deleteProduct:"<<"temp="<<temp;
+    QSqlQuery query = m_db.exec (temp);
+    if(query.lastError ().type ()==QSqlError::NoError){//如果上面的语句执行没有出错
+        return true;
+    }else{
+        qDebug()<<"deleteProduct:执行"<<temp<<"出错："<<query.lastError ().text ();
+        return false;
+    }
+}
+
+bool VMSqlite::insertProduct(const SqlProduct *product)
+{
+    QString tableName = "vmc_product";
+    if(!m_db.isOpen()){
+        qDebug()<<"insertProduct:"<< "数据库未打开";
+        return false;
+    }
+
+    QString temp = QString("insert into %1 values(NULL,'%2','%3','%4','%5','%6',%7,'%8')")
+            .arg(tableName).arg(product->id).arg(product->sellTag)
+            .arg(product->brandName).arg(product->name).arg(product->aliasName)
+            .arg(product->salePrice).arg(product->productTXT);
+
+    qDebug()<<"insertProduct:"<<"temp="<<temp;
+    QSqlQuery query = m_db.exec (temp);
+    if(query.lastError ().type ()==QSqlError::NoError){//如果上面的语句执行没有出错
+        return true;
+    }else{
+        qDebug()<<"insertProduct:执行"<<temp<<"出错："<<query.lastError ().text ();
+        return false;
+    }
+
+
+}
 
 void VMSqlite::addOrder(const QString &productId, OrderList *orderList)
 {

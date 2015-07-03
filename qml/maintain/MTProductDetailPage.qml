@@ -72,7 +72,6 @@ Rectangle {
                 picListPage =  MainTainJs.loadComponent(rect_window,"MTProductPicList.qml");
             }
             if(picListPage){
-                //productDetailItem.productInfoFlush(product_gridView.currentItem);
                 picListPage.show();
             }
 
