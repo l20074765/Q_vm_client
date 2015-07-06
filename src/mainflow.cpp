@@ -192,14 +192,17 @@ void MainFlow::qmlActionSlot(QVariant type, QVariant obj)
     else if(mt == QML_SQL_PRODUCT_CREATE){
         QString productId = obj.value<QString>();
         qDebug()<<"后台处理QML新建商品请求:"<<productId;
-        bool ok = vmsqlite->vmInsertProduct(productId)
-        SqlProduct *p = ` hashValue(productId);
-        if(p == NULL){
-            qDebug()<<"后台处理QML新建商品请求:提取商品失败";
+        bool ok = vmsqlite->vmInsertProduct(productId);
+        QVariant var1((int)QML_SQL_PRODUCT_CREATE);
+        QVariant var2;
+        if(ok){//插入成功
+            var2.setValue(int(1));
         }
         else{
-            vmsqlite->insertProduct(p);
+            qDebug()<<"后台处理QML新建商品请求:提取商品失败";
+            var2.setValue(int(0));
         }
+        emit qmlActionSignal(var1,var2);
     }
 }
 

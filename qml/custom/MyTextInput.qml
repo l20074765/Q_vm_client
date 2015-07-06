@@ -29,6 +29,7 @@ Rectangle{
         text: "12"
         onActiveFocusChanged: {
             console.log("编辑框进入:" + editor.activeFocus);
+
         }
     }
 }

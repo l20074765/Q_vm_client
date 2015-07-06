@@ -1,6 +1,7 @@
 import QtQuick 1.1
 import "MainTain.js" as MainTainJs
 import "./MTColumn" as MTColumn
+import "../custom"  as Custom
 import Qtvm 1.0
 
 Rectangle {
@@ -11,6 +12,7 @@ Rectangle {
     visible: false
     property Item picListPage: null
     property Item picItem: null
+    property Item loadingMask: null
     property string productPic: ""
 
 
@@ -39,6 +41,7 @@ Rectangle {
                              parent.height * 0.5: parent.width * 0.1;
             }
         }
+
     }
 
     //2 商品图片区
@@ -155,7 +158,11 @@ Rectangle {
                     p.salePriceStr =  productPrice;
                     //p.product_image = product.image;
                     mainView.qmlActionSlot(MainFlow.QML_SQL_PRODUCT_CREATE,productId);
-                    rect_window.visible = false
+
+                    loadingMask =  MainTainJs.loadComponent(rect_window,"../custom/LoadingMask.qml");
+                    loadingMask.visible = true;
+                    vm_main.qmlMainSignal.connect(loadingFinished);
+
                 }
             }
         }
@@ -188,6 +195,24 @@ Rectangle {
 
     }
 
+
+    function loadingFinished(type,obj){
+        console.log("测试qml信号" + "type=" + type+ " obj=" + obj);
+        MainTainJs.destroyItem(loadingMask);
+        if(obj == 1){//添加成功
+            var topParent = rect_window.parent;
+            var product = topParent.vmCreateProduct();
+            product.product_name = productName;
+            product.product_id = productId;
+            product.product_price =  productPrice;
+            product.product_image = productPic;
+
+        }
+        else{
+
+        }
+        rect_window.visible = false
+    }
 
 
 

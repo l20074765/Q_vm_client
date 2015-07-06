@@ -367,7 +367,7 @@ void VMSqlite::addOrder(const QString &productId, OrderList *orderList)
 
 bool VMSqlite::vmInsertProduct(const QString &productId)
 {
-    SqlProduct *p = SqlProductList.hashValue(productId);
+    SqlProduct *p = productList->hashValue(productId);
     if(p == NULL){
         qDebug()<<"vmInsertProduct:p=NULL";
         return false;

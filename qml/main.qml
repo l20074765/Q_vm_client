@@ -7,12 +7,12 @@ import Qtvm 1.0
 
 //主界面
 Rectangle {
-    id:main_rect
+    id:vm_main
     anchors.fill: parent
     property Item curPage:vmFaultPage
     property Item lastPage:vmFaultPage
     signal qmlActionSignal(variant type,variant obj)
-
+    signal qmlMainSignal(variant type,variant obj)
     //1.广告页面
     Ads.VMAdsPage{
         id:vmAdsPage
@@ -102,7 +102,7 @@ Rectangle {
 
     //返回函数
     function back_req(){
-        if(main_rect.curPage != vmFaultPage)
+        if(vm_main.curPage != vmFaultPage)
             vmPageSwitch(vmAdsPage)
     }
 
@@ -155,10 +155,10 @@ Rectangle {
 
     //页面切换函数
     function vmPageSwitch(page){
-        main_rect.lastPage = main_rect.curPage
-        main_rect.curPage = page
-        main_rect.lastPage.visible = false
-        main_rect.curPage.visible = true
+        vm_main.lastPage = vm_main.curPage
+        vm_main.curPage = page
+        vm_main.lastPage.visible = false
+        vm_main.curPage.visible = true
 
     }
 
@@ -189,6 +189,9 @@ Rectangle {
         else if(type == MainFlow.QML_TRADE_TYPE){
             tradeResult(obj);
         }
+        else if(type == MainFlow.QML_SQL_PRODUCT_CREATE){
+            qmlMainSignal(type,obj);
+        }
     }
 
     //新增商品
@@ -211,7 +214,10 @@ Rectangle {
     }
 
 
+    function vmcTest(){
+        console.log("测试主qml");
 
+    }
 }
 
 
