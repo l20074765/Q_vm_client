@@ -12,6 +12,18 @@ SqlProductList::~SqlProductList()
 
 }
 
+
+bool SqlProductList::isContains(const QString &key)
+{
+    qDebug()<<"SqlProductList-isContains"<<key;
+    if(hash.contains(key)){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
 SqlProduct *SqlProductList::add(const QString &key)
 {
     if(hash.contains(key)){

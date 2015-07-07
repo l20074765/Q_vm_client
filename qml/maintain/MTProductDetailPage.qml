@@ -13,13 +13,14 @@ Rectangle {
     property Item picListPage: null
     property Item picItem: null
     property Item loadingMask: null
-    property string productPic: ""
+ //   property string productPic: ""
 
 
     property alias productId:proudct_id.text_contex
     property alias productPrice:proudct_price.text_contex
     property alias productName: proudct_name.text_contex
-
+    property alias productPic:  product_image.source
+    property bool  newProduct: false
     MouseArea{ //禁止事件穿透
         anchors.fill: parent
     }
@@ -54,6 +55,7 @@ Rectangle {
        // border{color: "blue";width: 1}
         smooth: true
         Image{
+            id:product_image
             anchors.fill: parent
             source: productPic
             smooth: true
@@ -106,6 +108,19 @@ Rectangle {
                 height: parent.height / 12
                 text_title: qsTr("商品编号:")
                 text_contex: "vm0001"
+
+                onDisplayTextChanged: {
+                    if(rect_window.newProduct == true){
+                        if(sqlProductList.isContains(text_contex) == true){
+                            tipText = "*重复"
+                        }
+                        else{
+                             tipText = ""
+                        }
+                        console.log("商品编号验证");
+
+                    }
+                }
             }
             MTColumn.VMCoumnTextInput{
                 id:proudct_name
@@ -120,6 +135,13 @@ Rectangle {
                 height: parent.height / 12
                 text_title: qsTr("商品单价:")
                 text_contex: "1.00"
+                validator:DoubleValidator{id: intval; decimals: 2; bottom: 0; top: 100000000; notation:DoubleValidator.StandardNotation}
+                onActiveFocusChanged: {
+                    if(activeFocus == false){
+                        text_contex = vm.priceCheck(text_contex);
+                        console.log("单价矫正");
+                    }
+                }
             }
         }
     }
@@ -151,6 +173,7 @@ Rectangle {
                 var p = sqlProductList.add(productId);
                 if(p == null){
                     console.log("新增商品失败 重复商品编号");
+                   // proudct_id.tipText = "*重复"
                 }
                 else{
                     p.name = productName;
@@ -192,7 +215,10 @@ Rectangle {
 
     function productInfoFlush(p){
         console.log("刷新商品信息" + p);
-
+        productId  = p.productID;
+        productPrice = p.productPrice;
+        productName = p.productName;
+        productPic = p.productImage;
     }
 
 

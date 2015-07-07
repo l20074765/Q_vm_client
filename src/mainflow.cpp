@@ -236,3 +236,13 @@ void MainFlow::vmcActionSlot(QVariant type, QVariant obj)
 
 
 
+
+QString MainFlow::priceCheck(const QString &text)
+{
+    double d =  text.toDouble();
+    QString str = QString::number(d, 'f', 2);
+    qDebug()<<"d="<<d<<" str1="<<str;
+    return str;
+
+}
+

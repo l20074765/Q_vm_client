@@ -73,6 +73,7 @@ public slots:
     void vmcActionSlot(QVariant type,QVariant obj);
     void sqlActionSlot(int type,QObject *obj);
     void aliActionSlot(QVariant type,QVariant obj);
+    QString priceCheck(const QString &text);
 private:
 
     //主控板通信接口类

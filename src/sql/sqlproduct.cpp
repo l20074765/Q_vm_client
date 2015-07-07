@@ -1,5 +1,7 @@
 #include "sqlproduct.h"
 #include <QtDebug>
+#include <QList>
+#include <QStringList>
 SqlProduct::SqlProduct(QObject *parent) : QObject(parent)
 {
     id = "";
@@ -16,16 +18,21 @@ SqlProduct::~SqlProduct()
 }
 
 
+
 void SqlProduct::setSalePriceStr(const QString &text)
 {
     bool ok;
-    quint32 temp = text.toUInt(&ok,10);
+    QString temp = text;
+    temp.replace(".","");
+    quint32 n = temp.toUInt(&ok,10);
     if(ok){
-        salePrice = temp;
+        salePrice = n;
     }
     else{
         salePrice = 0;
     }
+
+    qDebug()<<"setSalePriceStr:salePrice="<<salePrice;
 }
 
 QString SqlProduct::getSalePriceStr()

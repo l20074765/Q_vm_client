@@ -48,6 +48,7 @@ signals:
 public slots:
    // void obj_destroy();
 
+
 };
 
 #endif // SQLPRODUCT_H

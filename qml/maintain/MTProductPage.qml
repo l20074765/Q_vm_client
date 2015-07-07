@@ -76,6 +76,17 @@ Rectangle {
                 productPrice: product_price
                 productIndex: product_index
                 productImage: product_image
+                onGoods_clicked: {
+                    console.log("选中商品 ID=" + productID  + product);
+                    if(productDetailItem == null){
+                        productDetailItem =  MainTainJs.loadComponent(mt_productPage,"MTProductDetailPage.qml");
+                    }
+                    if(productDetailItem){
+                        productDetailItem.productInfoFlush(product);
+                        productDetailItem.visible = true;
+                    }
+
+                }
             }
         }
 
@@ -99,25 +110,6 @@ Rectangle {
             model: product_model
             focus: true
             currentIndex: 1
-            MouseArea{
-                anchors.fill: parent
-                onClicked: {
-                    var m = product_gridView.indexAt(mouseX,mouseY);
-                    console.log("选中商品:" + m +
-                                " count=" + product_gridView.count);
-                    if(m != -1){
-                        product_gridView.currentIndex = m;
-                        if(productDetailItem == null){
-                            productDetailItem =  MainTainJs.loadComponent(mt_productPage,"MTProductDetailPage.qml");
-                        }
-                        if(productDetailItem){
-                            productDetailItem.productInfoFlush(product_gridView.currentItem);
-                            productDetailItem.visible = true;
-                        }
-                    }
-                }
-            }
-
         }
     }
 
@@ -191,7 +183,9 @@ Rectangle {
         if(productDetailItem){
            // productDetailItem.productInfoFlush(product_gridView.currentItem);
             productDetailItem.visible = true;
+            return productDetailItem;
         }
+        return null;
     }
 
 }

@@ -1,6 +1,7 @@
 import QtQuick 1.0
 
 Rectangle {
+    id:rect_product
     signal goods_clicked
     property int productIndex: 0
     property string productName: "商品名称"
@@ -8,6 +9,7 @@ Rectangle {
     property string productImage:"../../images/product/default_product.png"
     property string productID:"jp0001"
     property int borderMargin: 2
+    property alias product: rect_product
     width: 350
     height: 450
     Rectangle{
