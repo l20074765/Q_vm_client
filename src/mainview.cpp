@@ -60,6 +60,7 @@ MainView::MainView(QObject *parent) : QObject(parent)
     context = view->rootContext();
     context->setContextProperty("mainView",this);
     context->setContextProperty("vm",this->mainFlow);
+    context->setContextProperty("vmConfig",&vmConfig);
     VMSqlite *sqllite = mainFlow->getVMSqlite();
     context->setContextProperty("vmSqlite",sqllite);
 

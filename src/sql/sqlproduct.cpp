@@ -2,6 +2,9 @@
 #include <QtDebug>
 #include <QList>
 #include <QStringList>
+#include "setting.h"
+#include <QDir>
+
 SqlProduct::SqlProduct(QObject *parent) : QObject(parent)
 {
     id = "";
@@ -9,7 +12,7 @@ SqlProduct::SqlProduct(QObject *parent) : QObject(parent)
     salePrice = 100;
     buyNum = 0;
     image = "../../images/product/default_product.png";
-    imagePath = "../../images/productImage/";
+    imagePath = vmConfig.productImagePath();
 }
 
 SqlProduct::~SqlProduct()
@@ -43,6 +46,9 @@ QString SqlProduct::getSalePriceStr()
     return str;
 
 }
+
+
+
 
 
 

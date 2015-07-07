@@ -74,6 +74,7 @@ public slots:
     void sqlActionSlot(int type,QObject *obj);
     void aliActionSlot(QVariant type,QVariant obj);
     QString priceCheck(const QString &text);
+    QStringList getFilePicList(const QString &filePath);
 private:
 
     //主控板通信接口类

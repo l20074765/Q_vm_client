@@ -72,7 +72,7 @@ Rectangle {
             bottom: rect_productInfo.top
             bottomMargin: parent.width * 0.025
         }
-        text: "更改图片"
+        text: "添加图片"
         font{
             bold: true
             pixelSize: width * 0.16

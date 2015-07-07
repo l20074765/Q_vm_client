@@ -82,7 +82,6 @@ Rectangle {
 
         }
 
-
         MouseArea{
             hoverEnabled: false
             anchors.fill: parent

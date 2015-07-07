@@ -13,6 +13,9 @@ public:
 
     bool isQmlDebug(){return qmlDebug;}
     QString getVmPort(){return vmPort;}
+    QString productImagePath();
+    QStringList getFilePicList(const QString &filePath);
+
 signals:
 
 public slots:

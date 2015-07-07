@@ -151,7 +151,8 @@ Rectangle {
             p.product_name = product.name;
             p.product_id = product.id;
             p.product_price =  product.salePriceStr;
-            p.product_image = product.image;
+            p.product_image = product.imagePath + "/" + product.image;
+            console.log("Image:" + p.product_image);
         }
     }
 

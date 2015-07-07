@@ -1,6 +1,6 @@
 #include "vmsqlite.h"
 #include <QtDebug>
-
+#include "setting.h"
 
 VMSqlite::VMSqlite(QObject *parent) : QObject(parent)
 {
@@ -91,35 +91,22 @@ void VMSqlite::checkTableProduct()
         product->id = query.value(1).toString();
         product->name = query.value(4).toString();
         product->salePrice = query.value(6).toUInt(&ok);
-        QString filePic = product->imagePath + product->id + "/" + "1.jpg";
-        product->image = filePic;
-        qDebug()<<"VMSqlite::checkTableProduct...obj="<<product;
+        product->imagePath = vmConfig.productImagePath() + product->id;
+        product->picList = vmConfig.getFilePicList(product->imagePath);
+        if(product->picList.count() > 0){
+            product->image = product->picList.at(0);
+        }
+        else{
+           product->image = "";
+        }
+
+        qDebug()<<"VMSqlite::checkTableProduct...obj="<<product<<product->imagePath;
         productList->hashInsert(product->id,product);
 
 
     }
     productList->getProductList();
     emit sqlActionSignal(SQL_PRODUCT_ADD,(QObject *)productList);
-
-
-//    qDebug()<<"新增商品";
-//    SqlProduct p;
-//    p.id = "jp0001";
-//    p.aliasName = " a111111";
-//    p.salePrice = 10009;
-//    p.brandName = " b1111111";
-//    p.name = "未知商品11";
-//    p.productTXT = "wyeryey111111111";
-//    p.sellTag = "sellTag11111111";
-//    for(int i = 0;i < 100;i++){
-//        p.id = QString("jp%1").arg(i,4,10,QLatin1Char('0'));
-//        insertProduct(&p);
-//    }
-//    for(int i = 50;i < 100;i++){
-//        QString temp = QString("jp%1").arg(i,4,10,QLatin1Char('0'));
-//        deleteProduct(temp);
-//    }
-//    updateProduct(&p);
 
 }
 

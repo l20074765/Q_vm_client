@@ -86,6 +86,18 @@ QStringList MainFlow::getproductPicList()
     return list;
 }
 
+
+QStringList MainFlow::getFilePicList(const QString &filePath)
+{
+    QStringList list;
+    QDir dir(filePath);
+    QStringList filter;
+    filter<<"*.jpg"<<"*.png";
+    list = dir.entryList(filter);
+    qDebug()<<"getFileList"<<list;
+    return list;
+}
+
 QStringList MainFlow::getAdsFileList()
 {
     QStringList list;

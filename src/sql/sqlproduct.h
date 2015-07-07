@@ -2,7 +2,7 @@
 #define SQLPRODUCT_H
 
 #include <QObject>
-
+#include  <QStringList>
 class SqlProduct : public QObject
 {
     Q_OBJECT
@@ -10,13 +10,15 @@ class SqlProduct : public QObject
     Q_PROPERTY(QString name READ getName WRITE setName)
     Q_PROPERTY(QString salePriceStr READ getSalePriceStr WRITE setSalePriceStr)
     Q_PROPERTY(QString image READ getImage)
+    Q_PROPERTY(QString imagePath READ getImagePath)
+    Q_PROPERTY(QStringList picList READ getImages)
     Q_PROPERTY(quint32 salePrice READ getSalePrice WRITE setSalePrice)
 public:
     explicit SqlProduct(QObject *parent = 0);
     ~SqlProduct();
 
     QString getImage(){return this->image;}
-
+    QString getImagePath(){return this->imagePath;}
     QString getId(){return id;}
     void setId(const QString &id){this->id = id;}
 
@@ -29,7 +31,7 @@ public:
     void setSalePrice(const quint32 &salePrice){this->salePrice = salePrice;}
 
 
-
+    QStringList getImages(){return this->picList;}
 
 
     QString id;
@@ -37,6 +39,7 @@ public:
     quint32 salePrice;
     quint32 buyNum;//购买数量
     QString image;
+    QStringList picList;
     QString imagePath;
     QString sellTag;
     QString brandName;
@@ -47,6 +50,9 @@ signals:
 
 public slots:
    // void obj_destroy();
+
+
+private:
 
 
 };
