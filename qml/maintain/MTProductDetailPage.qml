@@ -13,7 +13,6 @@ Rectangle {
     property Item picListPage: null
     property Item picItem: null
     property Item loadingMask: null
- //   property string productPic: ""
 
 
     property alias productId:proudct_id.text_contex
@@ -72,7 +71,7 @@ Rectangle {
             bottom: rect_productInfo.top
             bottomMargin: parent.width * 0.025
         }
-        text: "添加图片"
+        text: "更改图片"
         font{
             bold: true
             pixelSize: width * 0.16
@@ -108,7 +107,7 @@ Rectangle {
                 height: parent.height / 12
                 text_title: qsTr("商品编号:")
                 text_contex: "vm0001"
-
+                readOnly:rect_window.newProduct == true ?  false:true
                 onDisplayTextChanged: {
                     if(rect_window.newProduct == true){
                         if(sqlProductList.isContains(text_contex) == true){
@@ -118,7 +117,6 @@ Rectangle {
                              tipText = ""
                         }
                         console.log("商品编号验证");
-
                     }
                 }
             }
@@ -170,23 +168,31 @@ Rectangle {
                                height * 0.6 : width * 0.1;
             }
             onClicked: {
-                var p = sqlProductList.add(productId);
-                if(p == null){
-                    console.log("新增商品失败 重复商品编号");
-                   // proudct_id.tipText = "*重复"
-                }
-                else{
-                    p.name = productName;
-                    p.id = productId;
-                    p.salePriceStr =  productPrice;
-                    //p.product_image = product.image;
-                    mainView.qmlActionSlot(MainFlow.QML_SQL_PRODUCT_CREATE,productId);
+                if(rect_window.newProduct == true){
+                    var p = sqlProductList.add(productId);
+                    if(p == null){
+                        console.log("新增商品失败 重复商品编号");
+                       // proudct_id.tipText = "*重复"
+                    }
+                    else{
+                        p.name = productName;
+                        p.id = productId;
+                        p.salePriceStr =  productPrice;
 
-                    loadingMask =  MainTainJs.loadComponent(rect_window,"../custom/LoadingMask.qml");
-                    loadingMask.visible = true;
-                    vm_main.qmlMainSignal.connect(loadingFinished);
+                        p.image = productPic;
+                        mainView.qmlActionSlot(MainFlow.QML_SQL_PRODUCT_CREATE,productId);
+
+                        loadingMask =  MainTainJs.loadComponent(rect_window,"../custom/LoadingMask.qml");
+                        loadingMask.visible = true;
+                        vm_main.qmlMainSignal.connect(loadingFinished);
+
+                    }
+                }
+                else{ //修改商品
 
                 }
+
+
             }
         }
 

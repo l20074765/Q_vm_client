@@ -82,6 +82,7 @@ Rectangle {
                         productDetailItem =  MainTainJs.loadComponent(mt_productPage,"MTProductDetailPage.qml");
                     }
                     if(productDetailItem){
+                        productDetailItem.newProduct = false;
                         productDetailItem.productInfoFlush(product);
                         productDetailItem.visible = true;
                     }
@@ -182,7 +183,11 @@ Rectangle {
             productDetailItem =  MainTainJs.loadComponent(mt_productPage,"MTProductDetailPage.qml");
         }
         if(productDetailItem){
-           // productDetailItem.productInfoFlush(product_gridView.currentItem);
+            productDetailItem.productId  = "";
+            productDetailItem.productPrice = "1.00";
+            productDetailItem.productName = "";
+            productDetailItem.productPic = "";
+            productDetailItem.newProduct = true;
             productDetailItem.visible = true;
             return productDetailItem;
         }

@@ -9,7 +9,7 @@ class SqlProduct : public QObject
     Q_PROPERTY(QString id READ getId WRITE setId)
     Q_PROPERTY(QString name READ getName WRITE setName)
     Q_PROPERTY(QString salePriceStr READ getSalePriceStr WRITE setSalePriceStr)
-    Q_PROPERTY(QString image READ getImage)
+    Q_PROPERTY(QString image READ getImage WRITE setImage)
     Q_PROPERTY(QString imagePath READ getImagePath)
     Q_PROPERTY(QStringList picList READ getImages)
     Q_PROPERTY(quint32 salePrice READ getSalePrice WRITE setSalePrice)
@@ -18,6 +18,7 @@ public:
     ~SqlProduct();
 
     QString getImage(){return this->image;}
+    void setImage(const QString &image){this->image = image;}
     QString getImagePath(){return this->imagePath;}
     QString getId(){return id;}
     void setId(const QString &id){this->id = id;}

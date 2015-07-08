@@ -43,8 +43,8 @@ Rectangle {
         Component{
             id:product_delegate
             Rectangle{
-                property string productName: product_name
-                property string productImage:  pic_path_str + product_image
+                property alias productName: p_text.text
+                property alias productImage:  p_image.source
 
                 width: product_gridView.cellW
                 height:product_gridView.cellH
@@ -55,18 +55,20 @@ Rectangle {
                         anchors.fill: parent
                         spacing: 4
                         Image{
+                            id:p_image
                             width: parent.width
                             height: parent.height * 0.8
                             smooth: true
-                            source: productImage
+                            source: product_image
                             fillMode: Image.PreserveAspectFit
                         }
                         Text {
+                            id:p_text
                             width: parent.width
                             height: parent.height * 0.2
                             anchors.horizontalCenter: parent.horizontalCenter
                             smooth: true
-                            text: productName
+                            text: product_name
                             font{
                                 pixelSize: (height < width) ?
                                                height * 0.4 : width * 0.06;
@@ -156,9 +158,10 @@ Rectangle {
 
     function vmCreateProduct(name){
         var picName = name.split('.');
+        var path = vmConfig.productPicPath();
         product_model.append({
                           "product_name":picName[0],
-                          "product_image":name
+                          "product_image":path + name
                          });
         var product = product_model.get(product_model.count - 1);
         return product;
@@ -188,7 +191,9 @@ Rectangle {
         if(!isGetPic){
             //isGetPic = true;
             mtProductClear();
-            var picList = vm.productPicList;
+            var path = vmConfig.productPicPath();
+            var picList = vmConfig.getFilePicList(path);
+           // var picList = vm.productPicList;
             for(var i = 0;i < picList.length;i++){
                 var pic = vmCreateProduct(picList[i]);
             }

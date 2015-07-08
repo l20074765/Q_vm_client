@@ -23,6 +23,15 @@ Setting::~Setting()
 }
 
 
+QString Setting::productDefaultPic()
+{
+    return "../../images/product/default_product.png";
+}
+
+QString Setting::productPicPath() //用户放置图片的文件夹
+{
+    return "../../images/productPic/";
+}
 
 QString Setting::productImagePath()
 {

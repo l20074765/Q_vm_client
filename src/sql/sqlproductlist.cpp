@@ -24,6 +24,11 @@ bool SqlProductList::isContains(const QString &key)
     }
 }
 
+SqlProduct *SqlProductList::get(const QString &key)
+{
+   return hash.value(key);
+}
+
 SqlProduct *SqlProductList::add(const QString &key)
 {
     if(hash.contains(key)){

@@ -97,7 +97,7 @@ void VMSqlite::checkTableProduct()
             product->image = product->picList.at(0);
         }
         else{
-           product->image = vmConfig.productDefaultPic();
+            product->image = vmConfig.productDefaultPic();
         }
 
         qDebug()<<"VMSqlite::checkTableProduct...obj="<<product<<product->imagePath;

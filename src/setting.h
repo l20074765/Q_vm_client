@@ -2,7 +2,7 @@
 #define SETTING_H
 
 #include <QObject>
-
+#include <QStringList>
 
 class Setting : public QObject
 {
@@ -14,12 +14,14 @@ public:
     bool isQmlDebug(){return qmlDebug;}
     QString getVmPort(){return vmPort;}
     QString productImagePath();
-    QStringList getFilePicList(const QString &filePath);
+
 
 signals:
 
 public slots:
-
+    QStringList getFilePicList(const QString &filePath);
+    QString productPicPath();
+    QString productDefaultPic();
 private:
     bool qmlDebug;
     QString vmPort;
