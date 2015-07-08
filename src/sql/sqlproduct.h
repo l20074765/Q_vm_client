@@ -9,17 +9,15 @@ class SqlProduct : public QObject
     Q_PROPERTY(QString id READ getId WRITE setId)
     Q_PROPERTY(QString name READ getName WRITE setName)
     Q_PROPERTY(QString salePriceStr READ getSalePriceStr WRITE setSalePriceStr)
-    Q_PROPERTY(QString image READ getImage WRITE setImage)
-    Q_PROPERTY(QString imagePath READ getImagePath)
-    Q_PROPERTY(QStringList picList READ getImages)
+    Q_PROPERTY(QStringList images READ getImages WRITE setImages)
+    Q_PROPERTY(QString imagePath READ getImagePath WRITE setImagePath)
     Q_PROPERTY(quint32 salePrice READ getSalePrice WRITE setSalePrice)
+
+
 public:
     explicit SqlProduct(QObject *parent = 0);
     ~SqlProduct();
 
-    QString getImage(){return this->image;}
-    void setImage(const QString &image){this->image = image;}
-    QString getImagePath(){return this->imagePath;}
     QString getId(){return id;}
     void setId(const QString &id){this->id = id;}
 
@@ -31,16 +29,18 @@ public:
     quint32 getSalePrice(){return salePrice;}
     void setSalePrice(const quint32 &salePrice){this->salePrice = salePrice;}
 
+    QString getImagePath(){return this->imagePath;}
+    void setImagePath(const QString &imagePath){this->imagePath = imagePath;}
 
-    QStringList getImages(){return this->picList;}
 
+    QStringList getImages(){return this->images;}
+    void setImages(const QStringList &images){this->images = images;}
 
     QString id;
     QString name;
     quint32 salePrice;
     quint32 buyNum;//购买数量
-    QString image;
-    QStringList picList;
+    QStringList images;
     QString imagePath;
     QString sellTag;
     QString brandName;

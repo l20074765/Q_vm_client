@@ -92,12 +92,14 @@ void VMSqlite::checkTableProduct()
         product->name = query.value(4).toString();
         product->salePrice = query.value(6).toUInt(&ok);
         product->imagePath = vmConfig.productImagePath() + product->id;
-        product->picList = vmConfig.getFilePicList(product->imagePath);
-        if(product->picList.count() > 0){
-            product->image = product->picList.at(0);
+
+        QStringList list = vmConfig.getFilePicList(product->imagePath);
+        product->images.clear();
+        if(list.isEmpty()){
+            product->images <<vmConfig.productDefaultPic();
         }
         else{
-           product->image = vmConfig.productDefaultPic();
+            product->images = list;
         }
 
         qDebug()<<"VMSqlite::checkTableProduct...obj="<<product<<product->imagePath;
