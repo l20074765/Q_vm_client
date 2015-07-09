@@ -2,6 +2,8 @@
 #include <QSettings>
 #include <QDir>
 #include <QtDebug>
+#include <QFile>
+#include <QFileInfo>
 
 Setting vmConfig;
 
@@ -30,14 +32,33 @@ QString Setting::productDefaultPic()
 
 QString Setting::productPicPath() //用户放置图片的文件夹
 {
-    return "../../images/productPic/";
+    return "../../images/productPic";
 }
 
 QString Setting::productImagePath()
 {
-    return "../../images/productImage/";
+    return "../../images/productImage";
 }
 
+
+
+
+bool Setting::createDir(const QString &filePath)
+{
+     QDir dir(filePath);
+     if(!dir.exists()){ //目录不存在则创建
+        bool ok = dir.current().mkdir(filePath);
+        if(!ok){
+            return false;
+        }
+        else{
+           return true;
+        }
+     }
+     else{
+         return true;
+     }
+}
 
 QStringList Setting::getFilePicList(const QString &filePath)
 {
@@ -47,11 +68,11 @@ QStringList Setting::getFilePicList(const QString &filePath)
     if(!dir.exists()){ //目录不存在则创建
        bool ok = dir.current().mkdir(filePath);
        if(!ok){
-           qDebug()<<"getFilePicList"<<"创建目录失败!"<<filePath;
+           //qDebug()<<"getFilePicList"<<"创建目录失败!"<<filePath;
            return list;
        }
        else{
-           qDebug()<<"getFilePicList"<<"创建目录成功!"<<filePath;
+           //qDebug()<<"getFilePicList"<<"创建目录成功!"<<filePath;
            dir.setPath(filePath);
 
        }
@@ -60,7 +81,7 @@ QStringList Setting::getFilePicList(const QString &filePath)
     QStringList filter;
     filter<<"*.jpg"<<"*.png";
     list = dir.entryList(filter);
-    qDebug()<<"getFileList"<<list;
+   // qDebug()<<"getFileList"<<list;
     if(list.isEmpty()){
         return list;
     }

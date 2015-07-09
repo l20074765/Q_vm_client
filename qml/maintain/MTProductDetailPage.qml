@@ -14,7 +14,8 @@ Rectangle {
     property Item picItem: null
     property Item loadingMask: null
 
-
+    property ListModel listModel:null
+    property Item curProduct:null
     property alias productId:proudct_id.text_contex
     property alias productPrice:proudct_price.text_contex
     property alias productName: proudct_name.text_contex
@@ -39,6 +40,38 @@ Rectangle {
                 bold: true
                 pixelSize: (parent.height < parent.width) ?
                              parent.height * 0.5: parent.width * 0.1;
+            }
+        }
+        MTColumn.MyButton{
+            width: parent.width * 0.2
+            height:parent.height * 0.8
+            anchors{
+                right: parent.right
+                rightMargin: 5
+                verticalCenter: parent.verticalCenter
+            }
+            font{
+                //bold: true
+                pixelSize: (height < width) ?
+                               height * 0.6 : width * 0.1;
+            }
+
+            text: "删除商品"
+            onClicked: {
+                if(newProduct == false){
+                    mainView.qmlActionSlot(MainFlow.QML_SQL_PRODUCT_DELETE,productId);
+                    var item = listModel.remove(curProduct.productIndex);
+                    var count = listModel.count;
+                    console.log("ListModel:count=" + count);
+                    for(var i = 0;i < count;i++){
+                        var t = listModel.get(i);
+                        listModel.setProperty(i,"product_index",i);
+                        //console.log("调整:id=" + t.product_id + " i=" + i);
+                    }
+
+                    console.log("删除商品:index=" + curProduct.productIndex);
+                    rect_window.visible = false;
+                }
             }
         }
 
@@ -178,8 +211,7 @@ Rectangle {
                         p.name = productName;
                         p.id = productId;
                         p.salePriceStr =  productPrice;
-
-                        p.image = productPic;
+                        p.pic = productPic;
                         mainView.qmlActionSlot(MainFlow.QML_SQL_PRODUCT_CREATE,productId);
 
                         loadingMask =  MainTainJs.loadComponent(rect_window,"../custom/LoadingMask.qml");
@@ -189,7 +221,21 @@ Rectangle {
                     }
                 }
                 else{ //修改商品
-
+                    var p = sqlProductList.get(productId)
+                    if(p == null){
+                        console.log("修改商品失败 商品编号不存在");
+                    }
+                    else{
+                        p.name = productName;
+                        p.id = productId;
+                        p.salePriceStr =  productPrice;
+                        p.pic = productPic;
+                        sqlProductList.updateProductImage(p); //更新图片
+                        mainView.qmlActionSlot(MainFlow.QML_SQL_PRODUCT_UPDATE,productId);
+                        loadingMask =  MainTainJs.loadComponent(rect_window,"../custom/LoadingMask.qml");
+                        loadingMask.visible = true;
+                        vm_main.qmlMainSignal.connect(loadingFinished);
+                    }
                 }
 
 
@@ -225,28 +271,46 @@ Rectangle {
         productPrice = p.productPrice;
         productName = p.productName;
         productPic = p.productImage;
+        curProduct = p;
     }
 
 
     function loadingFinished(type,obj){
         console.log("测试qml信号" + "type=" + type+ " obj=" + obj);
-        MainTainJs.destroyItem(loadingMask);
-        if(obj == 1){//添加成功
-            var topParent = rect_window.parent;
-            var product = topParent.vmCreateProduct();
-            product.product_name = productName;
-            product.product_id = productId;
-            product.product_price =  productPrice;
-            product.product_image = productPic;
+        if(type == MainFlow.QML_SQL_PRODUCT_CREATE){
+            MainTainJs.destroyItem(loadingMask);
+            if(obj == 1){//添加成功
+                var topParent = rect_window.parent;
+                var product = topParent.vmCreateProduct();
+                var p = sqlProductList.get(productId);
+                product.product_name = p.name;
+                product.product_id = p.id;
+                product.product_price =  p.salePriceStr;
+                product.product_image = p.pic;
+
+            }
+            else{
+
+            }
+            rect_window.visible = false
+        }
+        else if(type == MainFlow.QML_SQL_PRODUCT_UPDATE){
+            MainTainJs.destroyItem(loadingMask);
+            if(obj == 1 && listModel != null){
+                var p1 = sqlProductList.get(productId);
+                var index = curProduct.productIndex;
+                console.log("productUpdate:index=" + index + " ID=" + p1.id);
+                listModel.set(index,{"product_id":p1.id,
+                                    "product_name":p1.name,
+                                    "product_price":p1.salePriceStr,
+                                    "product_image":p1.pic,
+                                    "product_index":index});
+
+            }
+
+            rect_window.visible = false
 
         }
-        else{
-
-        }
-        rect_window.visible = false
     }
-
-
-
 }
 

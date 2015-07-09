@@ -77,14 +77,16 @@ Rectangle {
                 productIndex: product_index
                 productImage: product_image
                 onGoods_clicked: {
-                    console.log("选中商品 ID=" + productID  + product);
+                    console.log("选中商品 ID=" + productID + " Index=" + product.productIndex + "; " + product);
                     if(productDetailItem == null){
                         productDetailItem =  MainTainJs.loadComponent(mt_productPage,"MTProductDetailPage.qml");
                     }
                     if(productDetailItem){
+                       //var item = product_gridView.childAt(product.mouseX,product.mouseY);
                         productDetailItem.newProduct = false;
                         productDetailItem.productInfoFlush(product);
                         productDetailItem.visible = true;
+                        productDetailItem.listModel = product_model;
                     }
 
                 }
@@ -152,8 +154,8 @@ Rectangle {
             p.product_name = product.name;
             p.product_id = product.id;
             p.product_price =  product.salePriceStr;
-            p.product_image = product.imagePath + "/" + product.image;
-            console.log("Image:" + p.product_image);
+            p.product_image = product.pic;
+           // console.log("Image:" + p.product_image);
         }
     }
 

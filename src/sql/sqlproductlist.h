@@ -26,7 +26,9 @@ public slots:
     SqlProduct *at(int i){return this->list.at(i);}
     SqlProduct *add(const QString &key);
     SqlProduct *get(const QString &key);
+    bool remove(const QString &key);
     bool       isContains(const QString &key);
+    bool    updateProductImage(SqlProduct *p);
 private:
 
     QHash<QString,SqlProduct *> hash;

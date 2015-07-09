@@ -6,10 +6,12 @@ Rectangle {
     property int productIndex: 0
     property string productName: "商品名称"
     property string productPrice: "0.00"
-    property string productImage:"../../images/product/default_product.png"
+    property string productImage:""
     property string productID:"jp0001"
     property int borderMargin: 2
     property alias product: rect_product
+   // property alias mouseX: mouse_goods.mouseX
+    //property alias mouseY: mouse_goods.mouseY
     width: 350
     height: 450
     Rectangle{
@@ -54,6 +56,7 @@ Rectangle {
                spacing: 5
                Text {
                    id: pic_name
+                   width: parent.width
                    anchors{horizontalCenter: parent.horizontalCenter}
                    font{
                       bold: true
@@ -61,11 +64,13 @@ Rectangle {
                                    parent.width * 0.2 : parent.height * 0.35
                    }
                    horizontalAlignment: Text.AlignHCenter
+                   elide: Text.ElideRight
                    text: productName
 
                }
                Text {
                    id: pic_price
+                   width: parent.width
                    anchors{
                        horizontalCenter:   parent.horizontalCenter}
                    font{
@@ -83,6 +88,7 @@ Rectangle {
         }
 
         MouseArea{
+            id:mouse_goods
             hoverEnabled: false
             anchors.fill: parent
             onClicked: goods_clicked()

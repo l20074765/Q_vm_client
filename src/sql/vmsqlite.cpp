@@ -91,24 +91,31 @@ void VMSqlite::checkTableProduct()
         product->id = query.value(1).toString();
         product->name = query.value(4).toString();
         product->salePrice = query.value(6).toUInt(&ok);
-        product->imagePath = vmConfig.productImagePath() + product->id;
+        product->imagePath = vmConfig.productImagePath() + "/"  + product->id;
 
-        QStringList list = vmConfig.getFilePicList(product->imagePath);
-        product->images.clear();
-        if(list.isEmpty()){
-            product->images <<vmConfig.productDefaultPic();
+        product->images = vmConfig.getFilePicList(product->imagePath);
+
+        if(product->images.isEmpty()){
+            product->pic = vmConfig.productDefaultPic();
         }
         else{
-            product->images = list;
+            product->pic = product->imagePath + "/" + product->images[0];
         }
 
-        qDebug()<<"VMSqlite::checkTableProduct...obj="<<product<<product->imagePath;
+
+       // qDebug()<<"VMSqlite::checkTableProduct...obj="<<product<<product->imagePath;
         productList->hashInsert(product->id,product);
 
 
     }
     productList->getProductList();
     emit sqlActionSignal(SQL_PRODUCT_ADD,(QObject *)productList);
+
+//    SqlProduct *p = new SqlProduct();
+//    for(int i = 0;i < 10000;i++){
+//        p->id = QString("vm%1").arg(i,4,10,QLatin1Char('0'));
+//        insertProduct(p);
+//    }
 
 }
 
@@ -354,6 +361,31 @@ void VMSqlite::addOrder(const QString &productId, OrderList *orderList)
 }
 
 
+bool VMSqlite::vmDeleteProduct(const QString &productId)
+{
+    SqlProduct *p = productList->hashValue(productId);
+    if(p == NULL){
+        qDebug()<<"vmInsertProduct:p=NULL";
+        return false;
+    }
+    else{
+       deleteProduct(productId);//删除数据库
+       productList->remove(productId);//删除链表
+    }
+}
+
+bool VMSqlite::vmUpdateProduct(const QString &productId)
+{
+    SqlProduct *p = productList->hashValue(productId);
+    if(p == NULL){
+        qDebug()<<"vmInsertProduct:p=NULL";
+        return false;
+    }
+    else{
+       return updateProduct(p);
+    }
+}
+
 bool VMSqlite::vmInsertProduct(const QString &productId)
 {
     SqlProduct *p = productList->hashValue(productId);
@@ -362,6 +394,11 @@ bool VMSqlite::vmInsertProduct(const QString &productId)
         return false;
     }
     else{
+        //矫正图片
+        bool ok = productList->updateProductImage(p);
+        if(!ok){
+            qDebug()<<"商品图片更新失败"<<"id="<<p->id;
+        }
         return insertProduct(p);
     }
 }

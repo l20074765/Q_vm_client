@@ -11,6 +11,7 @@ class SqlProduct : public QObject
     Q_PROPERTY(QString salePriceStr READ getSalePriceStr WRITE setSalePriceStr)
     Q_PROPERTY(QStringList images READ getImages WRITE setImages)
     Q_PROPERTY(QString imagePath READ getImagePath WRITE setImagePath)
+    Q_PROPERTY(QString pic READ getPic WRITE setPic)
     Q_PROPERTY(quint32 salePrice READ getSalePrice WRITE setSalePrice)
 
 
@@ -32,6 +33,8 @@ public:
     QString getImagePath(){return this->imagePath;}
     void setImagePath(const QString &imagePath){this->imagePath = imagePath;}
 
+    QString getPic(){return this->pic;}
+    void setPic(const QString &pic){this->pic = pic;}
 
     QStringList getImages(){return this->images;}
     void setImages(const QStringList &images){this->images = images;}
@@ -42,6 +45,7 @@ public:
     quint32 buyNum;//购买数量
     QStringList images;
     QString imagePath;
+    QString pic;
     QString sellTag;
     QString brandName;
     QString aliasName;

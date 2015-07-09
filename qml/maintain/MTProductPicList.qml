@@ -84,9 +84,16 @@ Rectangle {
                         onClicked: {
                             var item = parent.parent
                             console.log("Item=" + item + " parent:" + root.parent);
+                            var item1 = product_gridView.childAt(mouseX,mouseY);
+                            console.log("item1=" + item1);
+                            console.log("listModel:count=" + product_model.count );
+
                             if(root.parent){
+                                if(root.parent.productName == ""){
+                                    root.parent.productName = item.productName
+                                }
                                 root.parent.productPic =item.productImage
-                                root.parent.productName = item.productName
+                                console.log("选中商品图片路径:" + item.productImage);
                             }
                             save();
 
@@ -161,7 +168,7 @@ Rectangle {
         var path = vmConfig.productPicPath();
         product_model.append({
                           "product_name":picName[0],
-                          "product_image":path + name
+                          "product_image":path + "/" + name
                          });
         var product = product_model.get(product_model.count - 1);
         return product;
@@ -193,7 +200,6 @@ Rectangle {
             mtProductClear();
             var path = vmConfig.productPicPath();
             var picList = vmConfig.getFilePicList(path);
-           // var picList = vm.productPicList;
             for(var i = 0;i < picList.length;i++){
                 var pic = vmCreateProduct(picList[i]);
             }

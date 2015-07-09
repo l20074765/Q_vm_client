@@ -171,6 +171,7 @@ Rectangle {
     function qmlActionSlot(type,obj){
         console.log(qsTr("处理QML请求:") + "type = " + type + " obj = " + obj);
         //console.log("QML当前线程:" + Qt.)
+
         if(type == MainFlow.QML_VMC_STATE){
             vmcStatehandle(obj);
         }
@@ -192,6 +193,9 @@ Rectangle {
         else if(type == MainFlow.QML_SQL_PRODUCT_CREATE){
             qmlMainSignal(type,obj);
         }
+        else if(type == MainFlow.QML_SQL_PRODUCT_UPDATE){
+            qmlMainSignal(type,obj);
+        }
     }
 
     //新增商品
@@ -199,7 +203,7 @@ Rectangle {
         var productList = obj;
         for(var i = 0;i < productList.size;i++){
             var product = productList.at(i);
-            console.log("提取商品"  + product);
+           // console.log("提取商品"  + product);
             if(product == null){
                 console.log("获取商品不存在");
                 continue;

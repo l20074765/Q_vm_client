@@ -36,7 +36,8 @@ public:
     bool updateProduct(const SqlProduct *product);
     bool deleteProduct(const QString &productNo);
     void addOrder(const QString &productId,OrderList *orderList);
-
+    bool vmDeleteProduct(const QString &productId);
+    bool vmUpdateProduct(const QString &productId);
     bool vmInsertProduct(const QString &productId);
     SqlProductList *getSqlProductList(){return this->productList;}
     SqlColumnList *getSqlColumnList(){return this->columnList;}
@@ -45,6 +46,7 @@ signals:
 
 public slots:
     void sqlActionSlot(int type,QObject * obj);
+
 private:
     QSqlDatabase m_db;
     bool sqlConnected;

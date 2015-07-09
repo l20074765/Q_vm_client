@@ -94,7 +94,7 @@ QStringList MainFlow::getFilePicList(const QString &filePath)
     QStringList filter;
     filter<<"*.jpg"<<"*.png";
     list = dir.entryList(filter);
-    qDebug()<<"getFileList"<<list;
+   // qDebug()<<"getFileList"<<list;
     return list;
 }
 
@@ -215,6 +215,25 @@ void MainFlow::qmlActionSlot(QVariant type, QVariant obj)
             var2.setValue(int(0));
         }
         emit qmlActionSignal(var1,var2);
+    }
+    else if(mt == QML_SQL_PRODUCT_UPDATE){
+        QString productId = obj.value<QString>();
+        bool ok = vmsqlite->vmUpdateProduct(productId);
+        qDebug()<<"后台处理QML新建商品请求:"<<productId;
+        QVariant var1((int)QML_SQL_PRODUCT_UPDATE);
+        QVariant var2;
+        if(ok){//插入成功
+            var2.setValue(int(1));
+        }
+        else{
+            qDebug()<<"后台处理QML新建商品请求:提取商品失败";
+            var2.setValue(int(0));
+        }
+        emit qmlActionSignal(var1,var2);
+    }
+    else if(mt == QML_SQL_PRODUCT_DELETE){
+        QString productId = obj.value<QString>();
+        vmsqlite->vmDeleteProduct(productId);
     }
 }
 

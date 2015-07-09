@@ -19,6 +19,8 @@ public:
 signals:
 
 public slots:
+
+    bool createDir(const QString &filePath);
     QStringList getFilePicList(const QString &filePath);
     QString productPicPath();
     QString productDefaultPic();
