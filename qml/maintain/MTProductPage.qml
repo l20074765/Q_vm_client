@@ -78,9 +78,7 @@ Rectangle {
                 productImage: product_image
                 onGoods_clicked: {
                     console.log("选中商品 ID=" + productID + " Index=" + product.productIndex + "; " + product);
-                    if(productDetailItem == null){
-                        productDetailItem =  MainTainJs.loadComponent(mt_productPage,"MTProductDetailPage.qml");
-                    }
+                    productDetailItem =  MainTainJs.loadComponent(mt_productPage,"MTProductDetailPage.qml");
                     if(productDetailItem){
                        //var item = product_gridView.childAt(product.mouseX,product.mouseY);
                         productDetailItem.newProduct = false;
@@ -155,7 +153,6 @@ Rectangle {
             p.product_id = product.id;
             p.product_price =  product.salePriceStr;
             p.product_image = product.pic;
-           // console.log("Image:" + p.product_image);
         }
     }
 
@@ -174,26 +171,24 @@ Rectangle {
         return product;
     }
 
-
-
     function mtProductClear(){
         product_model.clear();
     }
 
     function mtproductEnterEdit(){
-        if(productDetailItem == null){
-            productDetailItem =  MainTainJs.loadComponent(mt_productPage,"MTProductDetailPage.qml");
+        var item =  MainTainJs.loadComponent(mt_productPage,"MTProductDetailPage.qml");
+        if(item){
+            item.productId  = "vm0001";
+            item.productPrice = "1.00";
+            item.productName = "";
+            item.productPic = "";
+            item.newProduct = true;
+            item.visible = true;
+            return item;
         }
-        if(productDetailItem){
-            productDetailItem.productId  = "";
-            productDetailItem.productPrice = "1.00";
-            productDetailItem.productName = "";
-            productDetailItem.productPic = "";
-            productDetailItem.newProduct = true;
-            productDetailItem.visible = true;
-            return productDetailItem;
+        else{
+          return null;
         }
-        return null;
     }
 
 }

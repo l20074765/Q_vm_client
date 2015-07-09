@@ -23,23 +23,32 @@ bool SqlProductList::updateProductImage(SqlProduct *p)
     //矫正图片
     QString pic = p->pic;
     if(pic.startsWith("file:///")){
-        qDebug()<<"picFile.startsWith = true";
+        qDebug()<<"picFile.startsWith = true"<<" pic="<<pic;
         pic.remove(0,8);
     }
+    QString imagePath = vmConfig.productImagePath() + "/" + p->id;
     QFileInfo fileInfo(pic);
     QString picName = fileInfo.fileName();
-   //QString picPath = fileInfo.absolutePath();
-    QString imagePath = vmConfig.productImagePath() + "/" + p->id;
+    QFileInfo newFileInfo(imagePath + "/" + picName);
     bool ok = vmConfig.createDir(imagePath);
+    if(ok){ 
+        QString fileAbsPath = fileInfo.absoluteFilePath();
+        QString newFileAbsPath = newFileInfo.absoluteFilePath();
+        if(fileAbsPath == newFileAbsPath){
+            qDebug()<<"pic="<<fileAbsPath;
+            qDebug()<<"new="<<newFileAbsPath;
+            qDebug()<<"图片位置相同不用复制";
+            p->pic = fileAbsPath;
+            return true;
+        }
 
-    if(ok){
-        QString newFileName = imagePath + "/" + picName;
-        QFile newFile(newFileName);
+        QFile newFile(newFileAbsPath);
         if(newFile.exists()){
             newFile.remove();
         }
-        bool okk = QFile::copy(pic,newFileName);
-        qDebug()<<"vmInsertProduct:copy="<<okk;
+        bool okk = QFile::copy(pic,newFileAbsPath);
+
+        qDebug()<<"updateProductImage:copy="<<okk;
         p->imagePath = imagePath;
         p->images = vmConfig.getFilePicList(imagePath);
         if(p->images.isEmpty()){
@@ -51,6 +60,7 @@ bool SqlProductList::updateProductImage(SqlProduct *p)
         return true;
     }
     else{
+        p->pic = fileInfo.absoluteFilePath();
         return false;
     }
 }

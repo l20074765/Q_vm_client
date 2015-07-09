@@ -60,6 +60,29 @@ bool Setting::createDir(const QString &filePath)
      }
 }
 
+
+bool Setting::deleteDir(const QString &path)
+{
+    if(path.isEmpty())
+       return false;
+
+    QDir dir(path);
+    if(!dir.exists())
+       return true;
+    dir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot);
+    QFileInfoList infoList = dir.entryInfoList();
+    foreach (QFileInfo in, infoList) {
+       if(in.isFile()){
+           in.dir().remove(in.fileName());
+       }
+       else{
+           deleteDir(in.absoluteFilePath());
+       }
+    }
+
+    return dir.rmdir(dir.absolutePath());
+}
+
 QStringList Setting::getFilePicList(const QString &filePath)
 {
     QStringList list;

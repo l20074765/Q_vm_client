@@ -10,7 +10,7 @@ Rectangle {
     //color: "red"
     visible: false
     property int duration : 500
-    property string pic_path_str: "../../images/productPic/"
+//    property string pic_path_str: "../../images/productPic/"
     property bool isGetPic: false
 
 
@@ -84,10 +84,6 @@ Rectangle {
                         onClicked: {
                             var item = parent.parent
                             console.log("Item=" + item + " parent:" + root.parent);
-                            var item1 = product_gridView.childAt(mouseX,mouseY);
-                            console.log("item1=" + item1);
-                            console.log("listModel:count=" + product_model.count );
-
                             if(root.parent){
                                 if(root.parent.productName == ""){
                                     root.parent.productName = item.productName
@@ -106,7 +102,7 @@ Rectangle {
         }
 
         ListModel{
-            id:product_model
+            id:listModel_productPic
         }
 
         //商品列表框
@@ -122,7 +118,7 @@ Rectangle {
 
             flickableDirection:Flickable.VerticalFlick
             delegate: product_delegate
-            model: product_model
+            model: listModel_productPic
             focus: true
             currentIndex: 1
         }
@@ -166,18 +162,18 @@ Rectangle {
     function vmCreateProduct(name){
         var picName = name.split('.');
         var path = vmConfig.productPicPath();
-        product_model.append({
+        listModel_productPic.append({
                           "product_name":picName[0],
                           "product_image":path + "/" + name
                          });
-        var product = product_model.get(product_model.count - 1);
+        var product = listModel_productPic.get(listModel_productPic.count - 1);
         return product;
     }
 
 
 
     function mtProductClear(){
-        product_model.clear();
+        listModel_productPic.clear();
     }
 
 
@@ -195,23 +191,20 @@ Rectangle {
     function reset(){
         root.scale = 1;
         root.visible = true;
-        if(!isGetPic){
-            //isGetPic = true;
-            mtProductClear();
-            var path = vmConfig.productPicPath();
-            var picList = vmConfig.getFilePicList(path);
-            for(var i = 0;i < picList.length;i++){
-                var pic = vmCreateProduct(picList[i]);
-            }
+        mtProductClear();
+        var path = vmConfig.productPicPath();
+        var picList = vmConfig.getFilePicList(path);
+        for(var i = 0;i < picList.length;i++){
+            var pic = vmCreateProduct(picList[i]);
         }
-
-
     }
 
     // 立即关闭
     function close(){
       console.log("图片浏览器关闭");
       root.visible = false;
+      //listModel_productPic.clear();
+      root.destroy();
     }
 
     // 禁止事件穿透

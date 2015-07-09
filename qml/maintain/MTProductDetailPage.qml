@@ -10,7 +10,7 @@ Rectangle {
     height: 62
     z:9
     visible: false
-    property Item picListPage: null
+    //property Item picListPage: null
     property Item picItem: null
     property Item loadingMask: null
 
@@ -21,6 +21,7 @@ Rectangle {
     property alias productName: proudct_name.text_contex
     property alias productPic:  product_image.source
     property bool  newProduct: false
+
     MouseArea{ //禁止事件穿透
         anchors.fill: parent
     }
@@ -70,7 +71,7 @@ Rectangle {
                     }
 
                     console.log("删除商品:index=" + curProduct.productIndex);
-                    rect_window.visible = false;
+                    hide();
                 }
             }
         }
@@ -110,9 +111,7 @@ Rectangle {
             pixelSize: width * 0.16
         }
         onClicked: {
-            if(picListPage == null){
-                picListPage =  MainTainJs.loadComponent(rect_window,"MTProductPicList.qml");
-            }
+            var picListPage =  MainTainJs.loadComponent(rect_window,"MTProductPicList.qml");
             if(picListPage){
                 picListPage.show();
             }
@@ -143,7 +142,7 @@ Rectangle {
                 readOnly:rect_window.newProduct == true ?  false:true
                 onDisplayTextChanged: {
                     if(rect_window.newProduct == true){
-                        if(sqlProductList.isContains(text_contex) == true){
+                        if(text_contex =="" || sqlProductList.isContains(text_contex) == true){
                             tipText = "*重复"
                         }
                         else{
@@ -202,22 +201,27 @@ Rectangle {
             }
             onClicked: {
                 if(rect_window.newProduct == true){
-                    var p = sqlProductList.add(productId);
-                    if(p == null){
-                        console.log("新增商品失败 重复商品编号");
-                       // proudct_id.tipText = "*重复"
+                    if(productId == ""){
+                       proudct_id.tipText = "*空";
                     }
                     else{
-                        p.name = productName;
-                        p.id = productId;
-                        p.salePriceStr =  productPrice;
-                        p.pic = productPic;
-                        mainView.qmlActionSlot(MainFlow.QML_SQL_PRODUCT_CREATE,productId);
+                        var p = sqlProductList.add(productId);
+                        if(p == null){
+                            console.log("新增商品失败 重复商品编号");
+                            proudct_id.tipText = "*重复";
+                        }
+                        else{
+                            p.name = productName;
+                            p.id = productId;
+                            p.salePriceStr =  productPrice;
+                            p.pic = productPic;
+                            sqlProductList.updateProductImage(p); //更新图片
+                            mainView.qmlActionSlot(MainFlow.QML_SQL_PRODUCT_CREATE,productId);
+                            loadingMask =  MainTainJs.loadComponent(rect_window,"../custom/LoadingMask.qml");
+                            loadingMask.visible = true;
+                            vm_main.qmlMainSignal.connect(loadingFinished);
 
-                        loadingMask =  MainTainJs.loadComponent(rect_window,"../custom/LoadingMask.qml");
-                        loadingMask.visible = true;
-                        vm_main.qmlMainSignal.connect(loadingFinished);
-
+                        }
                     }
                 }
                 else{ //修改商品
@@ -237,8 +241,6 @@ Rectangle {
                         vm_main.qmlMainSignal.connect(loadingFinished);
                     }
                 }
-
-
             }
         }
 
@@ -256,7 +258,7 @@ Rectangle {
                                height * 0.6 : width * 0.1;
             }
             onClicked: {
-                rect_window.visible = false
+                hide();
             }
         }
     }
@@ -276,6 +278,7 @@ Rectangle {
 
 
     function loadingFinished(type,obj){
+
         console.log("测试qml信号" + "type=" + type+ " obj=" + obj);
         if(type == MainFlow.QML_SQL_PRODUCT_CREATE){
             MainTainJs.destroyItem(loadingMask);
@@ -289,10 +292,7 @@ Rectangle {
                 product.product_image = p.pic;
 
             }
-            else{
-
-            }
-            rect_window.visible = false
+            hide();
         }
         else if(type == MainFlow.QML_SQL_PRODUCT_UPDATE){
             MainTainJs.destroyItem(loadingMask);
@@ -308,9 +308,15 @@ Rectangle {
 
             }
 
-            rect_window.visible = false
+            hide();
 
         }
     }
+
+    function hide(){
+        rect_window.visible = false;
+        rect_window.destroy();
+    }
+
 }
 

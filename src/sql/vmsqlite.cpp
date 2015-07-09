@@ -91,18 +91,19 @@ void VMSqlite::checkTableProduct()
         product->id = query.value(1).toString();
         product->name = query.value(4).toString();
         product->salePrice = query.value(6).toUInt(&ok);
+        product->pic = query.value(8).toString();
         product->imagePath = vmConfig.productImagePath() + "/"  + product->id;
 
         product->images = vmConfig.getFilePicList(product->imagePath);
-
-        if(product->images.isEmpty()){
-            product->pic = vmConfig.productDefaultPic();
+        QFile file(product->pic);
+        if(!file.exists()){
+            if(product->images.isEmpty()){
+                product->pic = vmConfig.productDefaultPic();
+            }
+            else{
+                product->pic = product->imagePath + "/" + product->images[0];
+            }
         }
-        else{
-            product->pic = product->imagePath + "/" + product->images[0];
-        }
-
-
        // qDebug()<<"VMSqlite::checkTableProduct...obj="<<product<<product->imagePath;
         productList->hashInsert(product->id,product);
 
@@ -212,7 +213,8 @@ bool VMSqlite::createTableProduct()
                 "productName varchar(200)," +
                 "aliasName varchar(200)," +
                 "salesPrice unsigned integer," +
-                "productTXT TEXT"
+                "productTXT TEXT," +
+                "picture varchar(200)"
                         ")";// "salesPrice decimal(20,0)," +
         //创建一个表，如果这表不存在，
         QSqlQuery query = m_db.exec (temp);
@@ -262,21 +264,21 @@ bool VMSqlite::updateProduct(const SqlProduct *product)
 {
     QString tableName = "vmc_product";
     if(!m_db.isOpen()){
-        qDebug()<<"deleteProduct:"<< "数据库未打开";
+        qDebug()<<"updateProduct:"<< "数据库未打开";
         return false;
     }
 
-    QString temp = QString("update %1 set sellTag='%2',brandName='%3',productName='%4',aliasName='%5',salesPrice='%6',productTXT='%7' where productNo='%8'")
+    QString temp = QString("update %1 set sellTag='%2',brandName='%3',productName='%4',aliasName='%5',salesPrice='%6',productTXT='%7',picture='%8' where productNo='%9'")
             .arg(tableName).arg(product->sellTag).arg(product->brandName)
             .arg(product->name).arg(product->aliasName).arg(product->salePrice)
-            .arg(product->productTXT).arg(product->id);
+            .arg(product->productTXT).arg(product->pic).arg(product->id);
 
-    qDebug()<<"deleteProduct:"<<"temp="<<temp;
+    qDebug()<<"updateProduct:"<<"temp="<<temp;
     QSqlQuery query = m_db.exec (temp);
     if(query.lastError ().type ()==QSqlError::NoError){//如果上面的语句执行没有出错
         return true;
     }else{
-        qDebug()<<"deleteProduct:执行"<<temp<<"出错："<<query.lastError ().text ();
+        qDebug()<<"updateProduct:执行"<<temp<<"出错："<<query.lastError ().text ();
         return false;
     }
 
@@ -311,10 +313,10 @@ bool VMSqlite::insertProduct(const SqlProduct *product)
         return false;
     }
 
-    QString temp = QString("insert into %1 values(NULL,'%2','%3','%4','%5','%6',%7,'%8')")
+    QString temp = QString("insert into %1 values(NULL,'%2','%3','%4','%5','%6',%7,'%8','%9')")
             .arg(tableName).arg(product->id).arg(product->sellTag)
             .arg(product->brandName).arg(product->name).arg(product->aliasName)
-            .arg(product->salePrice).arg(product->productTXT);
+            .arg(product->salePrice).arg(product->productTXT).arg(product->pic);
 
     qDebug()<<"insertProduct:"<<"temp="<<temp;
     QSqlQuery query = m_db.exec (temp);
@@ -370,6 +372,7 @@ bool VMSqlite::vmDeleteProduct(const QString &productId)
     }
     else{
        deleteProduct(productId);//删除数据库
+       vmConfig.deleteDir(p->imagePath);//删除图片文件夹
        productList->remove(productId);//删除链表
     }
 }
@@ -394,11 +397,6 @@ bool VMSqlite::vmInsertProduct(const QString &productId)
         return false;
     }
     else{
-        //矫正图片
-        bool ok = productList->updateProductImage(p);
-        if(!ok){
-            qDebug()<<"商品图片更新失败"<<"id="<<p->id;
-        }
         return insertProduct(p);
     }
 }
