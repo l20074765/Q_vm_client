@@ -25,6 +25,7 @@ public:
         SQL_START,
         SQL_GOODS_SELECT,
         SQL_COLUMN_ADD,
+        SQL_CABINET_CHECK_FINISH,
         SQL_COLUMN_CHECK,
         SQL_ORDER_MAKE
     };
@@ -40,7 +41,13 @@ public:
 
 
     bool insertCabinet(const SqlCabinet *cabinet);
+    bool updateCabinet(const SqlCabinet *cabinet);
+    bool deleteCabinet(const SqlCabinet *cabinet);
 
+
+    bool insertColumn(const SqlColumn *column);
+    bool updateColumn(const SqlColumn *column);
+    bool deleteColumn(const SqlColumn *column);
 
 
     void addOrder(const QString &productId,OrderList *orderList);
@@ -62,12 +69,11 @@ private:
     void sqlStart();
     void checkTableColumn();
     void checkTableProduct();
-
-    void getProducts(int count, SqlProduct* curProduct, SqlProductList *list);
-
+    void checkTableCabinet();
 
     SqlProductList *productList;
     SqlColumnList *columnList;
+    SqlCabinetList *cabinetList;
 };
 
 

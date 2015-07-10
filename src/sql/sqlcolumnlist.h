@@ -25,6 +25,8 @@ signals:
 
 public slots:
     SqlColumn *at(int i){return this->list.at(i);}
+    void append(SqlColumn *column){this->list.append(column);}
+
 private:
 
 };

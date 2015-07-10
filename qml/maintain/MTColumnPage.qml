@@ -1,11 +1,12 @@
 import QtQuick 1.1
 import "MTColumn" as MTColumn
+import "MainTain.js" as MainTainJs
 import "./MTColumn/Column.js" as Column
 Rectangle {
-    id:window
+    id:rect_columnPage
     width: 100
     height: 62
-    visible: false
+    property Item cabinetEditItem:null
     // 1.标题栏
     Rectangle{
         id:title
@@ -34,7 +35,8 @@ Rectangle {
             }
             text: "新增货柜"
             onClicked: {
-                createCabinet(1);
+                var item = mtGetCabinetEditItem();
+                item.visible = true;
             }
         }
 
@@ -143,7 +145,7 @@ Rectangle {
                                height * 0.6 : width * 0.1;
             }
             onClicked: {
-                window.visible = false
+                rect_columnPage.visible = false
             }
         }
     }
@@ -183,6 +185,15 @@ Rectangle {
 
     function columnClear(){
         product_model.clear();
+    }
+
+
+    function mtGetCabinetEditItem(){
+        if(cabinetEditItem == null){
+            cabinetEditItem =  MainTainJs.loadComponent(rect_columnPage,"./MTColumn/MTCabinetEditPage.qml");
+           // cabinetEditItem.connectSignal();
+        }
+        return cabinetEditItem;
     }
 
 }

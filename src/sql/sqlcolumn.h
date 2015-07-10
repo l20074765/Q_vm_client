@@ -33,6 +33,7 @@ public:
     quint32 state;
     quint32 column;
     QString productNo;
+    QString message;
     quint32 remain;//余量
     quint32 capacity;//容量
     quint8  result;//出货结果

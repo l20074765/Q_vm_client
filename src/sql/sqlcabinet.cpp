@@ -2,6 +2,6 @@
 
 SqlCabinet::SqlCabinet(QObject *parent) : QObject(parent)
 {
-
+    columnList = new SqlColumnList(this);
 }
 

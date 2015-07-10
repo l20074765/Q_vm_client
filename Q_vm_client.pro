@@ -140,7 +140,8 @@ DISTFILES += \
     qml/custom/ProductList.qml \
     qml/custom/MyTextInput.qml \
     qml/maintain/MTProductPicList.qml \
-    qml/custom/LoadingMask.qml
+    qml/custom/LoadingMask.qml \
+    qml/maintain/MTColumn/MTCabinetEditPage.qml
 
 
 

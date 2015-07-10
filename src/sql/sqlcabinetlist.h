@@ -11,15 +11,15 @@ class SqlCabinetList : public QObject
 public:
     explicit SqlCabinetList(QObject *parent = 0);
 
-    void getCount(){return this->list.count();}
+    quint32 getCount(){return this->list.count();}
 
 
 signals:
 
 public slots:
     SqlCabinet *at(int i){return this->list.at(i);}
-    bool append(SqlCabinet *cabinet){return this->list.append(cabinet);}
-
+    void append(SqlCabinet *cabinet){this->list.append(cabinet);}
+    quint32 count(){return this->list.count();}
 private:
     QList<SqlCabinet *> list;
 };

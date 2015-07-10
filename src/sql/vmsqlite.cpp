@@ -7,6 +7,7 @@ VMSqlite::VMSqlite(QObject *parent) : QObject(parent)
     sqlConnected = false;
     productList = new SqlProductList(this);
     columnList = new SqlColumnList(this);
+    cabinetList = new SqlCabinetList(this);
 
 }
 
@@ -26,7 +27,7 @@ void VMSqlite::sqlActionSlot(int type,QObject *obj)
         sqlStart();
     }
     else if(mt == SQL_COLUMN_CHECK){
-        checkTableColumn();
+        checkTableCabinet();
     }
     else if(mt == SQL_ORDER_MAKE){
 
@@ -38,46 +39,6 @@ void VMSqlite::sqlActionSlot(int type,QObject *obj)
 
 
 
-void VMSqlite::getProducts(int count, SqlProduct *curProduct, SqlProductList *list)
-{
-#if 0
-    QString sql_code = "select myindex from "+ "vmc_product"
-            +"where senderUin="+currentData->senderUin ()
-            +" and message="+currentData->contentData ()
-            +" and mydate="+currentData->date().toString ()
-            +" and mytime="+currentData->time().toString ();
-    QSqlQuery sql_query = sqlite_db.exec (sql_code);
-    if(sql_query.lastError ().type ()==QSqlError::NoError){//如果查询没有出错
-        if(sql_query.size ()>0){
-            int currentIndex = sql_query.value (0).toInt ();//当前数据的索引为
-            sql_code = "select * from "+tableName
-                    +"where myindex<"+QString::number (currentIndex)
-                    +" and myindex<="+QString::number (currentIndex+count);
-            sql_query.exec (sql_code);
-            if(sql_query.lastError ().type ()==QSqlError::NoError){//如果查询没有出错
-                qDebug()<<"查询多条数据完成，数据的个数："<<sql_query.size ();
-                while(sql_query.next ()){
-                    ChatMessageInfo *data = new ChatMessageInfo;
-                    Utility *utility = Utility::createUtilityClass ();
-                    data->setSenderUin (sql_query.value (1).toString ());//从第一个开始，因为0为index
-                    data->setContentData (utility->stringUncrypt (sql_query.value (2).toString (), "XingchenQQ123"));
-                    //取回聊天内容时要解密
-                    data->setDate (QDate::fromString (sql_query.value (3).toString ()));
-                    data->setTime (QTime::fromString (sql_query.value (4).toString ()));
-                    datas->append (data);//将查询到的结果添加到列表中
-                }
-                //emit getDatasFinished (datas);//发送信号，告知数据获取完成
-            }else{
-                qDebug()<<"执行"<<sql_code<<"出错："<<sql_query.lastError ().text ();
-            }
-        }else{
-            qDebug()<<"执行"<<sql_code<<"未查询到结果";
-        }
-    }else{
-        qDebug()<<"执行"<<sql_code<<"出错："<<sql_query.lastError ().text ();
-    }
-#endif
-}
 
 
 void VMSqlite::checkTableProduct()
@@ -120,6 +81,50 @@ void VMSqlite::checkTableProduct()
 
 }
 
+
+void VMSqlite::checkTableCabinet()
+{
+    QSqlQuery query(m_db);
+
+    //查询货柜表
+    query.exec("SELECT * FROM vmc_cabinet");
+    while(query.next()){
+        bool ok;
+        SqlCabinet *cabinet = new SqlCabinet();
+        cabinet->id = query.value(0).toUInt(&ok);
+        cabinet->sum = query.value(2).toUInt(&ok);
+        cabinet->type = query.value(3).toUInt(&ok);
+        cabinet->info = query.value(4).toString();
+        qDebug()<<"checkTableCabinet cabinet:"<<cabinet->id;
+        cabinetList->append(cabinet);
+    }
+
+    //查询货道表
+    query.exec("SELECT * FROM vmc_column");
+    while(query.next()){
+        bool ok;
+        SqlColumn *column = new SqlColumn();
+        column->id = query.value(0).toUInt(&ok);
+        column->bin = column->id / 1000;
+        column->column = column->id % 1000;
+        column->state = query.value(3).toUInt(&ok);
+        column->productNo = query.value(4).toString();
+        column->remain = query.value(5).toUInt(&ok);
+        column->capacity = query.value(6).toUInt(&ok);
+
+        for(int i = 0;i < cabinetList->count();i++){
+            SqlCabinet *cabinet = cabinetList->at(i);
+            if(cabinet->id == column->bin){ //找到对应柜号
+                SqlColumnList *columnList = cabinet->columnList;
+                columnList->append(column);
+                break;
+            }
+        }
+    }
+    emit sqlActionSignal(SQL_CABINET_CHECK_FINISH,(QObject *)cabinetList);
+}
+
+
 void VMSqlite::checkTableColumn()
 {
     QSqlQuery query(m_db);
@@ -156,7 +161,7 @@ void VMSqlite::sqlStart()
         createTableColumn();
 
         checkTableProduct();
-        checkTableColumn();
+        checkTableCabinet();
     }
     else
     {
@@ -286,6 +291,51 @@ bool VMSqlite::createTableColumn()
 }
 
 
+bool VMSqlite::updateColumn(const SqlColumn *column)
+{
+    QString tableName = "vmc_column";
+    if(!m_db.isOpen()){
+        qDebug()<<"updateColumn:"<< "数据库未打开";
+        return false;
+    }
+
+
+    QString temp = QString("update %1 set id=%2,cabinetNo=%3,columnNo=%4,columnState=%5,productNo='%6',remain=%7,capacity=%8,message='%9'")
+            .arg(tableName).arg(column->id).arg(column->bin)
+            .arg(column->column).arg(column->state).arg(column->productNo)
+            .arg(column->remain).arg(column->capacity).arg(column->message);
+    qDebug()<<"updateColumn:"<<"temp="<<temp;
+    QSqlQuery query = m_db.exec (temp);
+    if(query.lastError ().type ()==QSqlError::NoError){//如果上面的语句执行没有出错
+        return true;
+    }else{
+        qDebug()<<"updateColumn:执行"<<temp<<"出错："<<query.lastError ().text ();
+        return false;
+    }
+}
+
+
+bool VMSqlite::updateCabinet(const SqlCabinet *cabinet)
+{
+    QString tableName = "vmc_cabinet";
+    if(!m_db.isOpen()){
+        qDebug()<<"updateCabinet:"<< "数据库未打开";
+        return false;
+    }
+
+    QString temp = QString("update %1 set id=%2,no=%3,sum=%4,type=%5,info='%6'")
+            .arg(tableName).arg(cabinet->id).arg(cabinet->id)
+            .arg(cabinet->sum).arg(cabinet->type).arg(cabinet->info);
+
+    qDebug()<<"updateCabinet:"<<"temp="<<temp;
+    QSqlQuery query = m_db.exec (temp);
+    if(query.lastError ().type ()==QSqlError::NoError){//如果上面的语句执行没有出错
+        return true;
+    }else{
+        qDebug()<<"updateCabinet:执行"<<temp<<"出错："<<query.lastError ().text ();
+        return false;
+    }
+}
 
 bool VMSqlite::updateProduct(const SqlProduct *product)
 {
@@ -309,6 +359,51 @@ bool VMSqlite::updateProduct(const SqlProduct *product)
         return false;
     }
 
+}
+
+
+
+bool VMSqlite::deleteColumn(const SqlColumn *column)
+{
+    QString tableName = "vmc_column";
+    if(!m_db.isOpen()){
+        qDebug()<<"deleteColumn:"<< "数据库未打开";
+        return false;
+    }
+
+    QString temp = QString("delete from %1 where id=%2")
+            .arg(tableName).arg(column->id);
+
+    qDebug()<<"deleteColumn:"<<"temp="<<temp;
+    QSqlQuery query = m_db.exec (temp);
+    if(query.lastError ().type ()==QSqlError::NoError){//如果上面的语句执行没有出错
+        return true;
+    }else{
+        qDebug()<<"deleteColumn:执行"<<temp<<"出错："<<query.lastError ().text ();
+        return false;
+    }
+}
+
+
+bool VMSqlite::deleteCabinet(const SqlCabinet *cabinet)
+{
+    QString tableName = "vmc_cabinet";
+    if(!m_db.isOpen()){
+        qDebug()<<"deleteCabinet:"<< "数据库未打开";
+        return false;
+    }
+
+    QString temp = QString("delete from %1 where id=%2")
+            .arg(tableName).arg(cabinet->id);
+
+    qDebug()<<"deleteCabinet:"<<"temp="<<temp;
+    QSqlQuery query = m_db.exec (temp);
+    if(query.lastError ().type ()==QSqlError::NoError){//如果上面的语句执行没有出错
+        return true;
+    }else{
+        qDebug()<<"deleteCabinet:执行"<<temp<<"出错："<<query.lastError ().text ();
+        return false;
+    }
 }
 
 bool VMSqlite::deleteProduct(const QString &productNo)
@@ -355,6 +450,53 @@ bool VMSqlite::insertProduct(const SqlProduct *product)
     }
 
 
+}
+
+
+
+bool VMSqlite::insertColumn(const SqlColumn *column)
+{
+    QString tableName = "vmc_column";
+    if(!m_db.isOpen()){
+        qDebug()<<"insertColumn:"<< "数据库未打开";
+        return false;
+    }
+
+    QString temp = QString("insert into %1 values(%2,%3,%4,%5,'%6',%7,%8,'%9')")
+            .arg(tableName).arg(column->id).arg(column->bin)
+            .arg(column->column).arg(column->state).arg(column->productNo)
+            .arg(column->remain).arg(column->capacity).arg(column->message);
+
+    qDebug()<<"insertColumn:"<<"temp="<<temp;
+    QSqlQuery query = m_db.exec (temp);
+    if(query.lastError ().type ()==QSqlError::NoError){//如果上面的语句执行没有出错
+        return true;
+    }else{
+        qDebug()<<"insertColumn:执行"<<temp<<"出错："<<query.lastError ().text ();
+        return false;
+    }
+}
+
+bool VMSqlite::insertCabinet(const SqlCabinet *cabinet)
+{
+    QString tableName = "vmc_cabinet";
+    if(!m_db.isOpen()){
+        qDebug()<<"insertCabinet:"<< "数据库未打开";
+        return false;
+    }
+
+    QString temp = QString("insert into %1 values(%2,%3,%4,%5,'%6')")
+            .arg(tableName).arg(cabinet->id).arg(cabinet->id)
+            .arg(cabinet->sum).arg(cabinet->type).arg(cabinet->info);
+
+    qDebug()<<"insertCabinet:"<<"temp="<<temp;
+    QSqlQuery query = m_db.exec (temp);
+    if(query.lastError ().type ()==QSqlError::NoError){//如果上面的语句执行没有出错
+        return true;
+    }else{
+        qDebug()<<"insertCabinet:执行"<<temp<<"出错："<<query.lastError ().text ();
+        return false;
+    }
 }
 
 void VMSqlite::addOrder(const QString &productId, OrderList *orderList)
