@@ -7,6 +7,7 @@
 #include "sqlproductlist.h"
 #include "sqlcolumnlist.h"
 #include "orderlist.h"
+#include "sqlcabinetlist.h"
 
 class VMSqlite : public QObject
 {
@@ -30,11 +31,18 @@ public:
 
     bool openSqlDatabase(const QString& fileName);
     bool tableAvailable(const QString &tableName);
+    bool createTableCabinet();
     bool createTableColumn();
     bool createTableProduct();
     bool insertProduct(const SqlProduct *product);
     bool updateProduct(const SqlProduct *product);
     bool deleteProduct(const QString &productNo);
+
+
+    bool insertCabinet(const SqlCabinet *cabinet);
+
+
+
     void addOrder(const QString &productId,OrderList *orderList);
     bool vmDeleteProduct(const QString &productId);
     bool vmUpdateProduct(const QString &productId);

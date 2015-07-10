@@ -66,7 +66,9 @@ SOURCES += \
     src/sql/sqlcolumnlist.cpp \
     src/sql/order.cpp \
     src/sql/orderlist.cpp \
-    src/mainview.cpp
+    src/mainview.cpp \
+    src/sql/sqlcabinet.cpp \
+    src/sql/sqlcabinetlist.cpp
 
 HEADERS += \
     src/vmc/EVprotocol.h \
@@ -97,7 +99,9 @@ HEADERS += \
     src/sql/sqlcolumnlist.h \
     src/sql/order.h \
     src/sql/orderlist.h \
-    src/mainview.h
+    src/mainview.h \
+    src/sql/sqlcabinet.h \
+    src/sql/sqlcabinetlist.h
 
 
 DISTFILES += \

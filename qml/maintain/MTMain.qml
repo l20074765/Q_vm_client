@@ -81,9 +81,11 @@ Custom.VMWidget{
                     onButton_clicked: {
                         if(productPage == null){
                            productPage =  MainTainJs.loadComponent(rect_mainTain,"MTProductPage.qml"); 
-                           productPage.productFlush();
                         }
-                        productPage.visible = true;
+                        if(productPage){
+                            productPage.productFlush();
+                            productPage.visible = true;
+                        }
                     }
                 }
                 MTButton{
@@ -93,7 +95,7 @@ Custom.VMWidget{
                     onButton_clicked: {
                         if(columnPage == null){
                            columnPage =  MainTainJs.loadComponent(rect_mainTain,"MTColumnPage.qml");
-                            columnPage.columnCreate(sqlColumnList);
+                           columnPage.columnCreate(sqlColumnList);
                         }
                         columnPage.visible = true;
                     }

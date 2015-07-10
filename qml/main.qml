@@ -170,8 +170,6 @@ Rectangle {
     //qml负责与C++通信的槽函数入口
     function qmlActionSlot(type,obj){
         console.log(qsTr("处理QML请求:") + "type = " + type + " obj = " + obj);
-        //console.log("QML当前线程:" + Qt.)
-
         if(type == MainFlow.QML_VMC_STATE){
             vmcStatehandle(obj);
         }

@@ -151,6 +151,7 @@ void VMSqlite::sqlStart()
     {
         sqlConnected = true;
         emit sqlActionSignal(SQL_CONNECT_OK ,NULL);
+        createTableCabinet();
         createTableProduct();
         createTableColumn();
 
@@ -229,6 +230,32 @@ bool VMSqlite::createTableProduct()
     return false;
 }
 
+
+
+bool VMSqlite::createTableCabinet()
+{
+    QString tableName = "vmc_cabinet";
+    if(m_db.isOpen ()){//如果数据库已经打开
+        QString temp = "create table if not exists "+
+                        tableName + " (" +
+                        "id integer primary key AUTOINCREMENT," +
+                        "no     integer," +
+                        "sum    integer," +
+                        "type   integer," +
+                        "info   TEXT" +
+                        ")";
+        //创建一个表，如果这表不存在，
+        QSqlQuery query = m_db.exec (temp);
+        if(query.lastError ().type ()==QSqlError::NoError){//如果上面的语句执行没有出错
+            return true;
+        }else{
+            qDebug()<<"执行"<<temp<<"出错："<<query.lastError().text ();
+        }
+    }else{
+        qDebug()<<"数据库未打开";
+    }
+    return false;
+}
 
 bool VMSqlite::createTableColumn()
 {

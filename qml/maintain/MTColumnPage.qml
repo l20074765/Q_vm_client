@@ -20,6 +20,25 @@ Rectangle {
             text: qsTr("货道管理")
             font{bold: true;pixelSize: 20}
         }
+        MTColumn.MyButton{
+            width: parent.width * 0.2
+            height:parent.height * 0.8
+            anchors{
+                right: parent.right
+                rightMargin: 5
+                verticalCenter: parent.verticalCenter
+            }
+            font{
+                //bold: true
+                pixelSize: (height < width) ? height * 0.6 : width * 0.1;
+            }
+            text: "新增货柜"
+            onClicked: {
+                createCabinet(1);
+            }
+        }
+
+
     }
     // 2.货道管理展示区域
     Rectangle{
@@ -110,17 +129,23 @@ Rectangle {
                 }
             }
         }
+
         MTColumn.MyButton{
-            width:parent.width * 0.2
-            height: parent.height * 0.8
+            width: parent.width * 0.2
+            height: parent.height * 0.75
             anchors.right: parent.right
-            anchors.rightMargin: 10
+            anchors.rightMargin: 5
+            anchors.verticalCenter: parent.verticalCenter
             text: "返回"
+            font{
+                bold: true
+                pixelSize: (height < width) ?
+                               height * 0.6 : width * 0.1;
+            }
             onClicked: {
-                window.visible = false;
+                window.visible = false
             }
         }
-
     }
 
 

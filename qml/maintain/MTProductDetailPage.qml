@@ -5,7 +5,7 @@ import "../custom"  as Custom
 import Qtvm 1.0
 
 Rectangle {
-    id:rect_window
+    id:rect_productDetailPage
     width: 100
     height: 62
     z:9
@@ -111,7 +111,7 @@ Rectangle {
             pixelSize: width * 0.16
         }
         onClicked: {
-            var picListPage =  MainTainJs.loadComponent(rect_window,"MTProductPicList.qml");
+            var picListPage =  MainTainJs.loadComponent(rect_productDetailPage,"MTProductPicList.qml");
             if(picListPage){
                 picListPage.show();
             }
@@ -139,9 +139,9 @@ Rectangle {
                 height: parent.height / 12
                 text_title: qsTr("商品编号:")
                 text_contex: "vm0001"
-                readOnly:rect_window.newProduct == true ?  false:true
+                readOnly:rect_productDetailPage.newProduct == true ?  false:true
                 onDisplayTextChanged: {
-                    if(rect_window.newProduct == true){
+                    if(rect_productDetailPage.newProduct == true){
                         if(text_contex =="" || sqlProductList.isContains(text_contex) == true){
                             tipText = "*重复"
                         }
@@ -200,7 +200,7 @@ Rectangle {
                                height * 0.6 : width * 0.1;
             }
             onClicked: {
-                if(rect_window.newProduct == true){
+                if(rect_productDetailPage.newProduct == true){
                     if(productId == ""){
                        proudct_id.tipText = "*空";
                     }
@@ -211,15 +211,16 @@ Rectangle {
                             proudct_id.tipText = "*重复";
                         }
                         else{
+                            loadingMask =  MainTainJs.loadComponent(rect_productDetailPage,"../custom/LoadingMask.qml");
+                            loadingMask.visible = true;
+
                             p.name = productName;
                             p.id = productId;
                             p.salePriceStr =  productPrice;
                             p.pic = productPic;
                             sqlProductList.updateProductImage(p); //更新图片
                             mainView.qmlActionSlot(MainFlow.QML_SQL_PRODUCT_CREATE,productId);
-                            loadingMask =  MainTainJs.loadComponent(rect_window,"../custom/LoadingMask.qml");
-                            loadingMask.visible = true;
-                            vm_main.qmlMainSignal.connect(loadingFinished);
+                            //vm_main.qmlMainSignal.connect(rect_productDetailPage.loadingFinished);
 
                         }
                     }
@@ -230,15 +231,14 @@ Rectangle {
                         console.log("修改商品失败 商品编号不存在");
                     }
                     else{
+                        loadingMask =  MainTainJs.loadComponent(rect_productDetailPage,"../custom/LoadingMask.qml");
+                        loadingMask.visible = true;
                         p.name = productName;
                         p.id = productId;
                         p.salePriceStr =  productPrice;
                         p.pic = productPic;
                         sqlProductList.updateProductImage(p); //更新图片
                         mainView.qmlActionSlot(MainFlow.QML_SQL_PRODUCT_UPDATE,productId);
-                        loadingMask =  MainTainJs.loadComponent(rect_window,"../custom/LoadingMask.qml");
-                        loadingMask.visible = true;
-                        vm_main.qmlMainSignal.connect(loadingFinished);
                     }
                 }
             }
@@ -269,33 +269,43 @@ Rectangle {
 
     function productInfoFlush(p){
         console.log("刷新商品信息" + p);
-        productId  = p.productID;
-        productPrice = p.productPrice;
-        productName = p.productName;
-        productPic = p.productImage;
-        curProduct = p;
+        if(p == null){
+            productId  = "";
+            productPrice = "1.00";
+            productName = "";
+            productPic = "";
+            curProduct = null;
+
+        }
+        else{
+            productId  = p.productID;
+            productPrice = p.productPrice;
+            productName = p.productName;
+            productPic = p.productImage;
+            curProduct = p;
+        }
+        proudct_id.tipText = "";
     }
 
 
     function loadingFinished(type,obj){
-
         console.log("测试qml信号" + "type=" + type+ " obj=" + obj);
+        console.log("本对象:" + rect_productDetailPage);
         if(type == MainFlow.QML_SQL_PRODUCT_CREATE){
-            MainTainJs.destroyItem(loadingMask);
+            rect_productDetailPage.loadingMask.destroy();
             if(obj == 1){//添加成功
-                var topParent = rect_window.parent;
+                var topParent = rect_productDetailPage.parent;
                 var product = topParent.vmCreateProduct();
                 var p = sqlProductList.get(productId);
                 product.product_name = p.name;
                 product.product_id = p.id;
                 product.product_price =  p.salePriceStr;
-                product.product_image = p.pic;
+                product.product_image = vmConfig.qmlPath() +  p.pic;
 
-            }
-            hide();
+            } 
         }
         else if(type == MainFlow.QML_SQL_PRODUCT_UPDATE){
-            MainTainJs.destroyItem(loadingMask);
+            rect_productDetailPage.loadingMask.destroy();
             if(obj == 1 && listModel != null){
                 var p1 = sqlProductList.get(productId);
                 var index = curProduct.productIndex;
@@ -303,19 +313,23 @@ Rectangle {
                 listModel.set(index,{"product_id":p1.id,
                                     "product_name":p1.name,
                                     "product_price":p1.salePriceStr,
-                                    "product_image":p1.pic,
+                                    "product_image":vmConfig.qmlPath() +  p1.pic,
                                     "product_index":index});
 
             }
-
-            hide();
-
         }
+        hide();
     }
 
     function hide(){
-        rect_window.visible = false;
-        rect_window.destroy();
+        rect_productDetailPage.visible = false;
+        //rect_productDetailPage.destroy();
+        //console.log("隐藏对象:" + rect_productDetailPage);
+    }
+
+
+    function connectSignal(){
+        vm_main.qmlMainSignal.connect(rect_productDetailPage.loadingFinished);
     }
 
 }

@@ -47,16 +47,22 @@ bool SqlProductList::updateProductImage(SqlProduct *p)
             newFile.remove();
         }
         bool okk = QFile::copy(pic,newFileAbsPath);
-
         qDebug()<<"updateProductImage:copy="<<okk;
         p->imagePath = imagePath;
         p->images = vmConfig.getFilePicList(imagePath);
-        if(p->images.isEmpty()){
-            p->pic = vmConfig.productDefaultPic();
+
+        if(okk == true){
+            p->pic = newFileAbsPath;
         }
         else{
-            p->pic = p->imagePath + "/" + p->images.at(0);
+            if(p->images.isEmpty()){
+                p->pic = vmConfig.productDefaultPic();
+            }
+            else{
+                p->pic = p->imagePath + "/" + p->images.at(0);
+            }
         }
+
         return true;
     }
     else{

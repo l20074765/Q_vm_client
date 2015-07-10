@@ -48,10 +48,14 @@ Rectangle {
 
             text: "新增商品"
             onClicked: {
-                mtproductEnterEdit();
+                var item = mtGetProductDetailItem();
+                if(item){
+                    item.productInfoFlush(null);
+                    item.newProduct = true;
+                    item.visible = true;
+                }
             }
         }
-
     }
 
     // 2.商品列表区
@@ -78,15 +82,13 @@ Rectangle {
                 productImage: product_image
                 onGoods_clicked: {
                     console.log("选中商品 ID=" + productID + " Index=" + product.productIndex + "; " + product);
-                    productDetailItem =  MainTainJs.loadComponent(mt_productPage,"MTProductDetailPage.qml");
-                    if(productDetailItem){
-                       //var item = product_gridView.childAt(product.mouseX,product.mouseY);
-                        productDetailItem.newProduct = false;
-                        productDetailItem.productInfoFlush(product);
-                        productDetailItem.visible = true;
-                        productDetailItem.listModel = product_model;
+                    var item = mtGetProductDetailItem();
+                    if(item){
+                        item.productInfoFlush(product);
+                        item.listModel = product_model;
+                        item.newProduct = false;
+                        item.visible = true;
                     }
-
                 }
             }
         }
@@ -152,7 +154,7 @@ Rectangle {
             p.product_name = product.name;
             p.product_id = product.id;
             p.product_price =  product.salePriceStr;
-            p.product_image = product.pic;
+            p.product_image = vmConfig.qmlPath() +  product.pic;
         }
     }
 
@@ -175,20 +177,12 @@ Rectangle {
         product_model.clear();
     }
 
-    function mtproductEnterEdit(){
-        var item =  MainTainJs.loadComponent(mt_productPage,"MTProductDetailPage.qml");
-        if(item){
-            item.productId  = "vm0001";
-            item.productPrice = "1.00";
-            item.productName = "";
-            item.productPic = "";
-            item.newProduct = true;
-            item.visible = true;
-            return item;
+    function mtGetProductDetailItem(){
+        if(productDetailItem == null){
+            productDetailItem =  MainTainJs.loadComponent(mt_productPage,"MTProductDetailPage.qml");
+            productDetailItem.connectSignal();
         }
-        else{
-          return null;
-        }
+        return productDetailItem;
     }
 
 }

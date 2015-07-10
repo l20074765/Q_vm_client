@@ -18,7 +18,7 @@ function loadComponent(parent,qml) {
 function createItem() {
     if (itemComponent.status == Component.Ready ) {
         itemColumn = itemComponent.createObject(parentWIndow, {"x": 0 ,"y":0 , "z": 9});
-        console.log("创建对象" + parentWIndow + " "+itemColumn)
+        console.log("创建对象" + itemColumn)
         itemColumn.anchors.fill = parentWIndow
         itemColumn.parent = parentWIndow
     } else if (itemComponent.status == Component.Error) {

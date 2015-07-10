@@ -24,23 +24,30 @@ Setting::~Setting()
 
 }
 
-
+//默认商品图片路径
 QString Setting::productDefaultPic()
 {
-    return "../../images/product/default_product.png";
+    return "E:/work/QT/EV/Q_vm_client/images/product/default_product.png";
 }
 
-QString Setting::productPicPath() //用户放置图片的文件夹
+//用户放置图片的文件夹路径
+QString Setting::productPicPath()
 {
-    return "../../images/productPic";
+    return "E:/work/QT/EV/Q_vm_client/images/productPic";
 }
 
+//商品图片保存路径
 QString Setting::productImagePath()
 {
-    return "../../images/productImage";
+    return "E:/work/QT/EV/Q_vm_client/images/productImage";
 }
 
 
+//QML路径包头
+QString Setting::qmlPath()
+{
+    return "file:///";
+}
 
 
 bool Setting::createDir(const QString &filePath)

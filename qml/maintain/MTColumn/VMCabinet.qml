@@ -87,7 +87,7 @@ Rectangle {
                 Text {
                     anchors.centerIn: parent
                     text: "正常"
-                    font{bold: true;pixelSize: parent.height * 0.4}
+                    font{bold: false;pixelSize: parent.height * 0.4}
                     color: "white"
                 }
             }
@@ -96,7 +96,7 @@ Rectangle {
                 color: "yellow"
                 Text {
                     anchors.centerIn: parent
-                    font{bold: true;pixelSize: parent.height * 0.4}
+                    font{bold: false;pixelSize: parent.height * 0.4}
                     text: "无货"
                     color: "white"
                 }
@@ -107,7 +107,7 @@ Rectangle {
                 color: "red"
                 Text {
                     anchors.centerIn: parent
-                    font{bold: true;pixelSize: parent.height * 0.4}
+                    font{bold: false;pixelSize: parent.height * 0.4}
                     text: "故障"
                     color: "white"
                 }
@@ -117,7 +117,7 @@ Rectangle {
                 color: "gray"
                 Text {
                     anchors.centerIn: parent
-                    font{bold: true;pixelSize: parent.height * 0.4}
+                    font{bold: false;pixelSize: parent.height * 0.4}
                     text: "禁用"
                     color: "white"
                 }

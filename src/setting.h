@@ -24,6 +24,7 @@ public slots:
     QStringList getFilePicList(const QString &filePath);
     QString productPicPath();
     QString productDefaultPic();
+    QString qmlPath();
 private:
     bool qmlDebug;
     QString vmPort;

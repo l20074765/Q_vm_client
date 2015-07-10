@@ -161,7 +161,7 @@ Rectangle {
 
     function vmCreateProduct(name){
         var picName = name.split('.');
-        var path = vmConfig.productPicPath();
+        var path = vmConfig.qmlPath() +  vmConfig.productPicPath(); //qml显示图片如果使用绝对地址需要加上"file:///"
         listModel_productPic.append({
                           "product_name":picName[0],
                           "product_image":path + "/" + name
