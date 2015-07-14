@@ -148,6 +148,7 @@ Rectangle {
 
     function productFlush(){
         mtProductClear();
+       console.log("productFlush:size=" + sqlProductList.size);
         for(var i = 0;i < sqlProductList.size;i++){
             var product = sqlProductList.at(i);
             var p = vmCreateProduct();

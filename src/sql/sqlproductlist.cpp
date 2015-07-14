@@ -120,6 +120,14 @@ SqlProduct *SqlProductList::hashValue(const QString &key)
 }
 
 
+int SqlProductList::size()
+{
+    list.clear();
+    list = hash.values();
+    return list.size();
+}
+
+
 void SqlProductList::getProductList()
 {
     list.clear();

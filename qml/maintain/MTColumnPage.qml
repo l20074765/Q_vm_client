@@ -30,13 +30,13 @@ Rectangle {
                 verticalCenter: parent.verticalCenter
             }
             font{
-                //bold: true
                 pixelSize: (height < width) ? height * 0.6 : width * 0.1;
             }
             text: "新增货柜"
             onClicked: {
                 var item = mtGetCabinetEditItem();
                 item.visible = true;
+
             }
         }
 
@@ -60,16 +60,15 @@ Rectangle {
                 delegate:list_delegate
                 snapMode: ListView.SnapToItem
                 spacing: 1
+                flickDeceleration: 2  //滑动速度
                 orientation: ListView.Horizontal
                 boundsBehavior: Flickable.StopAtBounds
-                flickDeceleration: 5000  //滑动速度
                 onMovementEnded:{
+                    console.log("onMovementEnded:");
                     var i = indexAt(contentX,contentY);
                     if(i != -1 && i != listView.currentIndex){
                         listView.currentIndex = i;
                     }
-                }
-                onMovementStarted: {
                 }
             }
             ListModel{
@@ -98,18 +97,41 @@ Rectangle {
         Rectangle{
             id:go_rect
             width: parent.width * 0.5
-            height: parent.height * 0.8
+            height: parent.height * 0.75
             anchors.centerIn: parent
             visible: true
             Row{
+                width: parent.width
+                height: parent.height
                 anchors.centerIn: parent
                 spacing: 10
-                Image {
+                Rectangle{
                     id: go_previous_image
-                    source: "../../images/tool/go-previous.png"
+                    width: parent.width * 0.3
+                    height: parent.height * 0.9
+                    border{
+                        width: 2
+                        color: "gray"
+                    }
+                    Text {
+                        id: name
+                        anchors.centerIn: parent
+                        text: "上一页"
+                    }
+                    MouseArea{
+                        anchors.fill: parent
+                        onClicked: {
+                            if(listView.currentIndex)
+                                listView.currentIndex-- ;
+                            else
+                                listView.currentIndex = 0;
+                        }
+                    }
                 }
                 Text {
                     id: go_text
+                    width: parent.width * 0.2
+                    height: parent.height * 0.9
                     text: (listView.currentIndex + 1) + "/" + listView.count
                     font{
                         bold: true
@@ -117,10 +139,31 @@ Rectangle {
                     }
                     color: "blue"
                 }
-                Image {
+
+                Rectangle{
                     id: go_next_image
-                    source: "../../images/tool/go-next.png"
+                    width: parent.width * 0.3
+                    height: parent.height * 0.9
+                    border{
+                        width: 2
+                        color: "gray"
+                    }
+                    Text {
+                        id: name1
+                        anchors.centerIn: parent
+                        text: "下一页"
+                    }
+                    MouseArea{
+                        anchors.fill: parent
+                        onClicked: {
+                            if(listView.currentIndex < listView.count)
+                                listView.currentIndex++ ;
+                            else
+                                listView.currentIndex = listView.count - 1;
+                        }
+                    }
                 }
+
             }
             Timer{
                 id:go_timer
@@ -191,7 +234,6 @@ Rectangle {
     function mtGetCabinetEditItem(){
         if(cabinetEditItem == null){
             cabinetEditItem =  MainTainJs.loadComponent(rect_columnPage,"./MTColumn/MTCabinetEditPage.qml");
-           // cabinetEditItem.connectSignal();
         }
         return cabinetEditItem;
     }

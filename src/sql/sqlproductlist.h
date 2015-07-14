@@ -14,7 +14,7 @@ public:
     explicit SqlProductList(QObject *parent = 0);
     ~SqlProductList();
 
-    int size(){return this->list.size();}
+    int size();
 
     void hashInsert(const QString &key,SqlProduct *obj);
     SqlProduct *hashValue(const QString &key);

@@ -37,8 +37,7 @@ Custom.VMWidget{
                     text: qsTr("系统维护")
                     font{
                         bold: true
-                        pixelSize:   (parent.height < parent.width) ?
-                                         parent.height * 0.08 : parent.width * 0.08
+                        pixelSize:   (parent.height < parent.width) ? parent.height * 0.08 : parent.width * 0.08
                     }
                 }
                 Text {
@@ -47,8 +46,7 @@ Custom.VMWidget{
                     horizontalAlignment: Text.AlignHCenter
                     font{
                         bold: true
-                        pixelSize: (parent.height < parent.width) ?
-                                       parent.height * 0.04 : parent.width * 0.04
+                        pixelSize: (parent.height < parent.width) ?parent.height * 0.04 : parent.width * 0.04
                     }
                     text: qsTr("系统时间:") + mtMainTainPage.datatime
                 }

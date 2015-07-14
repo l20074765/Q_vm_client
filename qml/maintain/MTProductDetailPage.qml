@@ -47,16 +47,13 @@ Rectangle {
             width: parent.width * 0.2
             height:parent.height * 0.8
             anchors{
-                right: parent.right
-                rightMargin: 5
+                left: parent.left
+                leftMargin: 5
                 verticalCenter: parent.verticalCenter
             }
             font{
-                //bold: true
-                pixelSize: (height < width) ?
-                               height * 0.6 : width * 0.1;
+                pixelSize: (height < width) ? height * 0.6 : width * 0.1;
             }
-
             text: "删除商品"
             onClicked: {
                 if(newProduct == false){
