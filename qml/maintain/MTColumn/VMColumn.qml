@@ -32,13 +32,15 @@ Rectangle{
             width: parent.width
             height: parent.height * 0.24
             title_text:"货道:"
-            label_font.pixelSize: (width < height) ? width * 0.9 : height * 0.9;
+            label_font.pixelSize: (width < height) ? width * 0.8 : height * 0.8;
             label_text: col_column
         }
         VMColumnText{
             width: parent.width
             height: parent.height * 0.24
             title_text:"余量:"
+            label_font.pixelSize: (width < height) ? width * 0.7 : height * 0.7;
+            //label_font.bold: false
             label_text: col_remain
         }
         VMColumnText{

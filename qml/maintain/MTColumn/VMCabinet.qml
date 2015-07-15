@@ -54,7 +54,7 @@ Rectangle {
            font{bold:false;pixelSize: (width < height) ? width * 0.4: height * 0.6;}
            text: "新建货道"
            onClicked: {
-               vmCreateColumn(99);
+               vmCreateColumn(product_model.count + 1);
            }
        }
 
@@ -73,8 +73,8 @@ Rectangle {
             width: parent.width
             height: parent.height
             anchors.fill: parent
-            property real cellW: (parent.width) / 10.1
-            property real cellH: (parent.height) / 10.1
+            property real cellW: (parent.width) / 10.01
+            property real cellH: (parent.height) / 10.01
             cellWidth: cellW
             cellHeight: cellH
             flickableDirection:Flickable.VerticalFlick
@@ -182,7 +182,7 @@ Rectangle {
                                 "column_goods":"",
                                 "column_bin":cabinet_rect.cabinetNo,
                                 "column_total":0,
-                                "column_column":0,
+                                "column_column":id,
                                 "col_index":0
                          });
         var column = product_model.get(product_model.count - 1);

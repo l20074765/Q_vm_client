@@ -10,6 +10,7 @@ Rectangle {
     property int sum:80
     property int type:1
     property alias cabinetNo: cabinet_id.text_contex
+    property alias colSum: cabinet_sum.text_contex
     property string info:""
 
     MouseArea{ //禁止事件穿透
@@ -73,7 +74,7 @@ Rectangle {
                 validator:DoubleValidator{ decimals: 0; bottom: 0; top: 1000; notation:DoubleValidator.StandardNotation}
             }
             VMCoumnTextInput{
-                id:cabinet_name
+                id:cabinet_sum
                 width: parent.width
                 height: parent.height / 12
                 text_title: qsTr("货道总数:")
@@ -119,7 +120,12 @@ Rectangle {
                                height * 0.6 : width * 0.1;
             }
             onClicked: {
-                rect_cabinetEditPage.parent.createCabinet(cabinetNo);
+
+                var cabinet = rect_cabinetEditPage.parent.createCabinet(cabinetNo);
+                for(var i = 1;i <= colSum;i++){
+                    cabinet.vmCreateColumn(i);
+                }
+
                 hide();
             }
         }

@@ -14,6 +14,8 @@ Rectangle {
     property alias in_remain: input_remain.text_contex
     property alias in_total: input_total.text_contex
     property alias in_goods: input_goods.text_contex
+    property alias in_image: product_image.source
+    property alias in_goods_name: product_text.text
     property bool isCreate:false
     focus: true
     color: "white"
@@ -47,19 +49,90 @@ Rectangle {
         width: parent.width
         height:parent.height * 0.9
         anchors.top:title_rect.bottom
+
+        //2 商品图片区
+        Rectangle{
+            id:rect_productImage
+            width: parent.width * 0.45
+            height: parent.height * 0.35
+
+            anchors{top:parent.top;topMargin: 10;
+                    left: parent.left;leftMargin: 10}
+           // border{color: "blue";width: 1}
+            smooth: true
+            Column{
+                width: parent.width
+                height: parent.height
+                anchors.fill: parent
+                spacing: 5
+
+                Image{
+                    id:product_image
+                    width: parent.width
+                    height: parent.height * 0.8
+                    source: ""
+                    smooth: true
+                    fillMode: Image.PreserveAspectFit
+                }
+                Text{
+                    id:product_text
+                    width: parent.width
+                    height: parent.height * 0.2
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font{
+                        bold:true
+                        pixelSize: (width < height) ? width * 0.4: height * 0.4;
+                    }
+                    elide:Text.ElideRight
+                    text:""
+                    smooth: true
+                }
+
+            }
+
+
+        }
+
+
+        MyButton{
+            width: parent.width * 0.15
+            height: parent.width * 0.15
+            anchors{
+                right: parent.right
+                rightMargin: parent.width * 0.025
+                bottom: column_rect.top
+                bottomMargin: 10
+            }
+            text: "绑定商品"
+            font{
+                bold: true
+                pixelSize: width * 0.16
+            }
+            onClicked: {
+                var  productPage =  MainTainJs.loadComponent(rect_mainTain,"VMProductBrowsePage.qml");
+                if(productPage){
+                    productPage.productFlush(rect);
+                    productPage.visible = true;
+                }
+
+            }
+        }
+
         //货道编辑区
         Rectangle{
             id:column_rect
             width: parent.width
-            height: parent.height * 0.8
-            anchors.centerIn: parent
+            height: parent.height * 0.4
+            anchors.top: rect_productImage.bottom
+            anchors.topMargin: 10
             Column{              
                 anchors.fill: parent
                 spacing: 5
                 VMCoumnTextInput{
                     id:input_bin
                     width: parent.width
-                    height: parent.height * 0.08
+                    height: parent.height * 0.15
                     text_title:"货柜号:"
                     text_contex: ""
                     validator:DoubleValidator{decimals: 0; bottom: 0; top: 100; notation:DoubleValidator.StandardNotation}
@@ -68,7 +141,7 @@ Rectangle {
                 VMCoumnTextInput{
                     id:input_column
                     width: parent.width
-                    height: parent.height * 0.08
+                    height: parent.height * 0.15
                     text_title:"货道号:"
                     validator:DoubleValidator{decimals: 0; bottom: 0; top: 100; notation:DoubleValidator.StandardNotation}
                     text_contex: ""
@@ -76,7 +149,7 @@ Rectangle {
                 VMCoumnTextInput{
                     id:input_remain
                     width: parent.width
-                    height: parent.height * 0.08
+                    height: parent.height * 0.15
                     text_title:"剩余量:"
                     text_contex: ""
                     validator:DoubleValidator{decimals: 0; bottom: 0; top: 100; notation:DoubleValidator.StandardNotation}
@@ -84,7 +157,7 @@ Rectangle {
                 VMCoumnTextInput{
                     id:input_total
                     width: parent.width
-                    height: parent.height * 0.08
+                    height: parent.height * 0.15
                     text_title:"总容量:"
                     text_contex: ""
                     validator:DoubleValidator{decimals: 0; bottom: 0; top: 100; notation:DoubleValidator.StandardNotation}
@@ -92,7 +165,7 @@ Rectangle {
                 VMCoumnTextInput{
                     id:input_goods
                     width: parent.width
-                    height: parent.height * 0.08
+                    height: parent.height * 0.15
                     text_title:"商品号:"
                     text_contex: ""
                     onActiveFocused: {
@@ -180,6 +253,13 @@ Rectangle {
         rect.in_goods = col.col_goods;
         rect.in_remain = col.col_remain;
         rect.in_total = col.col_total;
+
+        var item = sqlProductList.get(col.col_goods);
+        if(item){
+            in_image =  vmConfig.qmlPath() +  item.pic;
+            in_goods_name = item.name;
+        }
+
         rect.visible = true;
     }
 
