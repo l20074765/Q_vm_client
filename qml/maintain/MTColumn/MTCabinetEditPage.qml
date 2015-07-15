@@ -119,11 +119,7 @@ Rectangle {
                                height * 0.6 : width * 0.1;
             }
             onClicked: {
-                //rect_cabinetEditPage.parent.createCabinet(cabinetNo);
-                rect_cabinetEditPage.parent.createCabinet(1);
-                rect_cabinetEditPage.parent.createCabinet(2);
-                rect_cabinetEditPage.parent.createCabinet(3);
-                rect_cabinetEditPage.parent.createCabinet(4);
+                rect_cabinetEditPage.parent.createCabinet(cabinetNo);
                 hide();
             }
         }

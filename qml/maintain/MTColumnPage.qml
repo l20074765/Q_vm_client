@@ -19,7 +19,8 @@ Rectangle {
             anchors.centerIn: parent
             verticalAlignment: Text.AlignVCenter
             text: qsTr("货道管理")
-            font{bold: true;pixelSize: 20}
+            font.pixelSize: (parent.height < parent.width) ? parent.height * 0.5: parent.width * 0.1;
+            font{bold: true;}
         }
         MTColumn.MyButton{
             width: parent.width * 0.2
@@ -47,6 +48,7 @@ Rectangle {
         id:main_rect
         width: parent.width
         height: parent.height * 0.9
+        z:3
         anchors{top:title.bottom}
         //主界面
         Rectangle {
@@ -60,9 +62,11 @@ Rectangle {
                 delegate:list_delegate
                 snapMode: ListView.SnapToItem
                 spacing: 1
-                flickDeceleration: 2  //滑动速度
+                flickDeceleration: 5000  //滑动速度
+                highlightMoveSpeed:2000  //滚动速度
                 orientation: ListView.Horizontal
-                boundsBehavior: Flickable.StopAtBounds
+                boundsBehavior: Flickable.DragAndOvershootBounds
+                focus: true
                 onMovementEnded:{
                     console.log("onMovementEnded:");
                     var i = indexAt(contentX,contentY);
@@ -74,13 +78,15 @@ Rectangle {
             ListModel{
                 id:listModel
 
+
             }
             Component{
                 id:list_delegate
                 MTColumn.VMCabinet{
                     width: listView.width
                     height: listView.height
-                    property int num: num
+                    cabinetNo: cabinet_no
+                    topParent:  top_parent
                 }
             }
 
@@ -92,7 +98,6 @@ Rectangle {
         width: parent.width
         height: parent.height * 0.05
         anchors{bottom: parent.bottom}
-
         z:5
         Rectangle{
             id:go_rect
@@ -109,22 +114,15 @@ Rectangle {
                     id: go_previous_image
                     width: parent.width * 0.3
                     height: parent.height * 0.9
-                    border{
-                        width: 2
-                        color: "gray"
-                    }
+                    border{width: 2;color: "gray"}
                     Text {
-                        id: name
                         anchors.centerIn: parent
                         text: "上一页"
                     }
                     MouseArea{
                         anchors.fill: parent
                         onClicked: {
-                            if(listView.currentIndex)
-                                listView.currentIndex-- ;
-                            else
-                                listView.currentIndex = 0;
+                            listView.decrementCurrentIndex();
                         }
                     }
                 }
@@ -144,22 +142,15 @@ Rectangle {
                     id: go_next_image
                     width: parent.width * 0.3
                     height: parent.height * 0.9
-                    border{
-                        width: 2
-                        color: "gray"
-                    }
+                    border{width: 2;color: "gray"}
                     Text {
-                        id: name1
                         anchors.centerIn: parent
                         text: "下一页"
                     }
                     MouseArea{
                         anchors.fill: parent
                         onClicked: {
-                            if(listView.currentIndex < listView.count)
-                                listView.currentIndex++ ;
-                            else
-                                listView.currentIndex = listView.count - 1;
+                            listView.incrementCurrentIndex();
                         }
                     }
                 }
@@ -196,14 +187,15 @@ Rectangle {
 
 
     function createCabinet(no){
-        if(listView.count < no){
-            listModel.append({"num":no})
-            listView.cacheBuffer += listView.width
-            console.log("创建柜子 count="  + listModel.count + " cacheBuffer:" +
-                        listView.cacheBuffer)
-        }
 
-        listView.currentIndex = no - 1;
+        listModel.append({"cabinet_no":no,
+                            "top_parent":rect_columnPage})
+        listView.cacheBuffer += listView.width
+        console.log("创建柜子 count="  + listModel.count + " cacheBuffer:" +
+                    listView.cacheBuffer)
+
+        var index = listModel.count - 1;
+        listView.currentIndex = index;
         return listView.currentItem;
     }
 

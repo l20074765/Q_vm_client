@@ -6,9 +6,9 @@ Rectangle{
     property alias readOnly: editor.readOnly
     property alias validator: editor.validator
     property alias activeFocus: editor.activeFocus
-  //  property alias onDisplaySignal:editor.displayText
     property int margin: 2
     signal displayTextChanegd()
+    signal activeFocused()
 
     width: 100
     height: 40
@@ -36,6 +36,9 @@ Rectangle{
         onDisplayTextChanged: rect_input.displayTextChanegd();
         onActiveFocusChanged: {
            console.log("编辑框状态更改:" + editor.activeFocus);
+            if(editor.activeFocus == true){
+                rect_input.activeFocused();
+            }
         }
     }
 }

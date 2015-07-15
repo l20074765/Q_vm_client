@@ -12,6 +12,7 @@ Rectangle{
     property alias activeFocus: editor.activeFocus
     property alias tipText: tip.text
     signal displayTextChanged()
+    signal activeFocused();
     border{
         width: 1
         color: "gray"
@@ -30,8 +31,7 @@ Rectangle{
             }
             font{
                 bold: true
-                pixelSize: (height < width) ?
-                             height * 0.8 : width * 0.1;
+                pixelSize: (height < width) ? height * 0.8 : width * 0.1;
             }
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignLeft
@@ -59,6 +59,9 @@ Rectangle{
             onDisplayTextChanegd: {
               //  console.log("编辑框内容更改。。。。");
                 rect_columnInput.displayTextChanged();
+            }
+            onActiveFocused: {
+                rect_columnInput.activeFocused();
             }
         }
     }

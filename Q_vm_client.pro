@@ -141,7 +141,8 @@ DISTFILES += \
     qml/custom/MyTextInput.qml \
     qml/maintain/MTProductPicList.qml \
     qml/custom/LoadingMask.qml \
-    qml/maintain/MTColumn/MTCabinetEditPage.qml
+    qml/maintain/MTColumn/MTCabinetEditPage.qml \
+    qml/maintain/MTColumn/VMProductBrowsePage.qml
 
 
 
