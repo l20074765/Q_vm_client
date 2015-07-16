@@ -1,6 +1,7 @@
 import QtQuick 1.1
 import "../../custom"  as Custom
-
+import "../MainTain.js" as MainTainJs
+import Qtvm 1.0
 
 Rectangle {
     id:rect_cabinetEditPage
@@ -12,7 +13,7 @@ Rectangle {
     property alias cabinetNo: cabinet_id.text_contex
     property alias colSum: cabinet_sum.text_contex
     property string info:""
-
+    property Item loadingMask:null
     MouseArea{ //禁止事件穿透
         anchors.fill: parent
     }
@@ -78,7 +79,7 @@ Rectangle {
                 width: parent.width
                 height: parent.height / 12
                 text_title: qsTr("货道总数:")
-                text_contex: "80"
+                text_contex: "48"
                 validator:DoubleValidator{ decimals: 0; bottom: 0; top: 1000; notation:DoubleValidator.StandardNotation}
             }
 //            VMCoumnTextInput{
@@ -121,12 +122,20 @@ Rectangle {
             }
             onClicked: {
 
-                var cabinet = rect_cabinetEditPage.parent.createCabinet(cabinetNo);
-                for(var i = 1;i <= colSum;i++){
-                    cabinet.vmCreateColumn(i);
+                //创建货柜
+                var cab = sqlCabinetList.create(rect_cabinetEditPage.cabinetNo);
+                console.log("保存创建货柜" + "no=" + rect_cabinetEditPage.cabinetNo +" cab=" +  cab);
+                if(cab == null){ //柜号重复
+                    hide();
+                }
+                else{
+                    console.log("后台创建货柜");
+                    cab.sum = rect_cabinetEditPage.colSum;
+                    mainView.qmlActionSlot(MainFlow.QML_SQL_CABINET_CREATE,rect_cabinetEditPage.cabinetNo);
+                    loadingMask =  MainTainJs.loadComponent(rect_cabinetEditPage,"../../custom/LoadingMask.qml");
+                    loadingMask.visible = true;
                 }
 
-                hide();
             }
         }
 
@@ -156,6 +165,39 @@ Rectangle {
         rect_cabinetEditPage.visible = false;
     }
 
+    function loadingFinished(type,obj){
+        console.log("货柜:测试qml信号" + "type=" + type+ " obj=" + obj);
+        if(type == MainFlow.QML_SQL_CABINET_CREATE){
+            rect_cabinetEditPage.loadingMask.destroy();
+            var cabNo = rect_cabinetEditPage.cabinetNo;
+            if(obj == 1){
+                var cabinet = rect_cabinetEditPage.parent.createCabinet(cabNo);
+                var cabinetCpp = sqlCabinetList.get(cabNo);
+                var columnList = cabinetCpp.getColumnList();
+                var size = columnList.size;
+                console.log("需要创建货道数:" + size);
+                for(var i = 0;i <= size;i++){
+                    var col = columnList.at(i);
+                    if(col){
+                        console.log("自动创建货道:col=" +  col.column + " column=" +  col );
+                        var no = col.column;
+                        var columnPage = cabinet.vmCreateColumn(no);
+                        columnPage.column_remain = col.remain;
+                        columnPage.column_state = col.state;
+                        columnPage.column_total = col.total;
+                        columnPage.column_goods = col.productNo;
+                    }
+                }
+            }
+        }
+        hide();
+
+    }
+
+    function connectSignal(){
+        console.log("创建货柜编辑信号槽");
+        vm_main.qmlMainSignal.connect(rect_cabinetEditPage.loadingFinished);
+    }
 
 }
 

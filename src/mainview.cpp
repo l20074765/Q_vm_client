@@ -40,12 +40,21 @@ MainView::MainView(QObject *parent) : QObject(parent)
     //提醒注册组件必须要在 this->setSource(url);之前进行 否则qml找不到组件
     qmlRegisterType<VMVideo>("Qtvm",1,0,"VMVideo");
     qmlRegisterType<QrenWidget>("Qtvm",1,0,"QrenWidget");
+
+    qmlRegisterType<VmcMainFlow>("Qtvm",1,0,"VmcMainFlow");
+
     qmlRegisterType<SqlProduct>("Qtvm",1,0,"SqlProduct");
     qmlRegisterType<SqlProductList>("Qtvm",1,0,"SqlProductList");
-    qmlRegisterType<VmcMainFlow>("Qtvm",1,0,"VmcMainFlow");
-    qmlRegisterType<VMSqlite>("Qtvm",1,0,"VMSqlite");
+
     qmlRegisterType<SqlColumn>("Qtvm",1,0,"SqlColumn");
     qmlRegisterType<SqlColumnList>("Qtvm",1,0,"SqlColumnList");
+
+    qmlRegisterType<SqlCabinet>("Qtvm",1,0,"SqlCabinet");
+    qmlRegisterType<SqlCabinetList>("Qtvm",1,0,"SqlCabinetList");
+
+    qmlRegisterType<VMSqlite>("Qtvm",1,0,"VMSqlite");
+
+
     qmlRegisterType<MainFlow>("Qtvm",1,0,"MainFlow");
 
     QUrl url;
@@ -66,11 +75,11 @@ MainView::MainView(QObject *parent) : QObject(parent)
 
     SqlProductList *sqlProductList = sqllite->getSqlProductList();
     SqlColumnList *sqlColumnList = sqllite->getSqlColumnList();
+    SqlCabinetList *sqlCabinetList = sqllite->getSqlCabinetList();
 
-    //context->setContextProperty("sqlProduct",mainFlow->sqlProduct);
     context->setContextProperty("sqlProductList",sqlProductList);
     context->setContextProperty("sqlColumnList",sqlColumnList);
-
+    context->setContextProperty("sqlCabinetList",sqlCabinetList);
 
 
     mainItem = qobject_cast<QDeclarativeItem *>(view->rootObject());

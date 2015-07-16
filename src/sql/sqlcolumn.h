@@ -20,6 +20,8 @@ public:
 
 
     quint32 getId(){return id;}
+
+
     quint32 getBin(){return bin;}
     quint32 getColumn(){return column;}
     quint32 getState(){return state;}

@@ -235,6 +235,21 @@ void MainFlow::qmlActionSlot(QVariant type, QVariant obj)
         QString productId = obj.value<QString>();
         vmsqlite->vmDeleteProduct(productId);
     }
+    else if(mt == QML_SQL_CABINET_CREATE){ //创建柜子
+        int cabinetNo = obj.value<int>();
+        bool ok = vmsqlite->vmCreateCabinet(cabinetNo);
+        QVariant var1((int)QML_SQL_CABINET_CREATE);
+        QVariant var2;
+
+        if(ok){//插入成功
+            var2.setValue(int(1));
+        }
+        else{
+           // qDebug()<<"后台处理QML新建商品请求:提取商品失败";
+            var2.setValue(int(0));
+        }
+        emit qmlActionSignal(var1,var2);
+    }
 }
 
 void MainFlow::vmcActionSlot(QVariant type, QVariant obj)

@@ -248,6 +248,7 @@ Rectangle {
     function mtGetCabinetEditItem(){
         if(cabinetEditItem == null){
             cabinetEditItem =  MainTainJs.loadComponent(rect_columnPage,"./MTColumn/MTCabinetEditPage.qml");
+            cabinetEditItem.connectSignal();
         }
         return cabinetEditItem;
     }

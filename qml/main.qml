@@ -194,6 +194,9 @@ Rectangle {
         else if(type == MainFlow.QML_SQL_PRODUCT_UPDATE){
             qmlMainSignal(type,obj);
         }
+        else if(type == MainFlow.QML_SQL_CABINET_CREATE){
+            qmlMainSignal(type,obj);
+        }
     }
 
     //新增商品

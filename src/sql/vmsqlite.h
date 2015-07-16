@@ -8,6 +8,8 @@
 #include "sqlcolumnlist.h"
 #include "orderlist.h"
 #include "sqlcabinetlist.h"
+#include "vmcmainflow.h"
+
 
 class VMSqlite : public QObject
 {
@@ -48,14 +50,20 @@ public:
     bool insertColumn(const SqlColumn *column);
     bool updateColumn(const SqlColumn *column);
     bool deleteColumn(const SqlColumn *column);
-
+    bool deleteColumnByCabinet(const int no);
 
     void addOrder(const QString &productId,OrderList *orderList);
     bool vmDeleteProduct(const QString &productId);
     bool vmUpdateProduct(const QString &productId);
     bool vmInsertProduct(const QString &productId);
+
+
+    bool vmCreateCabinet(const int no);
+
+
     SqlProductList *getSqlProductList(){return this->productList;}
     SqlColumnList *getSqlColumnList(){return this->columnList;}
+    SqlCabinetList *getSqlCabinetList(){return this->cabinetList;}
 signals:
     void sqlActionSignal(int type,QObject *obj);
 

@@ -66,7 +66,6 @@ Rectangle {
                         listModel.setProperty(i,"product_index",i);
                         //console.log("调整:id=" + t.product_id + " i=" + i);
                     }
-
                     console.log("删除商品:index=" + curProduct.productIndex);
                     hide();
                 }

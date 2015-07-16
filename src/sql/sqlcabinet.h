@@ -32,6 +32,8 @@ public:
 signals:
 
 public slots:
+    SqlColumnList *getColumnList(){return this->columnList;}
+
 };
 
 #endif // SQLCABINET_H

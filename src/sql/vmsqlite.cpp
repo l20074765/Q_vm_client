@@ -361,7 +361,26 @@ bool VMSqlite::updateProduct(const SqlProduct *product)
 
 }
 
+bool VMSqlite::deleteColumnByCabinet(const int no)
+{
+    QString tableName = "vmc_column";
+    if(!m_db.isOpen()){
+        qDebug()<<"deleteColumn:"<< "数据库未打开";
+        return false;
+    }
 
+    QString temp = QString("delete from %1 where cabinetNo=%2")
+            .arg(tableName).arg(no);
+
+    qDebug()<<"deleteColumn:"<<"temp="<<temp;
+    QSqlQuery query = m_db.exec (temp);
+    if(query.lastError ().type ()==QSqlError::NoError){//如果上面的语句执行没有出错
+        return true;
+    }else{
+        qDebug()<<"deleteColumn:执行"<<temp<<"出错："<<query.lastError ().text ();
+        return false;
+    }
+}
 
 bool VMSqlite::deleteColumn(const SqlColumn *column)
 {
@@ -568,6 +587,47 @@ bool VMSqlite::vmInsertProduct(const QString &productId)
     else{
         return insertProduct(p);
     }
+}
+
+
+
+
+bool VMSqlite::vmCreateCabinet(const int no)
+{
+    qDebug()<<"vmCreateCabinet:柜号="<<no;
+    SqlCabinet *cabinet = cabinetList->get(no);
+    if(cabinet == NULL){
+        qDebug()<<"vmCreateCabinet:该柜不存在!";
+        return false;
+    }
+    else{
+        bool ok = insertCabinet(cabinet);
+        if(!ok){
+            return false;
+        }
+        ok = deleteColumnByCabinet(cabinet->id);
+        for(int i = 0;i < cabinet->sum;i++){
+            SqlColumn *column = new SqlColumn(0);
+            column->bin = cabinet->id;
+            column->column = i + 1;
+            column->id = column->bin * 1000 + column->column;
+            column->capacity = 1;
+            column->remain = 0;
+            column->state = VmcMainFlow::EV_COLUMN_EMPTY;
+            ok = insertColumn(column);
+            if(ok){
+                cabinet->columnList->append(column); //插入链表
+            }
+            else{
+                //创建失败
+                delete column;
+            }
+
+        }
+
+        return true;
+    }
+
 }
 
 
