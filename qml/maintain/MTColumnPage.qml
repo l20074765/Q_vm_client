@@ -22,6 +22,28 @@ Rectangle {
             font.pixelSize: (parent.height < parent.width) ? parent.height * 0.5: parent.width * 0.1;
             font{bold: true;}
         }
+
+        MTColumn.MyButton{
+            width: parent.width * 0.2
+            height:parent.height * 0.8
+            anchors{
+                left: parent.left
+                leftMargin: 5
+                verticalCenter: parent.verticalCenter
+            }
+            font{
+                pixelSize: (height < width) ? height * 0.6 : width * 0.1;
+            }
+            text: "删除该柜"
+            onClicked: {
+                if(listView.currentItem){
+                    //var sum = listModel.count;
+
+                }
+            }
+        }
+
+
         MTColumn.MyButton{
             width: parent.width * 0.2
             height:parent.height * 0.8

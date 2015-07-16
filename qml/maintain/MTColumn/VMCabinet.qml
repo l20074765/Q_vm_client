@@ -19,44 +19,54 @@ Rectangle {
         height: parent.height * 0.05
         z:5
         anchors{top:parent.top}
-        //color: "red"
         Rectangle{
             width: parent.width * 0.2
             height: parent.height * 0.8
             anchors.centerIn: parent
-            //color: "blue"
             Text{
                 anchors.fill: parent
                 font{
                     bold:true;
-                    pixelSize: (parent.width < parent.height) ? parent.width * 0.6: parent.height * 0.8;
+                    pixelSize: (parent.width < parent.height) ? parent.width * 0.8: parent.height * 0.9;
                 }
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
+                color:"blue"
                 text: cabinetNo
             }
         }
 
 
+        //按键组
+        Row{
+            width:parent.width * 0.4
+            height:parent.height * 0.6
+            anchors{left: parent.left;leftMargin: 5;}
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 15
 
-        MyButton{
-            width: parent.width * 0.2
-            height: parent.height * 0.6
-            anchors{left: parent.left;leftMargin:20;verticalCenter: parent.verticalCenter;}
-            font{bold:false;pixelSize: (width < height) ? width * 0.4: height * 0.6;}
-            text: "一键补货"
+            MyButton{
+                width:parent.width * 0.4
+                height:parent.height
+                font{bold:false;pixelSize: (width < height) ? width * 0.4: height * 0.6;}
+                text: "新建货道"
+                onClicked: {
+                    vmCreateColumn(product_model.count + 1);
+                }
+            }
+
+            MyButton{
+                width: parent.width * 0.4
+                height: parent.height
+                font{bold:false;pixelSize: (width < height) ? width * 0.4: height * 0.6;}
+                text: "一键补货"
+            }
+
         }
 
-       MyButton{
-           width:parent.width * 0.2
-           height:parent.height * 0.6
-           anchors{right:parent.right;rightMargin:20;verticalCenter: parent.verticalCenter}
-           font{bold:false;pixelSize: (width < height) ? width * 0.4: height * 0.6;}
-           text: "新建货道"
-           onClicked: {
-               vmCreateColumn(product_model.count + 1);
-           }
-       }
+
+
+
 
     }
 

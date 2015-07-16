@@ -95,7 +95,11 @@ Rectangle {
         }
 
 
+
+
+
         MyButton{
+            id:goodsBind
             width: parent.width * 0.15
             height: parent.width * 0.15
             anchors{
@@ -116,6 +120,28 @@ Rectangle {
                     productPage.visible = true;
                 }
 
+            }
+        }
+
+
+        MyButton{
+            width: parent.width * 0.15
+            height: parent.width * 0.15
+            anchors{
+                right: parent.right
+                rightMargin: parent.width * 0.025
+                top: parent.top
+                topMargin: 10
+            }
+            text: "解除绑定"
+            font{
+                bold: true
+                pixelSize: width * 0.16
+            }
+            onClicked: {
+                in_goods = "";
+                in_goods_name = "";
+                in_image = "";
             }
         }
 

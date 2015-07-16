@@ -57,7 +57,8 @@ Rectangle {
                 onGoods_clicked: {
                     console.log("选中商品 ID=" + productID + " Index=" + product.productIndex + "; " + product);
                     topParent.in_goods = product.productID;
-
+                    topParent.in_image = product.productImage;
+                    topParent.in_goods_name = product.productName;
                     hide();
                 }
             }
