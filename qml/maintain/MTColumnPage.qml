@@ -2,11 +2,14 @@ import QtQuick 1.1
 import "MTColumn" as MTColumn
 import "MainTain.js" as MainTainJs
 import "./MTColumn/Column.js" as Column
+import Qtvm 1.0
+
 Rectangle {
     id:rect_columnPage
     width: 100
     height: 62
     property Item cabinetEditItem:null
+    property Item loadingMask:nul
     // 1.标题栏
     Rectangle{
         id:title
@@ -36,7 +39,12 @@ Rectangle {
             }
             text: "删除该柜"
             onClicked: {
-                if(listView.currentItem){
+                var cabinet = listView.currentItem;
+                if(cabinet){
+                    console.log("删除该柜:" + cabinet.cabinetNo);
+                    mainView.qmlActionSlot(MainFlow.QML_SQL_CABINET_DELETE,cabinet.cabinetNo);
+                    loadingMask =  MainTainJs.loadComponent(rect_columnPage,"../custom/LoadingMask.qml");
+                    loadingMask.visible = true;
                     //var sum = listModel.count;
 
                 }
@@ -222,21 +230,25 @@ Rectangle {
     }
 
 
-    function columnCreate(obj){
-        console.log("货道列表模型" + "obj="+ obj + " count=" + obj.size);
-        for(var i = 0;i < obj.size;i++){
-            var col = obj.at(i);
-            console.log("提取货道" + "col=" + col + " id=" + col.id);
-            var cabinet = createCabinet(col.bin);
-            var column = cabinet.vmCreateColumn(col.column);
-            column.column_id = col.bin + "-" + col.column;
-            column.column_state = col.state;
-            column.column_column = col.column;
-            column.column_bin = col.bin;
-            column.column_remain = col.remain;
-            column.column_total = col.total;
-            column.column_goods = col.productNo;
 
+    function flush(){
+        console.log("货道列表模型");
+        listModel.clear(); //清楚柜子
+        for(var j = 0;j < sqlCabinetList.count;j++){
+            var cab = sqlCabinetList.at(j);
+            if(cab){
+                var cabinet = createCabinet(cab.id);
+                var columnList = cab.getColumnList();
+                cabinet.listClear();
+                if(columnList){
+                    for(var i = 0;i < columnList.size;i++){
+                        var col = columnList.at(i);
+                        if(col){
+                            cabinet.vmCreateColumnByColumn(col);
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -251,6 +263,14 @@ Rectangle {
             cabinetEditItem.connectSignal();
         }
         return cabinetEditItem;
+    }
+
+    function loadingFinished(type,obj){
+        console.log("槽:货道管理页面" + "type=" + type + " obj=" + obj);
+        if(type == MainFlow.QML_SQL_CABINET_DELETE){
+            flush();
+            loadingMask.destroy();
+        }
     }
 
 }

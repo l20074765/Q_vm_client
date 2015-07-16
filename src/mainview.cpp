@@ -74,11 +74,10 @@ MainView::MainView(QObject *parent) : QObject(parent)
     context->setContextProperty("vmSqlite",sqllite);
 
     SqlProductList *sqlProductList = sqllite->getSqlProductList();
-    SqlColumnList *sqlColumnList = sqllite->getSqlColumnList();
     SqlCabinetList *sqlCabinetList = sqllite->getSqlCabinetList();
 
     context->setContextProperty("sqlProductList",sqlProductList);
-    context->setContextProperty("sqlColumnList",sqlColumnList);
+   // context->setContextProperty("sqlColumnList",sqlColumnList);
     context->setContextProperty("sqlCabinetList",sqlCabinetList);
 
 

@@ -184,20 +184,38 @@ Rectangle {
 
 
 
+    function listClear(){
+        product_model.clear();
+    }
+
     function vmCreateColumn(id){
-        console.log("创建货道:" + id + " model=" + product_model)
+        console.log("创建货道:" + id )
         product_model.append({
-                                "column_state":VmcMainFlow.EV_COLUMN_NORMAL,
-                                "column_remain":0,
-                                "column_goods":"",
-                                "column_bin":cabinet_rect.cabinetNo,
-                                "column_total":0,
-                                "column_column":id,
-                                "col_index":0
+                    "column_state":VmcMainFlow.EV_COLUMN_NORMAL,
+                    "column_remain":0,
+                    "column_goods":"",
+                    "column_bin":cabinet_rect.cabinetNo,
+                    "column_total":0,
+                    "column_column":id,
+                    "col_index":1
                          });
         var column = product_model.get(product_model.count - 1);
-        column.col_index = product_model.count - 1;
+        //console.log("创建货道: column=" + column);
         return column;
+    }
+
+
+    function vmCreateColumnByColumn(column){
+        var col = vmCreateColumn(column.column);
+        if(col){
+            col.column_remain = column.remain;
+            col.column_state = column.state;
+            col.column_total = column.total;
+            col.column_goods = column.productNo;
+        }
+        else{
+            console.log("创建货道:vmCreateColumn失败");
+        }
     }
 
 

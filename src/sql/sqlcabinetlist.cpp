@@ -6,7 +6,32 @@ SqlCabinetList::SqlCabinetList(QObject *parent) : QObject(parent)
     list.clear();
 }
 
+SqlCabinetList::~SqlCabinetList()
+{
+    clear();
+}
 
+void SqlCabinetList::clear()
+{
+    for(int i = 0;i < list.size();i++){
+        SqlCabinet *cabinet = list.at(i);
+        delete cabinet;
+    }
+    list.clear();
+}
+
+
+bool SqlCabinetList::remove(int no)
+{
+    for(int i = 0;i < list.size();i++){
+        SqlCabinet *cabinet = list.at(i);
+        if(cabinet->id == no){
+            list.removeAt(i);
+            delete cabinet;
+        }
+    }
+    return true;
+}
 
 SqlCabinet *SqlCabinetList::get(int no)
 {

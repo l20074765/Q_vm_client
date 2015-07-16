@@ -15,5 +15,9 @@ Rectangle {
         fillMode: Image.PreserveAspectFit
 
     }
+
+    MouseArea{
+        anchors.fill: parent
+    }
 }
 

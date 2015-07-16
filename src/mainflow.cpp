@@ -15,8 +15,6 @@ MainFlow::MainFlow(QObject *parent) : QObject(parent)
 {
     connect(this,SIGNAL(destroyed()),this,SLOT(obj_destroy()));
 
-
-
     //启动后台通信
     qDebug()<<"Start vmc ..."<<vmConfig.getVmPort();
     vmcMainFlow = new VmcMainFlow(this,vmConfig.getVmPort());
@@ -250,6 +248,23 @@ void MainFlow::qmlActionSlot(QVariant type, QVariant obj)
         }
         emit qmlActionSignal(var1,var2);
     }
+    else if(mt == QML_SQL_CABINET_DELETE){
+        int cabinetNo = obj.value<int>();
+        bool ok = vmsqlite->vmDeleteCabinet(cabinetNo);
+        QVariant var1((int)QML_SQL_CABINET_DELETE);
+        QVariant var2;
+
+        if(ok){//插入成功
+            var2.setValue(int(1));
+        }
+        else{
+           // qDebug()<<"后台处理QML新建商品请求:提取商品失败";
+            var2.setValue(int(0));
+        }
+        emit qmlActionSignal(var1,var2);
+    }
+
+
 }
 
 void MainFlow::vmcActionSlot(QVariant type, QVariant obj)

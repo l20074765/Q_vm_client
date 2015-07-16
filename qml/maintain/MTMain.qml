@@ -93,8 +93,9 @@ Custom.VMWidget{
                     onButton_clicked: {
                         if(columnPage == null){
                            columnPage =  MainTainJs.loadComponent(rect_mainTain,"MTColumnPage.qml");
-                           columnPage.columnCreate(sqlColumnList);
+                           vm_main.qmlMainSignal.connect(columnPage.loadingFinished);
                         }
+                        columnPage.flush();
                         columnPage.visible = true;
                     }
                 }

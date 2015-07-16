@@ -16,17 +16,16 @@ public:
     explicit SqlColumnList(QObject *parent = 0);
     ~SqlColumnList();
 
-    int size(){return this->list.count();}
+    int size(){return this->list.size();}
 
     QList<SqlColumn *> list;
-    QHash<quint32,SqlColumn *> hash;
-    QMultiHash<QString,SqlColumn *> multiHash;
 signals:
 
 public slots:
     SqlColumn *at(int i){return this->list.at(i);}
     void append(SqlColumn *column){this->list.append(column);}
-
+    void clear();
+    bool remove(int col);
 private:
 
 };

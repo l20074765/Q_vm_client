@@ -6,7 +6,7 @@ VMSqlite::VMSqlite(QObject *parent) : QObject(parent)
 {
     sqlConnected = false;
     productList = new SqlProductList(this);
-    columnList = new SqlColumnList(this);
+  //  columnList = new SqlColumnList(this);
     cabinetList = new SqlCabinetList(this);
 
 }
@@ -125,30 +125,7 @@ void VMSqlite::checkTableCabinet()
 }
 
 
-void VMSqlite::checkTableColumn()
-{
-    QSqlQuery query(m_db);
-    query.exec("SELECT * FROM vmc_column");
-    while(query.next())
-    {
-        bool ok;
-        SqlColumn *column = new SqlColumn();
-        column->id = query.value(0).toUInt(&ok);
-        column->bin = column->id / 1000;
-        column->column = column->id % 1000;
-        column->state = query.value(3).toUInt(&ok);
-        column->productNo = query.value(4).toString();
-        column->remain = query.value(5).toUInt(&ok);
-        column->capacity = query.value(6).toUInt(&ok);
-        qDebug()<<"VMSqlite::checkTableColumn column:"<<column<<column->productNo;
-        columnList->hash.insert(column->id,column);
-        columnList->list<<column;
-        columnList->multiHash.insert(column->productNo,column);
-    }
 
-    emit sqlActionSignal(SQL_COLUMN_ADD,(QObject *)columnList);
-
-}
 
 void VMSqlite::sqlStart()
 {
@@ -546,7 +523,7 @@ void VMSqlite::addOrder(const QString &productId, OrderList *orderList)
     order->salePrice = product->salePrice;
     //绑定货道
     order->columnList.clear();
-    order->columnList = columnList->multiHash.values(productId);
+    //order->columnList = columnList->multiHash.values(productId);
     orderList->list << order;
 }
 
@@ -562,7 +539,9 @@ bool VMSqlite::vmDeleteProduct(const QString &productId)
        deleteProduct(productId);//删除数据库
        vmConfig.deleteDir(p->imagePath);//删除图片文件夹
        productList->remove(productId);//删除链表
+       return true;
     }
+
 }
 
 bool VMSqlite::vmUpdateProduct(const QString &productId)
@@ -590,7 +569,27 @@ bool VMSqlite::vmInsertProduct(const QString &productId)
 }
 
 
+bool VMSqlite::vmDeleteCabinet(const int no)
+{
+    qDebug()<<"vmDeleteCabinet:柜号="<<no;
+    SqlCabinet *cabinet = cabinetList->get(no);
+    if(cabinet == NULL){
+        qDebug()<<"vmDeleteCabinet:该柜不存在!";
+        return false;
+    }
+    else{
+        bool ok = deleteCabinet(cabinet); //删除柜子数据库
+        if(!ok){
+            return false;
+        }
+        ok = deleteColumnByCabinet(cabinet->id);//删除该柜所有货道 数据库
 
+        SqlColumnList *columnList = cabinet->getColumnList();
+        columnList->clear(); //删除该柜所有货到链表
+        cabinetList->remove(cabinet->id); //删除柜子链表
+        return true;
+    }
+}
 
 bool VMSqlite::vmCreateCabinet(const int no)
 {
@@ -606,7 +605,7 @@ bool VMSqlite::vmCreateCabinet(const int no)
             return false;
         }
         ok = deleteColumnByCabinet(cabinet->id);
-        for(int i = 0;i < cabinet->sum;i++){
+        for(quint32 i = 0;i < cabinet->sum;i++){
             SqlColumn *column = new SqlColumn(0);
             column->bin = cabinet->id;
             column->column = i + 1;

@@ -179,17 +179,7 @@ Rectangle {
                 for(var i = 0;i <= size;i++){
                     var col = columnList.at(i);
                     if(col){
-                        var no = col.column;
-                        var columnPage = cabinet.vmCreateColumn(no);
-                        if(columnPage){
-                            columnPage.column_remain = col.remain;
-                            columnPage.column_state = col.state;
-                            columnPage.column_total = col.total;
-                            columnPage.column_goods = col.productNo;
-                        }
-                        else{
-                            console.log("创建货道:vmCreateColumn失败");
-                        }
+                        cabinet.vmCreateColumnByColumn(col);
                     }
                 }
             }

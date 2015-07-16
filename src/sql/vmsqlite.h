@@ -59,10 +59,9 @@ public:
 
 
     bool vmCreateCabinet(const int no);
-
+    bool vmDeleteCabinet(const int no);
 
     SqlProductList *getSqlProductList(){return this->productList;}
-    SqlColumnList *getSqlColumnList(){return this->columnList;}
     SqlCabinetList *getSqlCabinetList(){return this->cabinetList;}
 signals:
     void sqlActionSignal(int type,QObject *obj);
@@ -75,12 +74,10 @@ private:
     bool sqlConnected;
 
     void sqlStart();
-    void checkTableColumn();
     void checkTableProduct();
     void checkTableCabinet();
 
     SqlProductList *productList;
-    SqlColumnList *columnList;
     SqlCabinetList *cabinetList;
 };
 
