@@ -189,7 +189,7 @@ Rectangle {
     }
 
     function vmCreateColumn(id){
-        console.log("创建货道:" + id )
+        //console.log("创建货道:" + id )
         product_model.append({
                     "column_state":VmcMainFlow.EV_COLUMN_NORMAL,
                     "column_remain":0,

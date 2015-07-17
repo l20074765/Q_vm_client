@@ -142,7 +142,8 @@ DISTFILES += \
     qml/maintain/MTProductPicList.qml \
     qml/custom/LoadingMask.qml \
     qml/maintain/MTColumn/MTCabinetEditPage.qml \
-    qml/maintain/MTColumn/VMProductBrowsePage.qml
+    qml/maintain/MTColumn/VMProductBrowsePage.qml \
+    qml/custom/ConfirmDialog.qml
 
 
 

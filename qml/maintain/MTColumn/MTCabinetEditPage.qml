@@ -37,6 +37,7 @@ Rectangle {
         MyButton{
             width: parent.width * 0.2
             height:parent.height * 0.8
+            visible: false
             anchors{
                 left: parent.left
                 leftMargin: 5
@@ -46,6 +47,7 @@ Rectangle {
                 pixelSize: (height < width) ?height * 0.6 : width * 0.1;
             }
             text: "删除商品"
+
             onClicked: {
                  hide();
             }
@@ -167,6 +169,7 @@ Rectangle {
 
     function loadingFinished(type,obj){
         console.log("货柜:测试qml信号" + "type=" + type+ " obj=" + obj);
+
         if(type == MainFlow.QML_SQL_CABINET_CREATE){
             rect_cabinetEditPage.loadingMask.destroy();
             var cabNo = rect_cabinetEditPage.cabinetNo;
@@ -175,10 +178,10 @@ Rectangle {
                 var cabinetCpp = sqlCabinetList.get(cabNo);
                 var columnList = cabinetCpp.getColumnList();
                 var size = columnList.size;
-                console.log("需要创建货道数:" + size);
-                for(var i = 0;i <= size;i++){
+
+                for(var i = 0;i < size;i++){
                     var col = columnList.at(i);
-                    if(col){
+                    if(col != null){
                         cabinet.vmCreateColumnByColumn(col);
                     }
                 }

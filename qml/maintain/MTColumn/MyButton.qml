@@ -6,6 +6,7 @@ Rectangle {
     property bool hovered: false
     property alias font: text.font
     property alias text: text.text
+    property alias text_color: text.color
     signal clicked
     implicitWidth: 80
     implicitHeight: 20

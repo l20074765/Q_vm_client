@@ -9,7 +9,7 @@ Rectangle {
     width: 100
     height: 62
     property Item cabinetEditItem:null
-    property Item loadingMask:nul
+    property Item loadingMask:null
     // 1.标题栏
     Rectangle{
         id:title
@@ -41,12 +41,10 @@ Rectangle {
             onClicked: {
                 var cabinet = listView.currentItem;
                 if(cabinet){
-                    console.log("删除该柜:" + cabinet.cabinetNo);
-                    mainView.qmlActionSlot(MainFlow.QML_SQL_CABINET_DELETE,cabinet.cabinetNo);
-                    loadingMask =  MainTainJs.loadComponent(rect_columnPage,"../custom/LoadingMask.qml");
-                    loadingMask.visible = true;
-                    //var sum = listModel.count;
+                    var confirm =  MainTainJs.loadComponent(rect_columnPage,"../custom/ConfirmDialog.qml");
 
+                    confirm.text = cabinet.cabinetNo + "柜\n\n" + "确定要删除该柜吗？"
+                    confirm.accept.connect(deleteCabinet);
                 }
             }
         }
@@ -270,6 +268,18 @@ Rectangle {
         if(type == MainFlow.QML_SQL_CABINET_DELETE){
             flush();
             loadingMask.destroy();
+        }
+    }
+
+    function deleteCabinet(){
+        console.log("槽:[确定] 货道删除");
+        var cabinet = listView.currentItem;
+        if(cabinet){
+            console.log("删除该柜:" + cabinet.cabinetNo);
+            mainView.qmlActionSlot(MainFlow.QML_SQL_CABINET_DELETE,cabinet.cabinetNo);
+            loadingMask =  MainTainJs.loadComponent(rect_columnPage,"../custom/LoadingMask.qml");
+            loadingMask.visible = true;
+            //var sum = listModel.count;
         }
     }
 
