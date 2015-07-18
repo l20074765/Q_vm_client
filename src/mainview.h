@@ -17,6 +17,7 @@ public:
     explicit MainView(QObject *parent = 0);
     ~MainView();
 
+    void setFont(const QFont &font);
     void show();
 signals:
     void qmlActionSignal(QVariant type,QVariant obj);

@@ -21,6 +21,8 @@ Rectangle {
         z:5
         anchors{top:parent.top ;topMargin: 0}
         border{color: "gray";width: 1}
+        MouseArea{anchors.fill: parent} //mask
+
         Text {
             anchors.centerIn: parent
             verticalAlignment: Text.AlignVCenter
@@ -127,6 +129,7 @@ Rectangle {
         }
         smooth: true
         border{ color: "gray";width: 1 }
+        MouseArea{anchors.fill: parent} //mask
         MTColumn.MyButton{
             width: parent.width * 0.2
             height: parent.height * 0.75
@@ -169,6 +172,9 @@ Rectangle {
                           "product_image":"",
                           "product_index": 0
                          });
+        //增加缓存
+        product_gridView.cacheBuffer += product_gridView.cellH;
+
         var product = product_model.get(product_model.count - 1);
         product.product_index = product_model.count - 1;
         return product;

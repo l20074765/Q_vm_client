@@ -115,6 +115,10 @@ MainView::~MainView()
 }
 
 
+void MainView::setFont(const QFont &font)
+{
+    view->setFont(font);
+}
 
 void MainView::show()
 {

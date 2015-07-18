@@ -18,6 +18,7 @@ Rectangle {
         anchors{top:parent.top;topMargin: 0}
         z:5
         border{color: "gray"; width: 1}
+        MouseArea{anchors.fill: parent} //mask
         Text {
             anchors.centerIn: parent
             verticalAlignment: Text.AlignVCenter
@@ -127,6 +128,7 @@ Rectangle {
         height: parent.height * 0.05
         anchors{bottom: parent.bottom}
         z:5
+        MouseArea{anchors.fill: parent} //mask
         Rectangle{
             id:go_rect
             width: parent.width * 0.5
