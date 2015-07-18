@@ -10,10 +10,12 @@ Rectangle {
     property int no: 0
     property int sum:80
     property int type:1
+    property bool isNewCabinet: true
     property alias cabinetNo: cabinet_id.text_contex
     property alias colSum: cabinet_sum.text_contex
     property string info:""
     property Item loadingMask:null
+    property Item columnPage:null
     MouseArea{ //禁止事件穿透
         anchors.fill: parent
     }
@@ -37,7 +39,6 @@ Rectangle {
         MyButton{
             width: parent.width * 0.2
             height:parent.height * 0.8
-            visible: false
             anchors{
                 left: parent.left
                 leftMargin: 5
@@ -46,10 +47,12 @@ Rectangle {
             font{
                 pixelSize: (height < width) ?height * 0.6 : width * 0.1;
             }
-            text: "删除商品"
+            text: "删除该柜"
 
             onClicked: {
-                 hide();
+                var confirm =  MainTainJs.loadComponent(rect_columnPage,"../../custom/ConfirmDialog.qml");
+                confirm.text = cabinetNo + " 柜\n\n" + "确定要删除该柜吗？"
+                confirm.accept.connect(deleteCabinet);
             }
         }
 
@@ -74,6 +77,7 @@ Rectangle {
                 height: parent.height / 12
                 text_title: qsTr("货柜编号:")
                 text_contex: "1"
+                readOnly:isNewCabinet ? false : true;
                 validator:DoubleValidator{ decimals: 0; bottom: 0; top: 1000; notation:DoubleValidator.StandardNotation}
             }
             VMCoumnTextInput{
@@ -123,21 +127,25 @@ Rectangle {
                                height * 0.6 : width * 0.1;
             }
             onClicked: {
-
-                //创建货柜
-                var cab = sqlCabinetList.create(rect_cabinetEditPage.cabinetNo);
-                console.log("保存创建货柜" + "no=" + rect_cabinetEditPage.cabinetNo +" cab=" +  cab);
-                if(cab == null){ //柜号重复
-                    hide();
+                if(isNewCabinet){
+                    //创建货柜
+                    var cab = sqlCabinetList.create(rect_cabinetEditPage.cabinetNo);
+                    console.log("保存创建货柜" + "no=" + rect_cabinetEditPage.cabinetNo +" cab=" +  cab);
+                    if(cab == null){ //柜号重复
+                        hide();
+                    }
+                    else{
+                        console.log("后台创建货柜");
+                        cab.sum = rect_cabinetEditPage.colSum;
+                        mainView.qmlActionSlot(MainFlow.QML_SQL_CABINET_CREATE,rect_cabinetEditPage.cabinetNo);
+                        loadingMask =  MainTainJs.loadComponent(rect_cabinetEditPage,"../../custom/LoadingMask.qml");
+                        loadingMask.visible = true;
+                    }
                 }
                 else{
-                    console.log("后台创建货柜");
-                    cab.sum = rect_cabinetEditPage.colSum;
-                    mainView.qmlActionSlot(MainFlow.QML_SQL_CABINET_CREATE,rect_cabinetEditPage.cabinetNo);
-                    loadingMask =  MainTainJs.loadComponent(rect_cabinetEditPage,"../../custom/LoadingMask.qml");
-                    loadingMask.visible = true;
+                    //保存编辑
+                    hide();
                 }
-
             }
         }
 
@@ -169,7 +177,6 @@ Rectangle {
 
     function loadingFinished(type,obj){
         console.log("货柜:测试qml信号" + "type=" + type+ " obj=" + obj);
-
         if(type == MainFlow.QML_SQL_CABINET_CREATE){
             rect_cabinetEditPage.loadingMask.destroy();
             var cabNo = rect_cabinetEditPage.cabinetNo;
@@ -187,6 +194,11 @@ Rectangle {
                 }
             }
         }
+        else if(type == MainFlow.QML_SQL_CABINET_DELETE){
+            columnPage.flush();
+            rect_cabinetEditPage.loadingMask.destroy();
+        }
+
         hide();
 
     }
@@ -194,6 +206,14 @@ Rectangle {
     function connectSignal(){
         console.log("创建货柜编辑信号槽");
         vm_main.qmlMainSignal.connect(rect_cabinetEditPage.loadingFinished);
+    }
+
+    function deleteCabinet(){
+        console.log("槽:[确定] 货道删除");
+        console.log("删除该柜:" + cabinetNo);
+        mainView.qmlActionSlot(MainFlow.QML_SQL_CABINET_DELETE,cabinetNo);
+        loadingMask =  MainTainJs.loadComponent(rect_columnPage,"../../custom/LoadingMask.qml");
+        loadingMask.visible = true;
     }
 
 }

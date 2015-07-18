@@ -1,5 +1,6 @@
 import QtQuick 1.1
 import "Column.js" as Column
+import "../MainTain.js" as MainTainJs
 import Qtvm 1.0
 
 
@@ -99,8 +100,6 @@ Rectangle {
         anchors{top:cmCabinet_rect.bottom}
         MouseArea{anchors.fill: parent} //mask
         z:5
-        color: "red"
-
         Grid{
             width: parent.width * 0.05
             height: parent.height * 0.8
@@ -171,38 +170,51 @@ Rectangle {
         //按键组
         Row{
             width:parent.width * 0.5
-            height:parent.height * 0.4
+            height:parent.height * 0.3
             anchors.centerIn: parent
-            spacing: 15
+            spacing: width * 0.05
 
             MyButton{
-                width:parent.width * 0.4
+                width:parent.width * 0.3
                 height:parent.height
                 font{bold:false;pixelSize: (width < height) ? width * 0.4: height * 0.4;}
                 text: "新建货道"
                 onClicked: {
-                    vmCreateColumn(product_model.count + 1);
+                    var confirm =  MainTainJs.loadComponent(topParent,"../../custom/ConfirmDialog.qml");
+                    confirm.text = "确定要新建货道吗？"
+                    confirm.accept.connect(createCabinetSlot);
                 }
             }
 
             MyButton{
-                width: parent.width * 0.4
+                width: parent.width * 0.3
                 height: parent.height
                 font{bold:false;pixelSize: (width < height) ? width * 0.4: height * 0.4;}
                 text: "一键补货"
+                onClicked: {
+                    var confirm =  MainTainJs.loadComponent(topParent,"../../custom/ConfirmDialog.qml");
+                    confirm.text = "确定要补满该柜吗？"
+                    confirm.accept.connect(addGoodsCabinetSlot);
+                }
             }
 
             MyButton{
-                width:parent.width * 0.4
+                width:parent.width * 0.3
                 height:parent.height
+                visible: false
                 font{bold:false;pixelSize: (width < height) ? width * 0.4: height * 0.4;}
                 text: "删除货道"
                 onClicked: {
-                    //vmCreateColumn(product_model.count + 1);
+//                    var confirm =  MainTainJs.loadComponent(topParent,"../../custom/ConfirmDialog.qml");
+//                    confirm.text = "确定要删除货道吗？"
+//                    confirm.accept.connect(createCabinetSlot);
                 }
             }
 
         }
+
+
+
 
 
     }
@@ -241,6 +253,14 @@ Rectangle {
         else{
             console.log("创建货道:vmCreateColumn失败");
         }
+    }
+
+    function createCabinetSlot(){
+        vmCreateColumn(product_model.count + 1);
+    }
+
+    function addGoodsCabinetSlot(){
+
     }
 
 

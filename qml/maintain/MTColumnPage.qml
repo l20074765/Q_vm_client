@@ -38,14 +38,17 @@ Rectangle {
             font{
                 pixelSize: (height < width) ? height * 0.6 : width * 0.1;
             }
-            text: "删除该柜"
+            text: "编辑该柜"
             onClicked: {
+
                 var cabinet = listView.currentItem;
                 if(cabinet){
-                    var confirm =  MainTainJs.loadComponent(rect_columnPage,"../custom/ConfirmDialog.qml");
-
-                    confirm.text = cabinet.cabinetNo + "柜\n\n" + "确定要删除该柜吗？"
-                    confirm.accept.connect(deleteCabinet);
+                    var item = mtGetCabinetEditItem();
+                    item.isNewCabinet = false;
+                    item.cabinetNo = cabinet.cabinetNo;
+                    item.colSum  = cabinet.listModel_column.count
+                    item.columnPage = rect_columnPage;
+                    item.visible = true;
                 }
             }
         }
@@ -65,6 +68,8 @@ Rectangle {
             text: "新增货柜"
             onClicked: {
                 var item = mtGetCabinetEditItem();
+                item.isNewCabinet = true;
+                item.columnPage = rect_columnPage;
                 item.visible = true;
 
             }
@@ -267,22 +272,7 @@ Rectangle {
 
     function loadingFinished(type,obj){
         console.log("槽:货道管理页面" + "type=" + type + " obj=" + obj);
-        if(type == MainFlow.QML_SQL_CABINET_DELETE){
-            flush();
-            loadingMask.destroy();
-        }
-    }
 
-    function deleteCabinet(){
-        console.log("槽:[确定] 货道删除");
-        var cabinet = listView.currentItem;
-        if(cabinet){
-            console.log("删除该柜:" + cabinet.cabinetNo);
-            mainView.qmlActionSlot(MainFlow.QML_SQL_CABINET_DELETE,cabinet.cabinetNo);
-            loadingMask =  MainTainJs.loadComponent(rect_columnPage,"../custom/LoadingMask.qml");
-            loadingMask.visible = true;
-            //var sum = listModel.count;
-        }
     }
 
 }
