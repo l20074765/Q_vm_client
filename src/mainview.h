@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include "mainflow.h"
+#include<QApplication>
+
 
 class QDeclarativeView;
 class QDeclarativeContext;
@@ -25,6 +27,7 @@ signals:
 public slots:
     void qmlActionSlot(QVariant type,QVariant obj);
     void vmActionSlot(QVariant type,QVariant obj);
+    QString appVersion();
 private:
     QDeclarativeItem *mainItem;
     QDeclarativeContext *context;

@@ -127,6 +127,12 @@ void MainView::show()
 }
 
 
+QString MainView::appVersion()
+{
+    QString appVersion = qApp->applicationVersion();
+    return appVersion;
+}
+
 void MainView::qmlActionSlot(QVariant type, QVariant obj)
 {
     //将qml信号 传递给 后端

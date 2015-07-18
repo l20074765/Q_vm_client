@@ -28,27 +28,42 @@ Custom.VMWidget{
             anchors.top: parent.top
             anchors.topMargin: 10
             Column{
+                width: parent.width
+                height: parent.height
                 anchors.fill: parent
-                spacing: 15
+                spacing: height * 0.005
                 Text {
                     id: sys_text
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: parent.width
+                    height: parent.height * 0.15
                     horizontalAlignment: Text.AlignHCenter
                     text: qsTr("系统维护")
                     font{
                         bold: true
-                        pixelSize:   (parent.height < parent.width) ? parent.height * 0.08 : parent.width * 0.08
+                        pixelSize:  (height < width) ? height * 0.6 : width * 0.6
                     }
                 }
                 Text {
                     id: sys_time_text
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: parent.width
+                    height: parent.height * 0.1
                     horizontalAlignment: Text.AlignHCenter
                     font{
                         bold: true
-                        pixelSize: (parent.height < parent.width) ?parent.height * 0.04 : parent.width * 0.04
+                        pixelSize: (height < width) ? height * 0.4 : width * 0.4
                     }
                     text: qsTr("系统时间:") + mtMainTainPage.datatime
+                }
+                Text {
+                    id: sys_text_version
+                    width: parent.width
+                    height: parent.height * 0.08
+                    horizontalAlignment: Text.AlignHCenter
+                    font{
+                        bold: false
+                        pixelSize: (height < width) ? height * 0.4 : width * 0.4
+                    }
+                    text: "系统版本:" + "V" + mainView.appVersion();
                 }
                 Timer {
                     interval: 500; running: true; repeat: true;
@@ -56,6 +71,8 @@ Custom.VMWidget{
                         mtMainTainPage.datatime = Qt.formatDateTime(new Date(),"yyyy-MM-dd HH:mm:ss")
                     }
                 }
+
+
             }
         }
         //维护工具栏
