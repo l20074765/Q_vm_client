@@ -9,6 +9,7 @@ Rectangle {
     height: 162
     property Item parentItem
     property Item column:null
+    property Item loadingMask: null
     property alias in_bin: input_bin.text_contex
     property alias in_column: input_column.text_contex
     property alias in_remain: input_remain.text_contex
@@ -17,6 +18,10 @@ Rectangle {
     property alias in_image: product_image.source
     property alias in_goods_name: product_text.text
     property bool isCreate:false
+    property int intRemain: 0
+    property int intTotal: 0
+    property int in_id: 0
+    property int temp32: 0
     focus: true
     color: "white"
     opacity: 0.9
@@ -168,6 +173,7 @@ Rectangle {
                     id:input_column
                     width: parent.width
                     height: parent.height * 0.15
+                    readOnly:true
                     text_title:"货道号:"
                     validator:DoubleValidator{decimals: 0; bottom: 0; top: 100; notation:DoubleValidator.StandardNotation}
                     text_contex: ""
@@ -176,17 +182,45 @@ Rectangle {
                     id:input_remain
                     width: parent.width
                     height: parent.height * 0.15
+                    numberOpen: true
                     text_title:"剩余量:"
                     text_contex: ""
                     validator:DoubleValidator{decimals: 0; bottom: 0; top: 100; notation:DoubleValidator.StandardNotation}
+                    onAddSignal: {
+                        intRemain = in_remain;
+                        intTotal = in_total;
+                        if(intRemain < intTotal){
+                            in_remain++;
+                        }
+                    }
+                    onSubSignal: {
+                        if(in_remain > 0){
+                            in_remain--;
+                        }
+                    }
                 }
                 VMCoumnTextInput{
                     id:input_total
                     width: parent.width
                     height: parent.height * 0.15
                     text_title:"总容量:"
+                    numberOpen: true
                     text_contex: ""
                     validator:DoubleValidator{decimals: 0; bottom: 0; top: 100; notation:DoubleValidator.StandardNotation}
+                    onAddSignal: {
+                        in_total++;
+                    }
+                    onSubSignal: {
+                        if(in_total > 0){
+                            in_total--;
+                            intRemain = in_remain;
+                            intTotal = in_total;
+                            if(intRemain > intTotal){
+                                in_remain = in_total;
+                            }
+                        }
+                    }
+
                 }
                 VMCoumnTextInput{
                     id:input_goods
@@ -243,8 +277,14 @@ Rectangle {
                         column.col_state = VmcMainFlow.EV_COLUMN_NORMAL;
                     }
                 }
-                vm.qmlActionSlot(MainFlow.QML_SQL_COLUMN_CHANGE,column);
-                hide();
+                in_id = in_bin;
+                temp32 =  in_column;
+                in_id = in_id * 1000 + temp32;
+                console.log("qml:货道更改保存:id="+in_id);
+                vm.qmlActionSlot(MainFlow.QML_SQL_COLUMN_UPDATE,in_id);
+                loadingMask =  MainTainJs.loadComponent(rect_columnPage,"../../custom/LoadingMask.qml");
+                loadingMask.visible = true;
+
             }
         }
 
@@ -287,6 +327,18 @@ Rectangle {
         }
 
         rect.visible = true;
+    }
+
+
+    function loadingFinished(type,obj){
+        console.log("槽[ColumnEdit]:qml信号" + "type=" + type+ " obj=" + obj);
+        if(type == MainFlow.QML_SQL_COLUMN_UPDATE){
+            loadingMask.destroy();
+
+        }
+
+        vm_main.qmlMainSignal.disconnect(rect.loadingFinished);
+        hide();
     }
 
 

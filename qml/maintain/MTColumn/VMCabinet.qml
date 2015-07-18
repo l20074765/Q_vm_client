@@ -83,7 +83,9 @@ Rectangle {
                     col_remain: column_remain
                     col_goods: column_goods
                     onColumnClicked: {
-                        var itemColumn = Column.loadComponent(topParent);
+                        var itemColumn = MainTainJs.loadComponent(topParent,"VMColumnEdit.qml");
+                        vm_main.qmlMainSignal.connect(itemColumn.loadingFinished);
+
                         itemColumn.flush(colId);
                     }
                 }
@@ -167,51 +169,19 @@ Rectangle {
 
 
 
-        //按键组
-        Row{
-            width:parent.width * 0.5
-            height:parent.height * 0.3
+        MyButton{
+            width: parent.width * 0.2
+            height: parent.height * 0.25
             anchors.centerIn: parent
-            spacing: width * 0.05
-
-            MyButton{
-                width:parent.width * 0.3
-                height:parent.height
-                font{bold:false;pixelSize: (width < height) ? width * 0.4: height * 0.4;}
-                text: "新建货道"
-                onClicked: {
-                    var confirm =  MainTainJs.loadComponent(topParent,"../../custom/ConfirmDialog.qml");
-                    confirm.text = "确定要新建货道吗？"
-                    confirm.accept.connect(createCabinetSlot);
-                }
+            font{bold:false;pixelSize: (width < height) ? width * 0.6: height * 0.6;}
+            text: "一键补货"
+            onClicked: {
+                var confirm =  MainTainJs.loadComponent(topParent,"../../custom/ConfirmDialog.qml");
+                confirm.text = "确定要补满该柜吗？"
+                confirm.accept.connect(addGoodsCabinetSlot);
             }
-
-            MyButton{
-                width: parent.width * 0.3
-                height: parent.height
-                font{bold:false;pixelSize: (width < height) ? width * 0.4: height * 0.4;}
-                text: "一键补货"
-                onClicked: {
-                    var confirm =  MainTainJs.loadComponent(topParent,"../../custom/ConfirmDialog.qml");
-                    confirm.text = "确定要补满该柜吗？"
-                    confirm.accept.connect(addGoodsCabinetSlot);
-                }
-            }
-
-            MyButton{
-                width:parent.width * 0.3
-                height:parent.height
-                visible: false
-                font{bold:false;pixelSize: (width < height) ? width * 0.4: height * 0.4;}
-                text: "删除货道"
-                onClicked: {
-//                    var confirm =  MainTainJs.loadComponent(topParent,"../../custom/ConfirmDialog.qml");
-//                    confirm.text = "确定要删除货道吗？"
-//                    confirm.accept.connect(createCabinetSlot);
-                }
-            }
-
         }
+
 
 
 

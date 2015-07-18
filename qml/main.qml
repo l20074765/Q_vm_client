@@ -200,6 +200,9 @@ Rectangle {
         else if(type == MainFlow.QML_SQL_CABINET_DELETE){
             qmlMainSignal(type,obj);
         }
+        else if(type == MainFlow.QML_SQL_COLUMN_UPDATE){
+            qmlMainSignal(type,obj);
+        }
     }
 
     //新增商品

@@ -263,6 +263,20 @@ void MainFlow::qmlActionSlot(QVariant type, QVariant obj)
         }
         emit qmlActionSignal(var1,var2);
     }
+    else if(mt == QML_SQL_COLUMN_UPDATE){
+
+        QVariant var1((int)QML_SQL_COLUMN_UPDATE);
+        QVariant var2;
+        bool ok;// = vmsqlite->vmDeleteCabinet(cabinetNo);
+        if(ok){//插入成功
+            var2.setValue(int(1));
+        }
+        else{
+           // qDebug()<<"后台处理QML新建商品请求:提取商品失败";
+            var2.setValue(int(0));
+        }
+        emit qmlActionSignal(var1,var2);
+    }
 
 
 }

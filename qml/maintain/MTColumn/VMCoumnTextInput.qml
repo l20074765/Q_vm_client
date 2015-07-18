@@ -11,12 +11,12 @@ Rectangle{
     property alias validator: editor.validator
     property alias activeFocus: editor.activeFocus
     property alias tipText: tip.text
+    property bool numberOpen: false
     signal displayTextChanged()
-    signal activeFocused();
-    border{
-        width: 1
-        color: "gray"
-    }
+    signal activeFocused()
+    signal addSignal()
+    signal subSignal()
+    border{width: 1;color: "gray";}
     Row{
         width: parent.width * 0.95
         height: parent.height* 0.7
@@ -52,22 +52,63 @@ Rectangle{
             text:""
         }
 
+        Rectangle{
+            id:sub
+            width: numberOpen ? parent.height: 0;
+            height: numberOpen ? parent.height: 0;
+            radius: width / 2
+            visible: numberOpen ? true : false;
+            Image{
+                width: sub_mouse.pressed ? parent.width : parent.width * 0.8
+                height: sub_mouse.pressed ? parent.height:parent.height * 0.8
+                anchors.centerIn: parent
+                source: "../../../images/tool/sub.png"
+                smooth: true
+                fillMode: Image.PreserveAspectFit
+            }
+            MouseArea{
+                id:sub_mouse
+                anchors.fill: parent
+                onClicked: {
+                   subSignal();
+                }
+            }
+        }
+
         Custom.MyTextInput{
             id:editor
-            width: parent.width * 0.6
+            width: numberOpen ? parent.width * 0.6 - parent.height * 2: parent.width * 0.6;
             height:parent.height
             onDisplayTextChanegd: {
-              //  console.log("编辑框内容更改。。。。");
                 rect_columnInput.displayTextChanged();
             }
             onActiveFocused: {
                 rect_columnInput.activeFocused();
             }
         }
+
+        Rectangle{
+            id:add
+            width: numberOpen ? parent.height: 0;
+            height: numberOpen ? parent.height: 0;
+            radius: width / 2
+            visible: numberOpen ? true : false;
+            Image{
+                width: add_mouse.pressed ? parent.width : parent.width * 0.8
+                height: add_mouse.pressed ? parent.height:parent.height * 0.8
+                anchors.centerIn: parent
+                source: "../../../images/tool/add.png"
+                smooth: true
+                fillMode: Image.PreserveAspectFit
+            }
+            MouseArea{
+                id:add_mouse
+                anchors.fill: parent
+                onClicked: {
+                    addSignal();
+                }
+            }
+        }
     }
-
-
-
-
 }
 

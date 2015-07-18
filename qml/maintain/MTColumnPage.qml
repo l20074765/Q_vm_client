@@ -134,72 +134,55 @@ Rectangle {
         anchors{bottom: parent.bottom}
         z:5
         MouseArea{anchors.fill: parent} //mask
-        Rectangle{
+        Row{
             id:go_rect
-            width: parent.width * 0.5
-            height: parent.height * 0.75
+            width: parent.width * 0.35
+            height: parent.height * 0.5
             anchors.centerIn: parent
-            visible: true
-            Row{
-                width: parent.width
+            spacing: width * 0.05
+            MTColumn.MyButton{
+                id: go_previous_image
+                width: parent.width * 0.35
                 height: parent.height
-                anchors.centerIn: parent
-                spacing: 10
-                Rectangle{
-                    id: go_previous_image
-                    width: parent.width * 0.3
-                    height: parent.height * 0.9
-                    border{width: 2;color: "gray"}
-                    Text {
-                        anchors.centerIn: parent
-                        text: "上一页"
-                    }
-                    MouseArea{
-                        anchors.fill: parent
-                        onClicked: {
-                            listView.decrementCurrentIndex();
-                        }
-                    }
+                radius: 1
+                font{bold:false;pixelSize: (width < height) ? width * 0.5: height * 0.5;}
+                text: "上一页"
+                onClicked: {
+                    listView.decrementCurrentIndex();
                 }
-                Text {
-                    id: go_text
-                    width: parent.width * 0.2
-                    height: parent.height * 0.9
-                    text: (listView.currentIndex + 1) + "/" + listView.count
-                    font{
-                        bold: true
-                        pixelSize: go_rect.height
-                    }
-                    color: "blue"
-                }
-
-                Rectangle{
-                    id: go_next_image
-                    width: parent.width * 0.3
-                    height: parent.height * 0.9
-                    border{width: 2;color: "gray"}
-                    Text {
-                        anchors.centerIn: parent
-                        text: "下一页"
-                    }
-                    MouseArea{
-                        anchors.fill: parent
-                        onClicked: {
-                            listView.incrementCurrentIndex();
-                        }
-                    }
-                }
-
             }
-            Timer{
-                id:go_timer
-                interval: 3000; running: false; repeat: true
-                onTriggered:{
-                    go_timer.stop();
-                    go_rect.visible = false;
+            Text {
+                id: go_text
+                width: parent.width * 0.2
+                height: parent.height
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                text: (listView.currentIndex + 1) + "/" + listView.count
+                font{bold:true;pixelSize: (width < height) ? width * 0.6: height * 0.6;}
+                color: "blue"
+            }
+            MTColumn.MyButton{
+                id: go_next_image
+                width: parent.width * 0.35
+                height: parent.height
+                radius: 1
+                font{bold:false;pixelSize: (width < height) ? width * 0.5: height * 0.5;}
+                text: "下一页"
+                onClicked: {
+                    listView.incrementCurrentIndex();
                 }
+            }
+
+        }
+        Timer{
+            id:go_timer
+            interval: 3000; running: false; repeat: true
+            onTriggered:{
+                go_timer.stop();
+                go_rect.visible = false;
             }
         }
+
 
         MTColumn.MyButton{
             width: parent.width * 0.2
