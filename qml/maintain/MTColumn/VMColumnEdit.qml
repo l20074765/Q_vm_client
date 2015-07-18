@@ -17,6 +17,7 @@ Rectangle {
     property alias in_goods: input_goods.text_contex
     property alias in_image: product_image.source
     property alias in_goods_name: product_text.text
+    property alias in_state: input_state.text_contex
     property bool isCreate:false
     property int intRemain: 0
     property int intTotal: 0
@@ -235,6 +236,16 @@ Rectangle {
                             productPage.visible = true;
                         }
                     }
+                }VMCoumnTextInput{
+                    id:input_state
+                    width: parent.width
+                    height: parent.height * 0.15
+                    visible: false
+                    text_title:"状态:"
+                    text_contex: ""
+                    onActiveFocused: {
+
+                    }
                 }
             }
         }
@@ -262,28 +273,36 @@ Rectangle {
                 pixelSize: (height < width) ? height * 0.6 : width * 0.1;
             }
             onClicked: {
-                column.col_bin = in_bin;
-                column.col_column = in_column;
-                column.col_goods = in_goods;
-                column.col_remain = in_remain;
-                column.col_total = in_total;
-                if(column.col_remain == 0){
-                   if(column.col_state == VmcMainFlow.EV_COLUMN_NORMAL){
-                       column.col_state = VmcMainFlow.EV_COLUMN_EMPTY;
-                   }
-                }
-                else{
-                    if(column.col_state == VmcMainFlow.EV_COLUMN_EMPTY){
-                        column.col_state = VmcMainFlow.EV_COLUMN_NORMAL;
-                    }
-                }
                 in_id = in_bin;
                 temp32 =  in_column;
                 in_id = in_id * 1000 + temp32;
                 console.log("qml:货道更改保存:id="+in_id);
-                vm.qmlActionSlot(MainFlow.QML_SQL_COLUMN_UPDATE,in_id);
-                loadingMask =  MainTainJs.loadComponent(rect_columnPage,"../../custom/LoadingMask.qml");
-                loadingMask.visible = true;
+                var cpp_col = sqlCabinetList.getColumn(in_id);
+                if(cpp_col){
+                    //cpp_col.state =
+                    cpp_col.remain = in_remain;
+                    cpp_col.total = in_total;
+                    cpp_col.productNo = in_goods;
+                    if(in_remain == 0){
+                       if(in_state == VmcMainFlow.EV_COLUMN_NORMAL){
+                           cpp_col.state = VmcMainFlow.EV_COLUMN_EMPTY;
+                       }
+                    }
+                    else{
+                        if(in_state == VmcMainFlow.EV_COLUMN_EMPTY){
+                            cpp_col.state = VmcMainFlow.EV_COLUMN_NORMAL;
+                        }
+                    }
+
+
+
+                    vm.qmlActionSlot(MainFlow.QML_SQL_COLUMN_UPDATE,in_id);
+                    loadingMask =  MainTainJs.loadComponent(rect_columnPage,"../../custom/LoadingMask.qml");
+                    loadingMask.visible = true;
+                }
+                else{
+                    console.log("qml:货道不存在!");
+                }
 
             }
         }
@@ -319,7 +338,7 @@ Rectangle {
         rect.in_goods = col.col_goods;
         rect.in_remain = col.col_remain;
         rect.in_total = col.col_total;
-
+        rect.in_state = col.col_state;
         var item = sqlProductList.get(col.col_goods);
         if(item){
             in_image =  vmConfig.qmlPath() +  item.pic;
@@ -333,6 +352,15 @@ Rectangle {
     function loadingFinished(type,obj){
         console.log("槽[ColumnEdit]:qml信号" + "type=" + type+ " obj=" + obj);
         if(type == MainFlow.QML_SQL_COLUMN_UPDATE){
+            var  cpp_col = sqlCabinetList.getColumn(in_id);
+            if(cpp_col){
+                column.col_bin = cpp_col.bin;
+                column.col_column = cpp_col.column;
+                column.col_goods = cpp_col.productNo;
+                column.col_remain = cpp_col.remain;
+                column.col_total = cpp_col.total;
+                column.col_state = cpp_col.state;
+            }
             loadingMask.destroy();
 
         }

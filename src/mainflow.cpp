@@ -265,9 +265,11 @@ void MainFlow::qmlActionSlot(QVariant type, QVariant obj)
     }
     else if(mt == QML_SQL_COLUMN_UPDATE){
 
+        int columnId = obj.value<int>();
+        bool ok = vmsqlite->vmUpdateColumn(columnId);
         QVariant var1((int)QML_SQL_COLUMN_UPDATE);
         QVariant var2;
-        bool ok;// = vmsqlite->vmDeleteCabinet(cabinetNo);
+
         if(ok){//插入成功
             var2.setValue(int(1));
         }

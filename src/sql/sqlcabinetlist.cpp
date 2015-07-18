@@ -33,6 +33,29 @@ bool SqlCabinetList::remove(int no)
     return true;
 }
 
+SqlColumn *SqlCabinetList::getColumn(int id)
+{
+    int cabinetNo = id / 1000;
+    int columnNo = id % 1000;
+    qDebug()<<"vmUpdateColumn:bin="<<cabinetNo<<" col="<<columnNo;
+
+    SqlCabinet *cabinet = this->get(cabinetNo);
+    if(cabinet == NULL){
+        qDebug()<<"查找柜子失败";
+        return NULL;
+    }
+
+    SqlColumnList *columnList = cabinet->getColumnList();
+    SqlColumn *column = columnList->get(columnNo);
+    if(column == NULL){
+        qDebug()<<"查找柜号失败";
+        return NULL;
+    }
+
+    return column;
+}
+
+
 SqlCabinet *SqlCabinetList::get(int no)
 {
     for(int i = 0;i < list.count();i++){

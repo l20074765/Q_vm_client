@@ -61,6 +61,10 @@ public:
     bool vmCreateCabinet(const int no);
     bool vmDeleteCabinet(const int no);
 
+
+    bool vmUpdateColumn(const int id);
+
+
     SqlProductList *getSqlProductList(){return this->productList;}
     SqlCabinetList *getSqlCabinetList(){return this->cabinetList;}
 signals:

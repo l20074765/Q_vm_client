@@ -23,6 +23,7 @@ signals:
 
 public slots:
     SqlColumn *at(int i){return this->list.at(i);}
+    SqlColumn *get(int no);
     void append(SqlColumn *column){this->list.append(column);}
     void clear();
     bool remove(int col);

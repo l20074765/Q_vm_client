@@ -277,10 +277,9 @@ bool VMSqlite::updateColumn(const SqlColumn *column)
     }
 
 
-    QString temp = QString("update %1 set id=%2,cabinetNo=%3,columnNo=%4,columnState=%5,productNo='%6',remain=%7,capacity=%8,message='%9'")
-            .arg(tableName).arg(column->id).arg(column->bin)
-            .arg(column->column).arg(column->state).arg(column->productNo)
-            .arg(column->remain).arg(column->capacity).arg(column->message);
+    QString temp = QString("update %1 set cabinetNo=%2,columnNo=%3,columnState=%4,productNo='%5',remain=%6,capacity=%7,message='%8' where id='%9'")
+            .arg(tableName).arg(column->bin).arg(column->column).arg(column->state).arg(column->productNo)
+            .arg(column->remain).arg(column->capacity).arg(column->message).arg(column->id);
     qDebug()<<"updateColumn:"<<"temp="<<temp;
     QSqlQuery query = m_db.exec (temp);
     if(query.lastError ().type ()==QSqlError::NoError){//如果上面的语句执行没有出错
@@ -566,6 +565,15 @@ bool VMSqlite::vmInsertProduct(const QString &productId)
     else{
         return insertProduct(p);
     }
+}
+
+
+bool VMSqlite::vmUpdateColumn(const int id)
+{
+    SqlColumn *column = cabinetList->getColumn(id);
+    if(column == NULL){return false;}
+    bool ok = updateColumn(column);
+    return ok;
 }
 
 

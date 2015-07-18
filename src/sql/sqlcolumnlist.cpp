@@ -12,6 +12,17 @@ SqlColumnList::~SqlColumnList()
 }
 
 
+SqlColumn *SqlColumnList::get(int no)
+{
+    for(int i = 0;i < list.count();i++){
+        SqlColumn *col = list.at(i);
+        if(col->column == (quint32)no){
+            return col;
+        }
+    }
+    return NULL;
+}
+
 bool SqlColumnList::remove(int col)
 {
     for(int i = 0;i < list.size();i++){

@@ -22,6 +22,7 @@ public slots:
     SqlCabinet *at(int i){return this->list.at(i);}
     SqlCabinet *get(int no);
     SqlCabinet *create(int no);
+    SqlColumn *getColumn(int id);
     bool remove(int no);
     void append(SqlCabinet *cabinet){this->list.append(cabinet);}
     int count(){return this->list.count();}
