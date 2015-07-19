@@ -6,33 +6,36 @@ Rectangle{
     width: parent.width
     height: parent.height*0.05
     anchors{top:parent.top}
-    signal remain_timer_timeout()
+    signal timeout()
     property int remain_time: 120
     property bool remain_time_show: false
+    property alias title: text_title.text
     Image {
         id: title_image
         width: parent.width
         height: parent.height
         anchors.fill: parent
-        source: "../../images/tool/topbg.png"
+        smooth: true
+        source: "../../images/tool/test1.png"
         rotation: 0
 
     }
     Text{
-        width: 50
-        height: 20
+        id:text_title
+        width: parent.width * 0.5
+        height: parent.height * 0.8
         anchors{
             verticalCenter: parent.verticalCenter
             left:parent.left
             leftMargin: 5
         }
+        horizontalAlignment: Text.AlignLeft
+        verticalAlignment: Text.AlignVCenter
         font.bold: true
-        font.pixelSize: parent.height * 0.5
+        font.pixelSize: (width < height) ? width * 0.7 : height * 0.7
         color: "#FFFFFF"
-        text:"欢迎光临 by yoc"
+        text:"欢迎光临"
     }
-
-
     Text {
         id: title_timer_text
         width: parent.width * 0.1
@@ -42,9 +45,8 @@ Rectangle{
             rightMargin: 5
             verticalCenter: parent.verticalCenter
         }
-
         font.bold: true
-        font.pixelSize: parent.height * 0.5
+        font.pixelSize: (width < height) ? width * 0.5 : height * 0.5
         color: "#FFFFFF"
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
@@ -59,7 +61,7 @@ Rectangle{
             if(remain_time)
                 remain_time--;
             else
-                remain_timer_timeout();
+                timeout();
 
         }
     }
@@ -69,7 +71,7 @@ Rectangle{
         remain_time = 120;
     }
 
-    function title_timer_set(s){
+    function timer_set(s){
         if(s == 1){
             title_flush();
             title_timer_text.visible = true;

@@ -25,7 +25,7 @@ Custom.VMWidget {
         width: parent.width
         height: parent.height * parent.titleHR
         anchors{top:parent.top}
-        onRemain_timer_timeout: {
+        onTimeout: {
             back_clicked()
         }
     }

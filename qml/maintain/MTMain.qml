@@ -7,13 +7,13 @@ Custom.VMWidget{
     anchors.fill:parent
     z:3
     signal sqlActionSignal(variant type,variant obj)
-    property Item  goodsListItem:null
+    property Item goodsListItem:null
     property Item productPage:null
     property Item columnPage:null
     property Item systemManagePage: null
     property Item deviceManagePage: null
     property Item tradeManagePage: null
-
+    property string version: ""
     //1.系统主页面
     Rectangle{
         id:mtMainTainPage
@@ -63,7 +63,7 @@ Custom.VMWidget{
                         bold: false
                         pixelSize: (height < width) ? height * 0.4 : width * 0.4
                     }
-                    text: "系统版本:" + "V" + mainView.appVersion();
+                    text: "系统版本:" + version
                 }
                 Timer {
                     interval: 500; running: true; repeat: true;

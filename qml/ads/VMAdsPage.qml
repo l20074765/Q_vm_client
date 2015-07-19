@@ -18,8 +18,7 @@ Rectangle {
         if(visible == true){
             ads_turn();           
         }
-        else
-        {
+        else{
             ads_timer.stop();
             vm_video.stop();
         }
@@ -30,8 +29,9 @@ Rectangle {
         id: ads_image
         source: ads_path_str + ads_pic_str
         width: parent.width
-        height:parent.height*0.9
-        anchors{top:parent.top}
+        height:parent.height
+        anchors.fill: parent
+        smooth: true
         fillMode: Image.PreserveAspectCrop
         clip: true //开启裁剪图像
     }
@@ -39,7 +39,7 @@ Rectangle {
     VMVideo{
         id:vm_video
         width: parent.width
-        height: parent.height*0.9
+        height: parent.height
         anchors.fill: parent
         onVideo_finished:{
             console.log(qsTr("视频播放完毕"));
@@ -48,16 +48,16 @@ Rectangle {
 
     }
 
-    //广告栏
-    Image{
-        id:ads_bar
-        source: "../../images/tool/bar-inservice.png"
-        width: parent.width
-        height:parent.height*0.1
-        anchors{top:ads_image.bottom}
-        fillMode: Image.PreserveAspectCrop
-        clip: true //开启裁剪图像
-    }
+//    //广告栏
+//    Image{
+//        id:ads_bar
+//        source: "../../images/tool/bar-inservice.png"
+//        width: parent.width
+//        height:parent.height*0.1
+//        anchors{top:ads_image.bottom}
+//        fillMode: Image.PreserveAspectCrop
+//        clip: true //开启裁剪图像
+//    }
     //鼠标点击事件
     MouseArea{
         id:ads_mouse
@@ -115,8 +115,6 @@ Rectangle {
             else{
                 adsIndex = 0;
             }
-
-
         }
     }
 

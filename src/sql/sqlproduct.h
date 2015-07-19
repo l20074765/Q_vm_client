@@ -13,7 +13,7 @@ class SqlProduct : public QObject
     Q_PROPERTY(QString imagePath READ getImagePath WRITE setImagePath)
     Q_PROPERTY(QString pic READ getPic WRITE setPic)
     Q_PROPERTY(quint32 salePrice READ getSalePrice WRITE setSalePrice)
-
+    Q_PROPERTY(QString kind READ getKind WRITE setKind)
 
 public:
     explicit SqlProduct(QObject *parent = 0);
@@ -39,6 +39,11 @@ public:
     QStringList getImages(){return this->images;}
     void setImages(const QStringList &images){this->images = images;}
 
+    QString getKind(){return this->kind;}
+    void setKind(const QString &kind){this->kind = kind;}
+
+
+
     QString id;
     QString name;
     quint32 salePrice;
@@ -50,6 +55,7 @@ public:
     QString brandName;
     QString aliasName;
     QString productTXT;
+    QString kind;
 
 signals:
 

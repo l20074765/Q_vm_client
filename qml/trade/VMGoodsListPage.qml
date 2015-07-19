@@ -19,11 +19,27 @@ Custom.VMWidget {
         }
 
     }
+
+    //标题栏区域
+    Custom.VMTitlebar{
+        id:title_bar
+        width: parent.width
+        height: parent.height * parent.titleHR
+        z:5
+        anchors{top:parent.top}
+        remain_time_show: true
+        onTimeout: {
+            back_clicked()
+        }
+    }
+
+
     //主界面区域
     Rectangle{
         id:main_rect
         width: parent.width
         height: parent.height * parent.rectHR
+        z:2
         anchors{top:title_bar.bottom}
         //定义列表组件
         Component{
@@ -75,29 +91,20 @@ Custom.VMWidget {
 
     }
 
-    //标题栏区域
-    Custom.VMTitlebar{
-        id:title_bar
-        width: parent.width
-        height: parent.height * parent.titleHR
-        anchors{top:parent.top}
-        remain_time_show: true
-        onRemain_timer_timeout: {
-            back_clicked()
-        }
-    }
-
     //状态栏区域
     Custom.VMStatusbar{
         id:status_bar
         width: parent.width
         height: parent.height * parent.statusHR
+        z:5
         anchors{top:main_rect.bottom}
         onStatus_back_clicked: {
             //执行返回按钮
             back_clicked()
         }
     }
+
+
 
     function vmCreateProduct(){
         product_model.append({

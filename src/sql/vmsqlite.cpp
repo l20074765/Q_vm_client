@@ -50,9 +50,10 @@ void VMSqlite::checkTableProduct()
         bool ok;
         SqlProduct *product = new SqlProduct(0);
         product->id = query.value(1).toString();
-        product->name = query.value(4).toString();
-        product->salePrice = query.value(6).toUInt(&ok);
-        product->pic = query.value(8).toString();
+        product->kind = query.value(2).toString();
+        product->name = query.value(5).toString();
+        product->salePrice = query.value(7).toUInt(&ok);
+        product->pic = query.value(9).toString();
         product->imagePath = vmConfig.productImagePath() + "/"  + product->id;
 
         product->images = vmConfig.getFilePicList(product->imagePath);
@@ -191,6 +192,7 @@ bool VMSqlite::createTableProduct()
                 tableName + " (" +
                 "id integer primary key AUTOINCREMENT," +
                 "productNo varchar(100)," +
+                "kind varchar(100)," +
                 "sellTag varchar(200)," +
                 "brandName varchar(200)," +
                 "productName varchar(200)," +
@@ -321,8 +323,8 @@ bool VMSqlite::updateProduct(const SqlProduct *product)
         return false;
     }
 
-    QString temp = QString("update %1 set sellTag='%2',brandName='%3',productName='%4',aliasName='%5',salesPrice='%6',productTXT='%7',picture='%8' where productNo='%9'")
-            .arg(tableName).arg(product->sellTag).arg(product->brandName)
+    QString temp = QString("update %1 set kind='%2',sellTag='%3',brandName='%4',productName='%5',aliasName='%6',salesPrice='%7',productTXT='%8',picture='%9' where productNo='%10'")
+            .arg(tableName).arg(product->kind).arg(product->sellTag).arg(product->brandName)
             .arg(product->name).arg(product->aliasName).arg(product->salePrice)
             .arg(product->productTXT).arg(product->pic).arg(product->id);
 
@@ -430,8 +432,8 @@ bool VMSqlite::insertProduct(const SqlProduct *product)
         return false;
     }
 
-    QString temp = QString("insert into %1 values(NULL,'%2','%3','%4','%5','%6',%7,'%8','%9')")
-            .arg(tableName).arg(product->id).arg(product->sellTag)
+    QString temp = QString("insert into %1 values(NULL,'%2','%3','%4','%5','%6','%7',%8,'%9','%10')")
+            .arg(tableName).arg(product->id).arg(product->kind).arg(product->sellTag)
             .arg(product->brandName).arg(product->name).arg(product->aliasName)
             .arg(product->salePrice).arg(product->productTXT).arg(product->pic);
 

@@ -27,6 +27,7 @@ Rectangle {
     Trade.VMFaultPage{
         id:vmFaultPage
         anchors.fill: parent
+        visible: true;
     }
     //3.商品列表
     Trade.VMGoodsListPage{
@@ -96,6 +97,7 @@ Rectangle {
         anchors.fill: parent
         goodsListItem:vmGoodsListPage
 
+
     }
 
 
@@ -115,6 +117,7 @@ Rectangle {
             vmPageSwitch(vmAdsPage)
         }
         else if(s == 4) {   //维护
+            vmMTMainPage.version = "V" + mainView.appVersion();
             vmPageSwitch(vmMTMainPage);           
         }
         else{               //故障

@@ -27,8 +27,8 @@ public slots:
     SqlProduct *add(const QString &key);
     SqlProduct *get(const QString &key);
     bool remove(const QString &key);
-    bool       isContains(const QString &key);
-    bool    updateProductImage(SqlProduct *p);
+    bool isContains(const QString &key);
+    bool updateProductImage(SqlProduct *p);
 private:
 
     QHash<QString,SqlProduct *> hash;
