@@ -95,7 +95,7 @@ int main(int argc,char *argv[])
     systemMsgOutput = qInstallMsgHandler(myMessageOutput);
     QApplication app(argc,argv);
     app.setApplicationName(QObject::trUtf8("QVMClient"));
-    app.setApplicationVersion(QObject::trUtf8("1.1.1"));
+    app.setApplicationVersion(QObject::trUtf8("1.1.2"));
     app.setApplicationName(QObject::trUtf8("QVMClient"));
     app.setOrganizationName(QObject::trUtf8("easivend"));
 
