@@ -144,7 +144,8 @@ DISTFILES += \
     qml/maintain/MTColumn/MTCabinetEditPage.qml \
     qml/maintain/MTColumn/VMProductBrowsePage.qml \
     qml/custom/ConfirmDialog.qml \
-    qml/custom/CreateQml.js
+    qml/custom/CreateQml.js \
+    qml/trade/VMPayTypePage.qml
 
 
 

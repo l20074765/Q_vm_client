@@ -14,6 +14,7 @@ public:
     QString name;//商品名称
     quint32 salePrice;//销售价
     quint32 buyNum;//购买数量
+    quint32 priorityColumnId;//优先货道出货
     QList<SqlColumn *> columnList;//该商品绑定的所有货道号
     quint8 tradeRst;//该商品绑定的货道出货结果
 signals:

@@ -96,10 +96,6 @@ private:
     //sqlite数据库接口类
     VMSqlite *vmsqlite;
 
-    //订单管理类
-    OrderList *orderList;
-
-
     //支付宝类接口
     AlipayAPI *alipayApi;
 

@@ -11,7 +11,7 @@ Custom.VMWidget {
     property alias productImage: product_image.source
     property alias productName: product_name.text
     property alias productPrice: product_price.text
-    property Item vmPayPage: null
+    property Item vmPayTypePage: null
     //标题栏区域
     Custom.VMTitlebar{
         id:title_bar
@@ -120,12 +120,14 @@ Custom.VMWidget {
                         button_pay_clicked()
                         vm_main.timer_flush(120);
                         vm_main.timer_start();
-                        var page = vmGetPayPage();
+                        var page = vmGetPayTypePage();
+                        page.show();
                         //vmPayPage.vmPayAddProduct(p);
                         //vmPayPage.payqurePicSet(0);
-                        qmlActionSignal(MainFlow.QML_ACTION_ORDER_ADD,product.productID)
-                        qmlActionSignal(MainFlow.QML_ACTION_TRADE,product.productID);
-                        page.show();
+                        vmSqlite.addOrder(product.productID);
+                        //qmlActionSignal(MainFlow.QML_ACTION_ORDER_ADD,product.productID)
+                        //qmlActionSignal(MainFlow.QML_ACTION_TRADE,product.productID);
+
                     }
                 }
             }
@@ -156,17 +158,18 @@ Custom.VMWidget {
         }
     }
 
-
-    function vmGetPayPage(){
-        if(vmPayPage == null){
-            vmPayPage = CreateQml.loadComponent(widget,"VMPayPage.qml");
+    function vmGetPayTypePage(){
+        if(vmPayTypePage == null){
+            vmPayTypePage = CreateQml.loadComponent(widget,"VMPayTypePage.qml");
             //vmTransactionPage.back_clicked.connect(vmAdsPageSwitch);
-            return vmPayPage;
+            return vmPayTypePage;
         }
         else{
-            return vmPayPage;
+            return vmPayTypePage;
         }
     }
+
+
 
     function timer_out(){
         if(widget.visible == true){

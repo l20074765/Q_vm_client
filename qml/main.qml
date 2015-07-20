@@ -15,7 +15,9 @@ Rectangle {
     property Item vm_faultPage: null
     property Item vm_adsPage: null
     property Item vm_goodsListPage: null
-    property int tick:120
+    property Item vmMTMainPage: null
+
+    property int tick:0
     signal qmlActionSignal(variant type,variant obj)
     signal qmlMainSignal(variant type,variant obj)
     signal timerout()
@@ -47,16 +49,6 @@ Rectangle {
 
         }
     }
-
-    //8.维护主界面
-    MainTain.MTMain{
-        id:vmMTMainPage
-        anchors.fill: parent
-        goodsListItem:vmGoodsListPage
-
-
-    }
-
     //定时器
     Timer{
         id:timer
@@ -97,13 +89,16 @@ Rectangle {
     //交互接口
     function vmcStatehandle(s){
         console.log(qsTr("主页面切换 state=") + s )
+        var mainTainpage = vmGetMTMainPage();
+        var adsPage = vmGetAdsPage();
         if(s == 2){         //正常
-            var page = vmGetAdsPage();
-            page.show();
+            mainTainpage.hide();
+            adsPage.show();
         }
         else if(s == 4) {   //维护
-            vmMTMainPage.version = "V" + mainView.appVersion();
-            vmPageSwitch(vmMTMainPage);           
+            mainTainpage.version = "V" + mainView.appVersion();
+            adsPage.hide();
+            mainTainpage.show();
         }
         else{//故障
            // vmPageSwitch(vmFaultPage)
@@ -265,6 +260,17 @@ Rectangle {
         }
         else{
             return vm_goodsListPage;
+        }
+    }
+
+    function vmGetMTMainPage(){
+        if(vmMTMainPage == null){
+            vmMTMainPage = CreateQml.loadComponent(vm_main,"maintain/MTMain.qml");
+            //vmMTMainPage.ads_clicked.connect(vmGoodsListPageSwitch);
+            return vmMTMainPage;
+        }
+        else{
+            return vmMTMainPage;
         }
     }
 

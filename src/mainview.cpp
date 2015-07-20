@@ -52,6 +52,9 @@ MainView::MainView(QObject *parent) : QObject(parent)
     qmlRegisterType<SqlCabinet>("Qtvm",1,0,"SqlCabinet");
     qmlRegisterType<SqlCabinetList>("Qtvm",1,0,"SqlCabinetList");
 
+    qmlRegisterType<Order>("Qtvm",1,0,"Order");
+    qmlRegisterType<OrderList>("Qtvm",1,0,"OrderList");
+
     qmlRegisterType<VMSqlite>("Qtvm",1,0,"VMSqlite");
 
 
@@ -75,11 +78,10 @@ MainView::MainView(QObject *parent) : QObject(parent)
 
     SqlProductList *sqlProductList = sqllite->getSqlProductList();
     SqlCabinetList *sqlCabinetList = sqllite->getSqlCabinetList();
-
-    context->setContextProperty("sqlProductList",sqlProductList);
-   // context->setContextProperty("sqlColumnList",sqlColumnList);
+    OrderList *orderList = sqllite->getOrderList();
+    context->setContextProperty("sqlProductList",sqlProductList); 
     context->setContextProperty("sqlCabinetList",sqlCabinetList);
-
+    context->setContextProperty("orderList",orderList);
 
     mainItem = qobject_cast<QDeclarativeItem *>(view->rootObject());
     qDebug()<<"mainItem:"<<mainItem;

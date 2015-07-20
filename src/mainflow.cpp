@@ -34,8 +34,7 @@ MainFlow::MainFlow(QObject *parent) : QObject(parent)
     connect(vmsqlite,SIGNAL(sqlActionSignal(int,QObject *)),
             this,SLOT(sqlActionSlot(int,QObject *)));
 
-    //订单管理接口类
-    orderList = new OrderList(this);
+
 
     //支付宝接口类
     alipayApi = new AlipayAPI(this);
@@ -156,7 +155,7 @@ void MainFlow::aliActionSlot(QVariant type, QVariant obj)
         var.setValue((int)QML_PAYOUT_SUC);
         emit qmlActionSignal(qmlt,var);//支付成功 准备开始出货
 
-        QObject *objList = (QObject *)orderList;
+        QObject *objList = (QObject *)vmsqlite->getOrderList();
         QVariant obj1;
         obj1.setValue(objList);
         emit vmcActionSignal(VmcMainFlow::VMC_ACTION_TRADE,obj1);
@@ -184,12 +183,12 @@ void MainFlow::qmlActionSlot(QVariant type, QVariant obj)
     int mt = type.value<int>();
     if(mt == QML_ACTION_ORDER_ADD){
         QString productId = obj.value<QString>();
-        vmsqlite->addOrder(productId,orderList);
+        vmsqlite->addOrder(productId);
     }
     else if(mt == QML_ACTION_TRADE){
         QVariant type((int)AlipayAPI::ALI_ACTION_TRADE_START);
         QVariant obj1;
-        obj1.setValue(((QObject *)orderList));
+        obj1.setValue(((QObject *)vmsqlite->getOrderList()));
         emit aliActionSignal(type,obj1);//先从数据提取完整订单
     }
     else if(mt == QML_MAINFLOW_START){
@@ -293,13 +292,15 @@ void MainFlow::vmcActionSlot(QVariant type, QVariant obj)
         varType.setValue((int)QML_VMC_STATE);
     }
     else if(mt == VmcMainFlow::VMC_ACTION_TRADE_OK){
-        orderList->list.clear();
+        OrderList *list = vmsqlite->getOrderList();
+        list->list.clear();
         QVariant var1((int)QML_TRADE_TYPE);
         QVariant var2((int)QML_TRADE_OK);
         emit qmlActionSignal(var1,var2);
     }
     else if(mt == VmcMainFlow::VMC_ACTION_TRADE_FAIL){
-        orderList->list.clear();
+        OrderList *list = vmsqlite->getOrderList();
+        list->list.clear();
         QVariant var1((int)QML_TRADE_TYPE);
         QVariant var2((int)QML_TRADE_FAIL);
         emit qmlActionSignal(var1,var2);

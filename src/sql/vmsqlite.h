@@ -52,7 +52,7 @@ public:
     bool deleteColumn(const SqlColumn *column);
     bool deleteColumnByCabinet(const int no);
 
-    void addOrder(const QString &productId,OrderList *orderList);
+
     bool vmDeleteProduct(const QString &productId);
     bool vmUpdateProduct(const QString &productId);
     bool vmInsertProduct(const QString &productId);
@@ -67,12 +67,13 @@ public:
 
     SqlProductList *getSqlProductList(){return this->productList;}
     SqlCabinetList *getSqlCabinetList(){return this->cabinetList;}
+    OrderList *getOrderList(){return this->orderList;}
 signals:
     void sqlActionSignal(int type,QObject *obj);
 
 public slots:
     void sqlActionSlot(int type,QObject * obj);
-
+    void addOrder(const QString &productId);
 private:
     QSqlDatabase m_db;
     bool sqlConnected;
@@ -83,6 +84,8 @@ private:
 
     SqlProductList *productList;
     SqlCabinetList *cabinetList;
+
+    OrderList *orderList;//订单管理类
 };
 
 

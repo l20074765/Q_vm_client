@@ -3,6 +3,7 @@ import QtQuick 1.1
 //状态栏
 Rectangle{
     id:status_rect
+    property alias back: back_text.text
     signal status_back_clicked
 
     width: 100
@@ -41,6 +42,7 @@ Rectangle{
     }
 
     Text{
+        id:back_text
         width: parent.width * 0.15
         height: parent.height
         anchors{

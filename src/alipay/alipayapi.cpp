@@ -40,13 +40,11 @@ AlipayAPI::~AlipayAPI()
 void AlipayAPI::aliActionSlot(QVariant type, QVariant obj)
 {
     qDebug()<<"AlipayAPI::aliRequestSlot"<<type<<obj;
-    if(type == ALI_ACTION_TRADE_START)
-    {
+    if(type == ALI_ACTION_TRADE_START){
         QObject *obj1 = obj.value<QObject *>();
         tradBegin(obj1);
     }
-    else if(type == ALI_ACTION_TRADE_CLEAR)
-    {
+    else if(type == ALI_ACTION_TRADE_CLEAR){
         timer_check->stop();
     }
 }

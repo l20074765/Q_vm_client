@@ -8,16 +8,12 @@ Custom.VMWidget {
     property string pic_image:"../../images/alipay/ali_code.png"
     property string pic_image_gif : "../../images/alipay/loading_wait.gif"
     property string pic_str: ""
-    property alias timer: title_bar
     //标题栏区域
     Custom.VMTitlebar{
         id:title_bar
         width: parent.width
         height: parent.height * parent.titleHR
         anchors{top:parent.top}
-        onTimeout: {
-            back_clicked()
-        }
     }
 
     //主界面区域
@@ -88,14 +84,17 @@ Custom.VMWidget {
                 width: parent.width
                 height: parent.height
                 anchors.fill: parent
-                source: "../../images/tool/topbg.png"
+                source: "../../images/tool/test2.png"
+                smooth: true
+                fillMode: Image.PreserveAspectCrop
+                clip: true
                 rotation: 0
 
             }
 
             Text{
-                width: 50
-                height: 20
+                width: parent.width * 0.5
+                height: parent.height * 0.9
                 anchors{
                     verticalCenter: parent.verticalCenter
                     left: parent.left
@@ -103,7 +102,8 @@ Custom.VMWidget {
                 }
                 color: "#FFFFFF"
                 font.bold: true
-                font.pixelSize: parent.height * 0.5
+                font.pixelSize: (width < height) ? width * 0.6 : height * 0.6
+                verticalAlignment: Text.AlignVCenter
                 text:"支付流程"
 
             }
@@ -148,9 +148,6 @@ Custom.VMWidget {
                 height: payView_image.width * 0.235
 
             }
-
-
-
             Rectangle{
                 id:payqure_animateImage
                 x:payView_image.x + payView_image.width * 0.558
@@ -177,10 +174,10 @@ Custom.VMWidget {
         id:status_bar
         width: parent.width
         height: parent.height * parent.statusHR
+        back:"返回"
         anchors{top:main_rect.bottom}
         onStatus_back_clicked: {
-            //执行返回按钮
-            back_clicked()
+            back_clicked()//执行返回按钮
         }
     }
 

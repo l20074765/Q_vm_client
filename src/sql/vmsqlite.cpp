@@ -6,9 +6,8 @@ VMSqlite::VMSqlite(QObject *parent) : QObject(parent)
 {
     sqlConnected = false;
     productList = new SqlProductList(this);
-  //  columnList = new SqlColumnList(this);
     cabinetList = new SqlCabinetList(this);
-
+    orderList = new OrderList(this);//订单管理接口类
 }
 
 VMSqlite::~VMSqlite()
@@ -496,7 +495,7 @@ bool VMSqlite::insertCabinet(const SqlCabinet *cabinet)
     }
 }
 
-void VMSqlite::addOrder(const QString &productId, OrderList *orderList)
+void VMSqlite::addOrder(const QString &productId)
 {
     qDebug()<<"VMSqlite::addOrder--"<<"productId=="<<productId<<
               " orderList="<<orderList;
@@ -509,10 +508,7 @@ void VMSqlite::addOrder(const QString &productId, OrderList *orderList)
             return;
         }
     }
-    //新添加商品
-    Order *order = new Order();
-    order->buyNum = 1;
-    order->id = productId;
+
 
 
     SqlProduct *product = productList->hashValue(productId);
@@ -520,10 +516,14 @@ void VMSqlite::addOrder(const QString &productId, OrderList *orderList)
         qWarning()<<tr("VMSqlite::addOrder---product == NULL");
         return;
     }
+
+    //新添加商品
+    Order *order = new Order();
+    order->buyNum = 1;
+    order->id = productId;
     order->name = product->name;
     order->salePrice = product->salePrice;
-    //绑定货道
-    order->columnList.clear();
+    order->columnList.clear();//绑定货道
     //order->columnList = columnList->multiHash.values(productId);
     orderList->list << order;
 }

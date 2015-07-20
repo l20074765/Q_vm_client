@@ -5,6 +5,7 @@ Order::Order(QObject *parent) : QObject(parent)
     this->buyNum = 0;
     this->salePrice = 0;
     this->id  ="";
+    priorityColumnId = 0;
 }
 
 Order::~Order()

@@ -7,7 +7,6 @@ Custom.VMWidget{
     anchors.fill:parent
     z:3
     signal sqlActionSignal(variant type,variant obj)
-    property Item goodsListItem:null
     property Item productPage:null
     property Item columnPage:null
     property Item systemManagePage: null
