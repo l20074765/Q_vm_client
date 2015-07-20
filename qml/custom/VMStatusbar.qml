@@ -32,7 +32,12 @@ Rectangle{
         font.bold: true
         font.pixelSize:(width < height) ? width * 0.7 : height * 0.7
         color: "#FFFFFF"
-        text:"首页"
+        text:""
+    }
+
+
+    Rectangle{
+
     }
 
     Text{

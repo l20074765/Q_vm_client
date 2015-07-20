@@ -6,10 +6,7 @@ Rectangle{
     width: parent.width
     height: parent.height*0.05
     anchors{top:parent.top}
-    signal timeout()
-    property int remain_time: 120
-    property bool remain_time_show: false
-    property alias title: text_title.text
+    property alias title: title_text.text
     Image {
         id: title_image
         width: parent.width
@@ -18,10 +15,10 @@ Rectangle{
         smooth: true
         source: "../../images/tool/test1.png"
         rotation: 0
-
     }
+
     Text{
-        id:text_title
+        id:title_text
         width: parent.width * 0.5
         height: parent.height * 0.8
         anchors{
@@ -37,8 +34,8 @@ Rectangle{
         text:"欢迎光临"
     }
     Text {
-        id: title_timer_text
-        width: parent.width * 0.1
+        id: timer_text
+        width: parent.width * 0.2
         height: parent.height
         anchors{
             right: parent.right
@@ -50,40 +47,8 @@ Rectangle{
         color: "#FFFFFF"
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
-        text:remain_time.toString();
-        visible: remain_time_show
+        text:"剩余:" + vm_main.tick
+        visible: (vm_main.tick > 0) ? true : false
     }
-    //定时器
-    Timer{
-        id:title_timer
-        interval: 1000; running: false; repeat: true;
-        onTriggered: {
-            if(remain_time)
-                remain_time--;
-            else
-                timeout();
-
-        }
-    }
-
-
-    function title_flush(){
-        remain_time = 120;
-    }
-
-    function timer_set(s){
-        if(s == 1){
-            title_flush();
-            title_timer_text.visible = true;
-            title_timer.start();
-        }
-        else{
-            title_timer.stop()
-            title_timer_text.visible = false;
-        }
-
-
-    }
-
 }
 

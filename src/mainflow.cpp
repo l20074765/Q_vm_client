@@ -115,7 +115,7 @@ void MainFlow::sqlActionSlot(int type, QObject *obj)
     QVariant varType;
     QVariant varobj;
     if(mt == VMSqlite::SQL_PRODUCT_ADD){
-        varType.setValue((int)QML_SQL_PRODUCT_ADD);
+        varType.setValue((int)QML_SQL_PRODUCT_FLUSH);
         varobj.setValue(obj);
     }
     else if(mt == VMSqlite::SQL_COLUMN_ADD){

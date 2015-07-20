@@ -57,12 +57,9 @@ void QQrencode::draw_QRcode(QPainter *painter,const qreal w,const QString &text)
     int s = qrcode->width > 0 ? qrcode->width : 1;
     qreal scale = rectq.width() / s;
     char *p = (char *)qrcode->data;
-    for(int y = 0; y < s;y++)
-    {
-        for(int x = 0;x < s;x++)
-        {
-             if(*p & 1)
-             {
+    for(int y = 0; y < s;y++){
+        for(int x = 0;x < s;x++){
+             if(*p & 1){
                 QRectF rect2(x*scale + rectq.x(),y*scale + rectq.y(),scale,scale);
                 painter->drawRect(rect2);
              }

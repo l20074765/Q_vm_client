@@ -9,10 +9,7 @@ class Order : public QObject
 public:
     explicit Order(QObject *parent = 0);
     ~Order();
-
-
     QString getSalePriceStr();
-
     QString id;//商品ID
     QString name;//商品名称
     quint32 salePrice;//销售价

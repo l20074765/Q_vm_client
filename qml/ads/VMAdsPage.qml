@@ -7,7 +7,8 @@ Rectangle {
     height: 450
     anchors.fill: parent
     visible: false
-    signal ads_clicked  //广告页面点击信号
+    property int duration: 500
+    signal ads_clicked()  //广告页面点击信号
     property int adsIndex: 0
     property string ads_path_str: "../../images/ads/"
     property string ads_pic_str: "5.jpg"
@@ -115,6 +116,48 @@ Rectangle {
             else{
                 adsIndex = 0;
             }
+        }
+    }
+
+
+    function show(){
+        visible = true;
+        //opacity = 1;
+        animShow.start();
+    }
+
+    function hide(){
+        animHide.start();
+    }
+
+    function close(){
+        visible = false;
+    }
+
+
+
+    //------------------------------
+    // 动画
+    //------------------------------
+    PropertyAnimation {
+        id: animShow
+        target: ads_page
+        duration: ads_page.duration
+        easing.type:  Easing.Linear
+        property: 'opacity';
+        from: 0;
+        to: 1
+    }
+    PropertyAnimation {
+        id: animHide
+        target: ads_page
+        duration: ads_page.duration
+        easing.type: Easing.Linear
+        property: 'opacity';
+        from: 1;
+        to: 0
+        onCompleted: {
+            close()
         }
     }
 

@@ -2,6 +2,7 @@ import QtQuick 1.1
 import "maintain" as MainTain
 import "ads" as Ads
 import "custom" as Custom
+import "custom/CreateQml.js" as CreateQml
 import "trade" as Trade
 import Qtvm 1.0
 
@@ -11,65 +12,21 @@ Rectangle {
     anchors.fill: parent
     property Item curPage:vmFaultPage
     property Item lastPage:vmFaultPage
+    property Item vm_faultPage: null
+    property Item vm_adsPage: null
+    property Item vm_goodsListPage: null
+    property int tick:120
     signal qmlActionSignal(variant type,variant obj)
     signal qmlMainSignal(variant type,variant obj)
-    //1.广告页面
-    Ads.VMAdsPage{
-        id:vmAdsPage
-        anchors.fill: parent
-        onAds_clicked: {
-            if(curPage == vmAdsPage)
-                vmPageSwitch(vmGoodsListPage);
-
-        }
-    }
-    //2.故障页面
+    signal timerout()
+    //初始主页面
     Trade.VMFaultPage{
         id:vmFaultPage
         anchors.fill: parent
         visible: true;
     }
-    //3.商品列表
-    Trade.VMGoodsListPage{
-        id:vmGoodsListPage
-        anchors.fill: parent
-        onGoodsList_clicked: {
-            var p = vmGoodsListPage.vmGetCurProductItem()
-            vmTransactionPage.setGoodsInfo(p)
-            console.log("进入交易界面 " + p);
-            vmPageSwitch(vmTransactionPage);
-        }
-        onBack_clicked: {
-            vmPageSwitch(vmAdsPage);
-        }
-    }
-    //4.交易界面
-    Trade.VMTransactionPage{
-        id:vmTransactionPage
-        anchors.fill: parent
-        onButton_pay_clicked:{
-            var p = vmGoodsListPage.vmGetCurProductItem();
-            vmPayPage.vmPayAddProduct(p);
-            vmPayPage.payqurePicSet(0);
-            vmPageSwitch(vmPayPage);
-            qmlActionSignal(MainFlow.QML_ACTION_ORDER_ADD,p.product_id)
-            qmlActionSignal(MainFlow.QML_ACTION_TRADE,p.product_id);
-        }
-        onBack_clicked: {
-            vmPageSwitch(vmGoodsListPage);
-        }
-    }
 
-    //5.支付界面
-    Trade.VMPayPage{
-        id:vmPayPage
-        anchors.fill: parent
-        onBack_clicked: {
-            vmTradeClear();
-            vmPageSwitch(vmGoodsListPage);
-        }
 
-    }
 
     //6.成功支付后的出货界面
     Trade.VMTradeoutPage{
@@ -100,6 +57,33 @@ Rectangle {
 
     }
 
+    //定时器
+    Timer{
+        id:timer
+        interval: 1000; running: false; repeat: true;
+        onTriggered: {
+            if(tick){
+                tick--;
+            }
+            else{
+                timer.stop();
+                timerout();
+            }
+        }
+    }
+
+    function timer_flush(t){
+        tick = t;
+    }
+
+    function timer_start(){
+        timer.start();
+    }
+
+    function timer_stop(){
+        timer.stop();
+    }
+
 
 
     //返回函数
@@ -114,14 +98,19 @@ Rectangle {
     function vmcStatehandle(s){
         console.log(qsTr("主页面切换 state=") + s )
         if(s == 2){         //正常
-            vmPageSwitch(vmAdsPage)
+            var page = vmGetAdsPage();
+            page.show();
         }
         else if(s == 4) {   //维护
             vmMTMainPage.version = "V" + mainView.appVersion();
             vmPageSwitch(vmMTMainPage);           
         }
-        else{               //故障
-            vmPageSwitch(vmFaultPage)
+        else{//故障
+           // vmPageSwitch(vmFaultPage)
+            if(vm_faultPage == null){
+                vm_faultPage = CreateQml.loadComponent(vm_main,"trade/VMFaultPage.qml");
+                vm_faultPage.show();
+            }
         }
         return 1;
     }
@@ -176,8 +165,8 @@ Rectangle {
         if(type == MainFlow.QML_VMC_STATE){
             vmcStatehandle(obj);
         }
-        else if(type == MainFlow.QML_SQL_PRODUCT_ADD){
-            vmcproductAdd(obj);
+        else if(type == MainFlow.QML_SQL_PRODUCT_FLUSH){
+           // vmcproductAdd(obj);
         }
         else if(type == MainFlow.QML_SQL_COLUMN_ADD){
             vmMTMainPage.sqlActionSlot(type,obj);
@@ -232,6 +221,56 @@ Rectangle {
         console.log("测试主qml");
 
     }
+
+
+    function vmGoodsListPageSwitch(){
+        var goodsListpage = vmGetGoodsListPage();
+        var adsPage = vmGetAdsPage();
+        adsPage.hide();
+        vm_main.timer_flush(120);
+        vm_main.timer_start();
+        goodsListpage.show();
+    }
+
+    function vmAdsPageSwitch(){
+        var goodsListpage = vmGetGoodsListPage();
+        var adsPage = vmGetAdsPage();
+        goodsListpage.hide();
+        vm_main.timer_stop();
+        adsPage.show();
+    }
+
+
+
+
+    function vmGetAdsPage(){
+        if(vm_adsPage == null){
+            vm_adsPage = CreateQml.loadComponent(vm_main,"ads/VMAdsPage.qml");
+            vm_adsPage.ads_clicked.connect(vmGoodsListPageSwitch);
+            return vm_adsPage;
+        }
+        else{
+            return vm_adsPage;
+        }
+    }
+
+
+    function vmGetGoodsListPage(){
+        if(vm_goodsListPage == null){
+            vm_goodsListPage = CreateQml.loadComponent(vm_main,"trade/VMGoodsListPage.qml");
+            vm_goodsListPage.back_clicked.connect(vmAdsPageSwitch);
+            vm_main.timerout.connect(vm_goodsListPage.timer_out);
+            vm_goodsListPage.productFlush();
+            return vm_goodsListPage;
+        }
+        else{
+            return vm_goodsListPage;
+        }
+    }
+
+
+
+
 }
 
 

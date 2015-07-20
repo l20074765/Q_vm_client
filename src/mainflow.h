@@ -26,7 +26,7 @@ public:
 
     enum QmlEnumType{
         QML_VMC_STATE = 0,
-        QML_SQL_PRODUCT_ADD,
+        QML_SQL_PRODUCT_FLUSH,
         QML_SQL_PRODUCT_CREATE,
         QML_SQL_PRODUCT_UPDATE,
         QML_SQL_PRODUCT_DELETE,

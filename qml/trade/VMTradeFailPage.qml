@@ -20,9 +20,7 @@ Custom.VMWidget {
         width: parent.width
         height: parent.height * parent.titleHR
         anchors{top:parent.top}
-        onTimeout: {
-            back_clicked();
-        }
+
     }
 
     //主界面区域

@@ -9,4 +9,47 @@ Rectangle {
     property real rectHR: 0.9
     color:"white"
     visible: false
+    property int duration: 500
+
+
+    function show(){
+        visible = true;
+        //opacity = 1;
+        animShow.start();
+    }
+
+    function hide(){
+        animHide.start();
+    }
+
+    function close(){
+        visible = false;
+    }
+
+
+
+    //------------------------------
+    // 动画
+    //------------------------------
+    PropertyAnimation {
+        id: animShow
+        target: widget
+        duration: widget.duration
+        easing.type:  Easing.Linear
+        property: 'opacity';
+        from: 0;
+        to: 1
+    }
+    PropertyAnimation {
+        id: animHide
+        target: widget
+        duration: widget.duration
+        easing.type: Easing.Linear
+        property: 'opacity';
+        from: 1;
+        to: 0
+        onCompleted: {
+            close()
+        }
+    }
 }

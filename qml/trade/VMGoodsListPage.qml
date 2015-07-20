@@ -1,25 +1,15 @@
 import QtQuick 1.0
 import "../custom" as Custom
+import "../custom/CreateQml.js" as CreateQml
+
 
 Custom.VMWidget {
     id:goodsList_page
-    signal goodsList_clicked()
+    property Item vmTransactionPage: null   //交易界面
     signal back_clicked()
     //商品组件数组
     property alias products:product_model.count
-    property ListModel product_listModel:product_model
-
-    anchors.fill: parent
-    onVisibleChanged: {
-        if(visible == true){
-            title_bar.title_timer_set(1);
-        }
-        else{
-            title_bar.title_timer_set(0);
-        }
-
-    }
-
+    property alias product_listModel:product_model
     //标题栏区域
     Custom.VMTitlebar{
         id:title_bar
@@ -27,10 +17,6 @@ Custom.VMWidget {
         height: parent.height * parent.titleHR
         z:5
         anchors{top:parent.top}
-        remain_time_show: true
-        onTimeout: {
-            back_clicked()
-        }
     }
 
 
@@ -58,11 +44,12 @@ Custom.VMWidget {
                     productIndex: product_index
                     productImage: product_image
                     onGoods_clicked: {
-                          //商品点击
-                        product_gridView.currentIndex = productIndex
-                        console.log("商品选中" + "index:" + productIndex.toString()
-                                    + " curIndex:" + product_gridView.currentIndex);
-                        goodsList_clicked();
+                        console.log("商品选中" + "product:" + product);
+                        var page = vmGetTransactionPage();
+                        page.flush(product);
+                        vm_main.timer_flush(120);
+                        vm_main.timer_start();
+                        page.show();
                     }
                 }
             }
@@ -76,8 +63,8 @@ Custom.VMWidget {
             width: parent.width
             height: parent.height
             anchors.fill: parent
-            property real cellW: (parent.width) / 4.0
-            property real cellH: (parent.height) / 5.0
+            property real cellW: (parent.width) / 4.1
+            property real cellH: (parent.height) / 4.4
             cellWidth: cellW
             cellHeight: cellH
             flickableDirection:Flickable.VerticalFlick
@@ -99,8 +86,7 @@ Custom.VMWidget {
         z:5
         anchors{top:main_rect.bottom}
         onStatus_back_clicked: {
-            //执行返回按钮
-            back_clicked()
+            back_clicked()//执行返回按钮
         }
     }
 
@@ -116,12 +102,28 @@ Custom.VMWidget {
                          });
         var product = product_model.get(product_model.count - 1);
         product.product_index = product_model.count - 1;
-        //console.log("创建商品:" + product);
         return product;
     }
 
     function vmDeleteProduct(p){
         p.destroy()
+    }
+
+    function productFlush(){
+       productClear();
+       console.log("VM:productFlush:size=" + sqlProductList.size);
+        for(var i = 0;i < sqlProductList.size;i++){
+            var product = sqlProductList.at(i);
+            var p = vmCreateProduct();
+            p.product_name = product.name;
+            p.product_id = product.id;
+            p.product_price =  product.salePriceStr;
+            p.product_image = vmConfig.qmlPath() +  product.pic;
+        }
+    }
+
+    function productClear(){
+        product_model.clear();
     }
 
 
@@ -134,6 +136,24 @@ Custom.VMWidget {
         return product_model;
 
 
+    }
+
+    function timer_out(){
+        if(goodsList_page.visible == true){
+            back_clicked();
+        }
+    }
+
+
+    function vmGetTransactionPage(){
+        if(vmTransactionPage == null){
+            vmTransactionPage = CreateQml.loadComponent(goodsList_page,"VMTransactionPage.qml");
+            vm_main.timerout.connect(vmTransactionPage.timer_out);
+            return vmTransactionPage;
+        }
+        else{
+            return vmTransactionPage;
+        }
     }
 
 }

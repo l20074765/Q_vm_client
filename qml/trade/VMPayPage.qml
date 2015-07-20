@@ -4,21 +4,11 @@ import Qtvm 1.0
 Custom.VMWidget {
     id:vmPay_page
     anchors.fill: parent
-
     signal back_clicked()
     property string pic_image:"../../images/alipay/ali_code.png"
     property string pic_image_gif : "../../images/alipay/loading_wait.gif"
     property string pic_str: ""
-    onVisibleChanged: {
-        if(visible == true){
-            title_bar.title_timer_set(1)
-        }
-        else{
-            title_bar.title_timer_set(0)
-        }
-
-    }
-
+    property alias timer: title_bar
     //标题栏区域
     Custom.VMTitlebar{
         id:title_bar
