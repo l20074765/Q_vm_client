@@ -4,8 +4,9 @@ import QtQuick 1.1
 Rectangle{
     id:status_rect
     property alias back: back_text.text
+    property alias function1Test: function1_test.text
     signal status_back_clicked
-
+    signal function1_clicked();
     width: 100
     height: 50
     Image {
@@ -20,7 +21,8 @@ Rectangle{
 
     }
     Text{
-        width: parent.width * 0.2
+        id:function1_test
+        width: parent.width * 0.3
         height: parent.height * 0.8
         anchors{
             verticalCenter: parent.verticalCenter
@@ -31,9 +33,15 @@ Rectangle{
         verticalAlignment: Text.AlignVCenter
         smooth: true
         font.bold: true
-        font.pixelSize:(width < height) ? width * 0.7 : height * 0.7
+        font.pixelSize:(width < height) ? width * 0.45 : height * 0.45
         color: "#FFFFFF"
         text:""
+        MouseArea{
+            anchors.fill: parent
+            onClicked: {
+                function1_clicked()
+            }
+        }
     }
 
 
