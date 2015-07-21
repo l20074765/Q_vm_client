@@ -17,7 +17,7 @@ function loadComponent(parent,qml) {
 
 function createItem() {
     if (itemComponent.status == Component.Ready ) {
-        itemColumn = itemComponent.createObject(parentWIndow, {"x": 0 ,"y":0 , "z": 9});
+        itemColumn = itemComponent.createObject(parentWIndow, {"x": 0 ,"y":0 , "z": parentWIndow.z + 1});
         console.log("创建对象" + itemColumn)
         itemColumn.width = parentWIndow.width
         itemColumn.height = parentWIndow.height

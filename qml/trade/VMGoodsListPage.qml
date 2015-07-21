@@ -8,6 +8,7 @@ Custom.VMWidget {
     property Item vmTransactionPage: null   //交易界面
     property int duration: 200
     property bool isCarted: cart_rect.visible
+    property bool isHide:visible
     signal back_clicked()
     //商品组件数组
     property alias products:product_model.count
@@ -19,6 +20,9 @@ Custom.VMWidget {
         height: parent.height * parent.titleHR
         z:5
         anchors{top:parent.top}
+        onTimerout: {
+         back_clicked();
+        }
     }
 
 
@@ -27,7 +31,7 @@ Custom.VMWidget {
         id:main_rect
         width: parent.width
         height: parent.height * parent.rectHR
-        z:2
+        z:5
         anchors{top:title_bar.bottom}
         //商品展示区
         Rectangle{
@@ -35,52 +39,76 @@ Custom.VMWidget {
             width: parent.width
             height: parent.height
             anchors.top:parent.top
-            //定义列表组件
-            Component{
-                id:product_delegate
-                Rectangle{
-                    id:product_rect
-                    width: product_gridView.cellW
-                    height: product_gridView.cellH
-                    Custom.Product{
-                        width: parent.width * 0.9
-                        height:parent.height * 0.9
-                        anchors.centerIn: parent
-                        productID: product_id
-                        productName:product_name
-                        productPrice: product_price
-                        productIndex: product_index
-                        productImage: product_image
-                        onGoods_clicked: {
-                            console.log("商品选中" + "product:" + product);
-                            var page = vmGetTransactionPage();
-                            page.flush(product);
-                            vm_main.timer_flush(120);
-                            vm_main.timer_start();
-                            page.show();
+            z:5
+            //商品列表栏
+            Rectangle{
+                width: parent.width
+                height: parent.height
+                anchors.top:parent.top
+                z:5
+                //定义列表组件
+                Component{
+                    id:product_delegate
+                    Rectangle{
+                        id:product_rect
+                        width: product_gridView.cellW
+                        height: product_gridView.cellH
+                        Custom.Product{
+                            width: parent.width * 0.9
+                            height:parent.height * 0.9
+                            anchors.centerIn: parent
+                            productID: product_id
+                            productName:product_name
+                            productPrice: product_price
+                            productIndex: product_index
+                            productImage: product_image
+                            onGoods_clicked: {
+                                console.log("商品选中" + "product:" + product);
+                                var page = vmGetTransactionPage();
+                                page.flush(product);
+                                vm_main.timer_flush(120);
+                                vm_main.timer_start();
+                                //goodsList_page.hide();
+                                page.show();
+                            }
                         }
                     }
                 }
-            }
-            ListModel{
-                id:product_model
-            }
-            //商品列表框
-            GridView{
-                id:product_gridView
-                width: parent.width
-                height: parent.height
-                anchors.fill: parent
-                property real cellW: (parent.width) / 4.1
-                property real cellH: (parent.height) / 4.4
-                cellWidth: cellW
-                cellHeight: cellH
-                flickableDirection:Flickable.VerticalFlick
-                delegate: product_delegate
-                model: product_model
-                focus: true
-                currentIndex: 0
+                ListModel{
+                    id:product_model
+                }
+                //商品列表框
+                GridView{
+                    id:product_gridView
+                    width: parent.width
+                    height: parent.height
+                    anchors.fill: parent
+                    z:2
+                    property real cellW: (parent.width) / 4.1
+                    property real cellH: (parent.height) / 4.4
+                    cellWidth: cellW
+                    cellHeight: cellH
+                    flickableDirection:Flickable.VerticalFlick
+                    delegate: product_delegate
+                    model: product_model
+                    focus: true
+                    currentIndex: 0
 
+                }
+            }
+
+            //分类栏
+            Rectangle{
+                id:peoductKind_rect
+                width: parent.width
+                height: 0//parent.height * 0.04
+                anchors.bottom: parent.bottom
+                z:5
+                color: "blue"
+                MouseArea{
+                    anchors.fill: parent
+                }
+                visible: false
             }
         }
 
@@ -90,11 +118,19 @@ Custom.VMWidget {
             width: parent.width
             height: 0
             anchors.bottom: parent.bottom
+            z:5
             visible: false
+            MouseArea{
+                anchors.fill: parent
+            }
+
             //购物条
             Rectangle{
+                id:cart_title
                 width: parent.width
                 height: parent.height * 0.15
+                anchors.top: parent.top
+                z:5
                 Image {
                     width: parent.width
                     height: parent.height
@@ -128,19 +164,25 @@ Custom.VMWidget {
                     MouseArea{
                         anchors.fill: parent
                         onClicked: {
-//                            productList_rect.height = main_rect.height;
-//                            product_gridView.cellW = productList_rect.width / 4.1;
-//                            cart_rect.height = 0;
-//                            cart_rect.visible = false;
+                            product_gridView.cellW = productList_rect.width / 4.1;
                             productAnimBig.start();
-                            productAnimBig1.start();
+                           // productAnimBig1.start();
                             cartAnimHide.start();
                         }
                     }
                 }
             }
-
-
+            //购物车
+            Rectangle{
+                width: parent.width
+                height: parent.height * 0.85
+                anchors.top: cart_title.bottom
+                z:2
+                CartProductList{
+                    id:cartList
+                    anchors.fill: parent
+                }
+            }
         }
     }
 
@@ -149,7 +191,7 @@ Custom.VMWidget {
         id:status_bar
         width: parent.width
         height: parent.height * parent.statusHR
-        z:5
+        z:10
         anchors{top:main_rect.bottom}
         function1Test: "添加购物车"
         onStatus_back_clicked: {
@@ -158,12 +200,14 @@ Custom.VMWidget {
         onFunction1_clicked: {
             if(cart_rect.visible == false){
 //                productList_rect.height = main_rect.height * 0.7;
-//                product_gridView.cellW = productList_rect.width / 5.1
 //                cart_rect.height = main_rect.height * 0.3
                 cart_rect.visible = true
+                product_gridView.cellW = productList_rect.width / 5.1
                 productAnimSmall.start();
-                productAnimSmall1.start();
+                //productAnimSmall1.start();
                 cartAnimShow.start();
+                cartList.createList();
+                console.log("列表：" + "listZ=" + cartList.listZ + " product_gridView=" + product_gridView.z);
             }
         }
     }
@@ -288,13 +332,6 @@ Custom.VMWidget {
 
     }
 
-    function timer_out(){
-        if(goodsList_page.visible == true){
-            back_clicked();
-        }
-    }
-
-
     function vmGetTransactionPage(){
         if(vmTransactionPage == null){
             vmTransactionPage = CreateQml.loadComponent(goodsList_page,"VMTransactionPage.qml");
@@ -304,6 +341,17 @@ Custom.VMWidget {
         else{
             return vmTransactionPage;
         }
+    }
+
+    function pageShow(){ //页面切换
+        show();
+        title_bar.timer_flush(120);
+        title_bar.timer_start();
+    }
+
+    function pageHide(){  //页面隐藏
+        title_bar.timer_stop();
+        hide();
     }
 
 }

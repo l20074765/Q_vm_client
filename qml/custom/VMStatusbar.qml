@@ -9,6 +9,7 @@ Rectangle{
     signal function1_clicked();
     width: 100
     height: 50
+    MouseArea{anchors.fill: parent} //mask
     Image {
         id: status_image
         width: parent.width

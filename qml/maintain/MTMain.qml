@@ -167,6 +167,14 @@ Custom.VMWidget{
         console.log("后台维护操作SQL:" + "type=" + type + " obj=" + obj);
     }
 
+    function pageShow(){ //页面切换
+        visible = true;
+    }
+
+    function pageHide(){  //页面隐藏
+        visible = false;
+    }
+
 
 }
 

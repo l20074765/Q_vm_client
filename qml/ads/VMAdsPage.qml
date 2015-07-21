@@ -1,5 +1,7 @@
 import QtQuick 1.1
 import Qtvm 1.0
+import "../custom/CreateQml.js" as CreateQml
+
 
 Rectangle {
     id:ads_page
@@ -8,11 +10,11 @@ Rectangle {
     anchors.fill: parent
     visible: false
     property int duration: 500
-    signal ads_clicked()  //广告页面点击信号
     property int adsIndex: 0
     property string ads_path_str: "../../images/ads/"
     property string ads_pic_str: "5.jpg"
     property string ads_file_str: "test"
+    property Item vmGoodsListPage: null
 
     onVisibleChanged: {
         console.log("广告页面显示更改" + visible);
@@ -64,9 +66,9 @@ Rectangle {
         id:ads_mouse
         width: parent.width
         height:parent.height
-        onClicked:{
+        onClicked:{  //点击进入商品交易界面
             console.log("main:onClicked....")
-            ads_clicked()
+            vmGoodsListPageSwitch()
             ads_timer.stop();
             if(ads_file_str.indexOf("avi") > 0){
                  vm_video.stop();
@@ -159,6 +161,42 @@ Rectangle {
         onCompleted: {
             close()
         }
+    }
+
+    function pageShow(){ //页面切换
+        show();
+    }
+
+    function pageHide(){  //页面隐藏
+        var goodsListpage = vmGetGoodsListPage();
+        if(goodsListpage.isHide){
+            goodsListpage.pageHide();
+        }
+        hide();
+    }
+
+    function vmGetGoodsListPage(){
+        if(vmGoodsListPage == null){
+            vmGoodsListPage = CreateQml.loadComponent(vm_main,"../trade/VMGoodsListPage.qml");
+            vmGoodsListPage.back_clicked.connect(vmAdsPageSwitch);
+            vmGoodsListPage.productFlush();
+            return vmGoodsListPage;
+        }
+        else{
+            return vmGoodsListPage;
+        }
+    }
+
+    function vmGoodsListPageSwitch(){
+        hide();
+        var goodsListpage = vmGetGoodsListPage();
+        goodsListpage.pageShow();
+    }
+
+    function vmAdsPageSwitch(){
+        var goodsListpage = vmGetGoodsListPage();
+        goodsListpage.hide();
+        show();
     }
 
 }

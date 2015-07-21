@@ -68,7 +68,13 @@ Custom.VMWidget {
     }
 
 
+    function pageShow(){ //页面切换
+        show();
+    }
 
+    function pageHide(){  //页面隐藏
+        hide();
+    }
 
 
 }

@@ -12,24 +12,16 @@ Rectangle {
     anchors.fill: parent
     property Item curPage:vmFaultPage
     property Item lastPage:vmFaultPage
-    property Item vm_faultPage: null
-    property Item vm_adsPage: null
-    property Item vm_goodsListPage: null
+    property Item vmAdsPage: null
     property Item vmMTMainPage: null
-
-    property int tick:0
     signal qmlActionSignal(variant type,variant obj)
     signal qmlMainSignal(variant type,variant obj)
-    signal timerout()
     //初始主页面
     Trade.VMFaultPage{
         id:vmFaultPage
         anchors.fill: parent
         visible: true;
     }
-
-
-
     //6.成功支付后的出货界面
     Trade.VMTradeoutPage{
         id:vmTradeoutPage
@@ -49,32 +41,7 @@ Rectangle {
 
         }
     }
-    //定时器
-    Timer{
-        id:timer
-        interval: 1000; running: false; repeat: true;
-        onTriggered: {
-            if(tick){
-                tick--;
-            }
-            else{
-                timer.stop();
-                timerout();
-            }
-        }
-    }
 
-    function timer_flush(t){
-        tick = t;
-    }
-
-    function timer_start(){
-        timer.start();
-    }
-
-    function timer_stop(){
-        timer.stop();
-    }
 
 
 
@@ -92,19 +59,15 @@ Rectangle {
         var mainTainpage = vmGetMTMainPage();
         var adsPage = vmGetAdsPage();
         if(s == 2){         //正常
-            mainTainpage.hide();
-            adsPage.show();
+            vmPageSwitch(adsPage);
         }
         else if(s == 4) {   //维护
             mainTainpage.version = "V" + mainView.appVersion();
-            adsPage.hide();
-            mainTainpage.show();
+            vmPageSwitch(mainTainpage);
         }
-        else{//故障
-           // vmPageSwitch(vmFaultPage)
-            if(vm_faultPage == null){
-                vm_faultPage = CreateQml.loadComponent(vm_main,"trade/VMFaultPage.qml");
-                vm_faultPage.show();
+        else{   //故障
+            if(vm_main.curPage == vmAdsPage){
+               vmPageSwitch(vmFaultPage);
             }
         }
         return 1;
@@ -144,9 +107,8 @@ Rectangle {
     function vmPageSwitch(page){
         vm_main.lastPage = vm_main.curPage
         vm_main.curPage = page
-        vm_main.lastPage.visible = false
-        vm_main.curPage.visible = true
-
+        vm_main.lastPage.pageHide();
+        vm_main.curPage.pageShow();
     }
 
     function vmTradeClear(){
@@ -212,56 +174,19 @@ Rectangle {
     }
 
 
-    function vmcTest(){
-        console.log("测试主qml");
-
-    }
-
-
-    function vmGoodsListPageSwitch(){
-        var goodsListpage = vmGetGoodsListPage();
-        var adsPage = vmGetAdsPage();
-        adsPage.hide();
-        vm_main.timer_flush(120);
-        vm_main.timer_start();
-        goodsListpage.show();
-    }
-
-    function vmAdsPageSwitch(){
-        var goodsListpage = vmGetGoodsListPage();
-        var adsPage = vmGetAdsPage();
-        goodsListpage.hide();
-        vm_main.timer_stop();
-        adsPage.show();
-    }
-
-
-
-
     function vmGetAdsPage(){
-        if(vm_adsPage == null){
-            vm_adsPage = CreateQml.loadComponent(vm_main,"ads/VMAdsPage.qml");
-            vm_adsPage.ads_clicked.connect(vmGoodsListPageSwitch);
-            return vm_adsPage;
+        if(vmAdsPage == null){
+            vmAdsPage = CreateQml.loadComponent(vm_main,"ads/VMAdsPage.qml");
+            //vmAdsPage.ads_clicked.connect(vmGoodsListPageSwitch);
+            return vmAdsPage;
         }
         else{
-            return vm_adsPage;
+            return vmAdsPage;
         }
     }
 
 
-    function vmGetGoodsListPage(){
-        if(vm_goodsListPage == null){
-            vm_goodsListPage = CreateQml.loadComponent(vm_main,"trade/VMGoodsListPage.qml");
-            vm_goodsListPage.back_clicked.connect(vmAdsPageSwitch);
-            vm_main.timerout.connect(vm_goodsListPage.timer_out);
-            vm_goodsListPage.productFlush();
-            return vm_goodsListPage;
-        }
-        else{
-            return vm_goodsListPage;
-        }
-    }
+
 
     function vmGetMTMainPage(){
         if(vmMTMainPage == null){
@@ -273,10 +198,6 @@ Rectangle {
             return vmMTMainPage;
         }
     }
-
-
-
-
 }
 
 

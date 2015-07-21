@@ -7,6 +7,9 @@ Rectangle{
     height: parent.height*0.05
     anchors{top:parent.top}
     property alias title: title_text.text
+    property int tick:0
+    signal timerout()
+    MouseArea{anchors.fill: parent} //mask
     Image {
         id: title_image
         width: parent.width
@@ -47,8 +50,39 @@ Rectangle{
         color: "#FFFFFF"
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
-        text:"剩余:" + vm_main.tick
-        visible: (vm_main.tick > 0) ? true : false
+        text:"剩余:" + tick
+        visible: (tick > 0) ? true : false
     }
+
+
+    //定时器
+    Timer{
+        id:timer
+        interval: 1000; running: false; repeat: true;
+        onTriggered: {
+            if(tick){
+                tick--;
+            }
+            else{
+                timer.stop();
+                timerout();
+            }
+        }
+    }
+
+    function timer_flush(t){
+        tick = t;
+    }
+
+    function timer_start(){
+        timer.start();
+    }
+
+    function timer_stop(){
+        timer.stop();
+    }
+
+
+
 }
 

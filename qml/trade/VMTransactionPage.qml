@@ -180,6 +180,7 @@ Custom.VMWidget {
     function back_return(){
         console.log("返回" +widget.parent );
         widget.hide();
+        //widget.parent.show();
         vm_main.timer_flush(120);
         vm_main.timer_start();
     }
