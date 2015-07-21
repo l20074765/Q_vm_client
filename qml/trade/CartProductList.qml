@@ -95,18 +95,37 @@ Rectangle {
                     height: parent.height
                     anchors.fill: parent
                     spacing: 1
-                    Image{
+                    Rectangle{
                         width: parent.width * 0.2
                         height: parent.height
-                        smooth: true
-                        source: "../../images/product/default_product.png"
+                        Image{
+                            width: parent.width * 0.4
+                            height: parent.height * 0.6
+                            anchors.centerIn: parent
+                            smooth: true
+                            source: "../../images/product/default_product.png"
+                        }
                     }
+
                     Text{
                         width: parent.width * 0.2
                         height: parent.height
                         smooth: true
                         text:product_name
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        font.pixelSize: (width < height) ? width * 0.4: height * 0.4
                     }
+                    Text{
+                        width: parent.width * 0.2
+                        height: parent.height
+                        smooth: true
+                        text:product_price
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        font.pixelSize: (width < height) ? width * 0.4: height * 0.4
+                    }
+
                 }
             }
         }
@@ -132,7 +151,8 @@ Rectangle {
 
     function createList(){
         for(var i = 0;i < 20;i++){
-            cartListModel.append({"product_name":"商品名称"  + i});
+            cartListModel.append({"product_name":"商品名称"  + i,
+                                 "product_price":"1.00"});
         }
 
     }
