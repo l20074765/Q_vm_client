@@ -319,6 +319,7 @@ QString AlipayAPI::buildRequestMysign(const QMap<QString, QString> &mapArr)
     QByteArray bb;
     bb = QCryptographicHash::hash(preStr.toUtf8(),QCryptographicHash::Md5 );
     mysign.append(bb.toHex());
+    qDebug()<<"MDB5校验值="<<bb.toHex();
     return mysign;
 }
 
